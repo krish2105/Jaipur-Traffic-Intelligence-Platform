@@ -1,0 +1,50 @@
+# Render blueprint for the PRAVAAH API.
+#
+# The database is deliberately NOT declared here. It lives on Tiger Cloud
+# (Postgres + TimescaleDB + PostGIS + pgvector), which Render cannot provision,
+# and a blueprint that quietly created a second empty Postgres would be a
+# convincing way to deploy a console with no data in it.
+#
+# Every secret is `sync: false` — Render prompts for it at deploy and never
+# stores it in this file. The repository is public.
+services:
+  - type: web
+    name: pravaah-api
+    runtime: python
+    plan: starter
+    region: singapore # closest Render region to Jaipur; ~40 ms better than Frankfurt
+    buildCommand: pip install uv && uv sync --frozen --no-dev
+    startCommand: uv run uvicorn pravaah.api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/v1/meta/sources
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
+      - key: PRAVAAH_ENV
+        value: production
+      # The lifespan handler refuses to start when this is true in production.
+      # A demo role switcher that survives deployment is an auth bypass, so the
+      # service failing to boot is the correct behaviour and is asserted here.
+      - key: DEMO_MODE
+        value: "false"
+      - key: PRAVAAH_SOURCE_MODE
+        value: replay
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_URL_READONLY
+        sync: false
+      - key: PLATE_HMAC_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+
+  - type: cron
+    name: pravaah-severity-nightly
+    runtime: python
+    plan: starter
+    region: singapore
+    schedule: "30 20 * * *" # 02:00 IST — after the day's counts have settled
+    buildCommand: pip install uv && uv sync --frozen --no-dev
+    startCommand: uv run python scripts/train_severity.py
+    envVars:
+      - key: DATABASE_URL
+        sync: false

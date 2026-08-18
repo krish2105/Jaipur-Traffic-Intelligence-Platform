@@ -1470,3 +1470,35 @@ explanation rather than being filtered for being negative ("dangerous despite a
 median" is a finding), and countermeasures are proposed only for factors that
 *raise* risk — suggesting median treatment where the median is holding the
 score down wastes a budget line.
+
+---
+
+## ADR-049 — Deployment blueprints, and what they deliberately omit
+**Date:** 2026-08-18 · **Status:** Accepted
+
+`render.yaml` and `apps/web/vercel.json`, matching the deployment named in the
+original brief.
+
+**The database is deliberately not declared.** It lives on Tiger Cloud
+(Postgres + TimescaleDB + PostGIS + pgvector), which Render cannot provision. A
+blueprint that quietly created a plain Render Postgres would deploy a console
+connected to an empty database — a convincing failure, which is the worst kind.
+
+**Every secret is `sync: false`**, so Render prompts at deploy and nothing lands
+in the file. The repository is public and that is not a detail to get right
+later.
+
+`DEMO_MODE` is pinned `false` in production, where the API's lifespan handler
+already refuses to start if it is true. The service failing to boot is the
+correct behaviour: a demo role switcher surviving into production is an
+authentication bypass, not a convenience, and this is the third independent
+place that is enforced.
+
+A nightly cron retrains KAVACH at 02:00 IST, after the day's counts have
+settled. Region `singapore` for the API and `bom1` for the frontend — closest
+to Jaipur, and worth roughly 40 ms against a European region on every request.
+
+Vercel carries the security headers the API already sets, plus a
+`Permissions-Policy` denying camera, microphone and geolocation. The citizen
+view asks for no location by design (ADR-037); denying it at the header level
+means a future dependency cannot quietly start asking.
