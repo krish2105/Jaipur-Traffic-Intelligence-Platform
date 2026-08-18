@@ -44,6 +44,8 @@ WEB = Path("apps/web")
 #: rather than a second URL-building implementation that can drift.
 PATHS: tuple[str, ...] = (
     "/corridors",
+    "/safety/severity",
+    "/enforcement/allocation",
     "/counts/summary?corridor_id=1",
     "/congestion/day-profile?corridor_id=1",
     "/congestion/weekly?corridor_id=1",

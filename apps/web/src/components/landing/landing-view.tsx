@@ -3,13 +3,21 @@
 import { useLocale } from "next-intl";
 import Link from "next/link";
 
-import type { CountsSummary, DayProfile, IncidentTimeline, PolicyScenarios } from "@/lib/api";
+import type {
+  CountsSummary,
+  DayProfile,
+  EnforcementAllocation,
+  IncidentTimeline,
+  PolicyScenarios,
+  SeverityFinding,
+} from "@/lib/api";
 import type { Locale } from "@/i18n/routing";
 import { formatCount } from "@/lib/format";
 import { DayProfileChart } from "@/components/charts/day-profile";
 import { IncidentTimelineChart } from "@/components/charts/incident-timeline";
 import { ThemeToggle } from "@/components/console/theme-toggle";
 import { Counter, Magnetic, SplitText } from "./motion-primitives";
+import { SeveritySection } from "./severity-section";
 
 /**
  * The landing page.
@@ -120,11 +128,15 @@ export function LandingView({
   profile,
   incidents,
   policy,
+  severity,
+  allocation,
 }: {
   summary: CountsSummary;
   profile: DayProfile;
   incidents: IncidentTimeline;
   policy: PolicyScenarios;
+  severity: SeverityFinding | null;
+  allocation: EnforcementAllocation | null;
 }) {
   const locale = useLocale() as Locale;
   const hi = locale === "hi";
@@ -394,6 +406,10 @@ export function LandingView({
           </div>
         </Reveal>
       </Section>
+
+      {severity && allocation && (
+        <SeveritySection severity={severity} allocation={allocation} />
+      )}
 
       {/* ── policy ──────────────────────────────────────────────────────── */}
       {lez && (

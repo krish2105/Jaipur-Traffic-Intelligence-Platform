@@ -479,6 +479,58 @@ export interface WeeklyMatrix {
   is_synthetic: boolean;
 }
 
+/** Jaipur's published severity gap. The one payload with no synthetic data in it. */
+export interface SeverityFinding {
+  crashes: { year: number; count: number; prev: number; change_pct: number };
+  deaths: {
+    year: number; count: number; prev: number;
+    prev_is_derived: boolean; change_pct: number;
+  };
+  fatality_rate_per_100: number;
+  fatality_rate_is_five_year_high: boolean;
+  enforcement: {
+    mix_pct: Record<string, number>;
+    challans_2025: number;
+    challans_2024: number;
+    recovery_rate_pct: number;
+    jaipur_fine_revenue_cr: number;
+  };
+  severity_drivers: {
+    helmet_fatality_share_pct: number;
+    unhelmeted_share_of_2w_deaths_pct: number;
+    two_wheeler_crash_share_pct: number;
+  };
+  argument: Bilingual;
+  sources: Record<string, { title: string; url: string; accessed: string; note: string }>;
+  is_synthetic: boolean;
+}
+
+/** The reallocation, with the model that produced it attached. */
+export interface EnforcementAllocation {
+  current_pct: Record<string, number>;
+  recommended_pct: Record<string, number>;
+  delta_pct: Record<string, number>;
+  marginal_return_now: Record<string, number>;
+  lives_per_year: { current: number; recommended: number; gain: number };
+  assumptions: {
+    attributable_fractions: Record<string, number>;
+    saturation_k: number;
+    floor_share: number;
+    fractions_overlap: boolean;
+    combination: string;
+    basis_deaths: number;
+    basis_year: number;
+  };
+  sensitivity: { k: number; helmet_share_pct: number; lives: number }[];
+  robustness: {
+    holds_for_k: number[];
+    fails_for_k: number[];
+    holds_above_k: number | null;
+    note: string;
+  };
+  is_synthetic: boolean;
+}
+
 /**
  * The demo role, read from the session at call time.
  *
@@ -579,6 +631,8 @@ const query = (params: Record<string, string | number | undefined>) => {
 
 export const api = {
   corridors: () => get<Corridor[]>("/corridors"),
+  severity: () => get<SeverityFinding>("/safety/severity"),
+  allocation: () => get<EnforcementAllocation>("/enforcement/allocation"),
   // Routed through get() rather than fetched raw in the page, so the 3D scene
   // falls back to the snapshot like every other panel. Fetched directly, it
   // was the one call that still went dark on a deployment with no API.
