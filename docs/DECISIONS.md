@@ -1900,3 +1900,44 @@ wrong.
 I have not done (3), because a seed rebuilt to agree with itself would remove
 the evidence of the inconsistency while leaving the underlying uncertainty
 exactly where it is.
+
+---
+
+## ADR-060 — Seed reconciliation: written, NOT verified as applied
+**Date:** 2026-08-18 · **Status:** Open
+
+`scripts/reconcile_seed.py` exists and its logic is sound. It targets the
+`vc_ratio` already recorded in `link_congestion` — the ratio the seed generator
+wrote down and then failed to honour — so it introduces no new assumption: the
+target is the seed's own stated intent, not a number I chose.
+
+**It does not currently change the warehouse, and I have not found out why.**
+
+Evidence:
+
+* Two consecutive runs report rescaling 144 then 119 link-hours, with median
+  factors 2.44 then 1.23 — so the second run still saw a gap.
+* The corridor total after each run is byte-identical: 282,530 vehicles,
+  156,083 PCU.
+* Achieved v/c stays at 0.649 against a target of 0.983.
+* Writes are not blocked: a plain `UPDATE` on the same table reports
+  `UPDATE 350958`, and although `traffic_counts` has compression *enabled*,
+  **0 of its 92 chunks are actually compressed**, so ADR-013's compressed-chunk
+  problem is not the cause.
+
+The most likely remaining explanation is that `executemany` is not committing,
+or that the `extract(hour …)` predicate in the UPDATE does not select the rows
+the measuring CTE aggregates. Both are checkable; neither is checked.
+
+A second finding surfaced on the way and matters more than the bug:
+**`traffic_counts` and `link_congestion` overlap on only 6 links at 19:00.**
+Counts exist on the camera-instrumented links; congestion exists on 90. The two
+tables largely describe different parts of the corridor, which is a deeper
+version of the ADR-059 inconsistency than rescaling can fix — you cannot
+reconcile two datasets by scaling their intersection when the intersection is
+6 links out of 90.
+
+**The script is committed and left unapplied.** It is not wired into any
+pipeline and nothing depends on it. Shipping a "reconciled" seed I had not
+verified would have put a silently-unchanged warehouse behind a claim that it
+was fixed, which is worse than the inconsistency it was meant to remove.
