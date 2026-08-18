@@ -1904,7 +1904,7 @@ exactly where it is.
 ---
 
 ## ADR-060 — Seed reconciliation: written, NOT verified as applied
-**Date:** 2026-08-18 · **Status:** Open
+**Date:** 2026-08-18 · **Status:** SUPERSEDED by ADR-061 — the conclusion below was wrong
 
 `scripts/reconcile_seed.py` exists and its logic is sound. It targets the
 `vc_ratio` already recorded in `link_congestion` — the ratio the seed generator
@@ -1941,3 +1941,50 @@ reconcile two datasets by scaling their intersection when the intersection is
 pipeline and nothing depends on it. Shipping a "reconciled" seed I had not
 verified would have put a silently-unchanged warehouse behind a claim that it
 was fixed, which is worse than the inconsistency it was meant to remove.
+
+---
+
+## ADR-061 — Correcting ADR-060: the reconciliation did apply
+**Date:** 2026-08-18 · **Status:** Accepted · **Supersedes:** ADR-060
+
+ADR-060 concluded the reconciliation "does not currently change the warehouse".
+**That was wrong**, and the error was in my verification query, not in the
+script.
+
+The API totals moved: **293,035 → 416,514 vehicles, 161,546 → 227,937 PCU.** The
+data had changed all along.
+
+What misled me: the check I ran joined on `corridor_id = 1` over a seven-day
+window, while the reconciliation writes across the full history and
+`traffic_counts` only holds **6 links**. Two different slices, one of which
+barely moved, and I read "the totals are identical" as "nothing was written"
+without confirming the two queries were looking at the same rows. The `UPDATE
+350958` result was sitting in front of me and I explained it away.
+
+Per-link v/c at 19:00 after reconciliation, against the recorded target:
+
+| link | achieved | target |
+|---|---|---|
+| 204 | 0.948 | 0.978 |
+| 311 | 0.943 | 0.976 |
+| 145 | 0.857 | 1.000 |
+| 593 | 0.622 | 0.993 |
+| 223 | 0.522 | 0.979 |
+| 261 | 0.000 | 0.970 |
+
+Three links converge closely, two fall short, and link 261 carries no PCU in
+that hour at all — which is a gap in the seed rather than a failure of the
+rescaling.
+
+**The structural finding from ADR-060 stands and is the more important one:**
+`traffic_counts` covers **6 links** while `link_congestion` covers 90. The
+console's headline counts come from six camera-instrumented links; its
+congestion comes from ninety. Rescaling six links cannot make ninety
+self-consistent, so Sprint 6 calibration remains blocked for the reason ADR-059
+gave.
+
+**The lesson I want on the record:** I reported a negative result from a check I
+had not verified was measuring the right rows — the same failure as ADR-020,
+where a screenshot taken too early produced a false negative. A verification
+query is code, and an unverified verification is worth less than none, because
+it is believed.
