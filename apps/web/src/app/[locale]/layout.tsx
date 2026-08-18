@@ -73,10 +73,15 @@ export default async function LocaleLayout({
       suppressHydrationWarning
       className={`${anekLatin.variable} ${anekDevanagari.variable} ${plexMono.variable}`}
     >
-      <head>
-        <ThemeScript />
-      </head>
       <body>
+        {/* First child of <body>, not inside <head>. React 19 reconciles the
+            <html> element during hydration and drops attributes the server did
+            not render, so a script in <head> could set data-theme before paint
+            and then have it removed underneath it — which is what happened, and
+            why any page without a 3D scene (which sets the attribute again in
+            an effect) lost its theme entirely. Running here is still ahead of
+            any body content painting, which is all a no-FOUC script needs. */}
+        <ThemeScript />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>

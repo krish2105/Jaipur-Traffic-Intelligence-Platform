@@ -1053,3 +1053,36 @@ installed app should open on the thing the installer wanted, and uses
 `standalone` rather than `fullscreen` — someone deciding whether to leave needs
 their clock and battery visible, and taking the status bar away to look more
 like an app is a trade against them.
+
+---
+
+## ADR-038 — A speed limit is not a measured speed
+**Date:** 2026-08-18 · **Status:** Accepted
+
+The scene endpoint returned `COALESCE(measured.speed_kmh, l.free_flow_speed_kmh, 30)`.
+Where no camera had seen a speed, it fell back to the link's **free-flow speed
+limit** and returned it in the same field, indistinguishable from a
+measurement. The citizen view rendered the result honestly and so exposed it:
+*"50 km/h"* beside a congestion index of 96.
+
+That is not a cosmetic problem. It is a contradiction any traffic engineer spots
+in the first thirty seconds, and it undermines every other figure on the screen
+— because if this one is a limit dressed as a measurement, which of the others
+are?
+
+Now:
+
+- `speed_kmh` is the measured value where one exists, and otherwise is
+  **derived from the congestion index** through the curve already calibrated
+  against the published 17.5 km/h rush-window mean;
+- `speed_source` is `"measured"` or `"modelled"` on every link, always;
+- `free_flow_kmh` is returned separately, as the reference it actually is.
+
+The interface marks a modelled speed with `~` and explains it on hover. The
+numbers now agree with each other: index 96.4 reads 14.4 km/h modelled, next to
+a measured 13.8 on a comparable link.
+
+This is docs/06 §8 — "no naked number" — applied to a field that had been
+quietly exempt. The rule is not only that a figure carries its quality; it is
+that a figure must not silently change what it *is* depending on whether the
+data arrived.

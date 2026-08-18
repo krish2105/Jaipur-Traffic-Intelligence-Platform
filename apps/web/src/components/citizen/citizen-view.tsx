@@ -242,8 +242,20 @@ export function CitizenView({
                   <span
                     className="shrink-0 font-mono tabular-nums text-[var(--ink-muted)]"
                     style={{ fontSize: "var(--d-support)" }}
+                    title={
+                      l.speed_source === "modelled"
+                        ? hi
+                          ? "भीड़ सूचकांक से निकाला गया, कैमरे से मापा नहीं"
+                          : "derived from the congestion index, not seen by a camera"
+                        : hi
+                          ? "कैमरे से मापा गया"
+                          : "measured by a camera"
+                    }
                   >
                     {l.speed_kmh.toFixed(0)} km/h
+                    {l.speed_source === "modelled" && (
+                      <span className="ml-1 text-[var(--ink-faint)]">~</span>
+                    )}
                   </span>
                 </li>
               ))}

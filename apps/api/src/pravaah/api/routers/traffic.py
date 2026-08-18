@@ -344,7 +344,9 @@ async def scene(
     city, so three round-trips would only produce three chances to show a
     half-built one.
 
-    `flow` and `speed_kmh` are measured values, and `suppressed` marks links
+    `flow` is measured. `speed_kmh` is measured where a camera saw it and
+    modelled from the congestion index otherwise — `speed_source` says
+    which, always. `suppressed` marks links
     whose latest bin fell below the quality floor. The twin renders those inert
     — it must never invent traffic it did not measure (docs/06 §3).
     """
@@ -411,8 +413,8 @@ async def scene(
                    ST_AsGeoJSON(l.geom)::json AS geometry,
                    COALESCE(latest.congestion_index, 0)  AS congestion_index,
                    COALESCE(measured.flow_per_hour, 0)   AS flow,
-                   COALESCE(measured.speed_kmh,
-                            l.free_flow_speed_kmh, 30)   AS speed_kmh,
+                   measured.speed_kmh                    AS measured_speed_kmh,
+                   COALESCE(l.free_flow_speed_kmh, 30)   AS free_flow_kmh,
                    COALESCE(measured.quality, 1.0)       AS quality,
                    mix_json.shares                       AS class_mix
             FROM road_links l
@@ -437,7 +439,23 @@ async def scene(
                 "coordinates": geometry.get("coordinates", []),
                 "congestion_index": round(float(r.congestion_index), 1),
                 "flow": round(float(r.flow), 1),
-                "speed_kmh": round(float(r.speed_kmh), 1),
+                # A link with no measured speed used to fall back to the
+                # free-flow LIMIT and present it as if measured — which put
+                # "50 km/h" beside a congestion index of 96, a contradiction
+                # any traffic engineer spots in the room. Where there is no
+                # measurement the speed is DERIVED from the congestion index
+                # using the curve calibrated against the published 17.5 km/h
+                # rush mean, and `speed_source` says which it is. docs/06 §8:
+                # no naked number.
+                "speed_kmh": (
+                    round(float(r.measured_speed_kmh), 1)
+                    if r.measured_speed_kmh is not None
+                    else speed_kmh(
+                        float(r.congestion_index or 0), float(r.free_flow_kmh)
+                    )
+                ),
+                "speed_source": "measured" if r.measured_speed_kmh is not None else "modelled",
+                "free_flow_kmh": round(float(r.free_flow_kmh), 1),
                 "suppressed": float(r.quality) < MIN_QUALITY,
                 "class_mix": r.class_mix or {},
             }

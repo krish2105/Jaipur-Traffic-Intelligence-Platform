@@ -538,8 +538,18 @@ export function MapFallback({ links, locale }: { links: SceneLink[]; locale: Loc
               <td className="py-1.5 text-right font-mono tabular-nums text-[var(--ink-muted)]">
                 {l.flow > 0 ? Math.round(l.flow).toLocaleString("en-IN") : "—"}
               </td>
-              <td className="py-1.5 text-right font-mono tabular-nums text-[var(--ink-muted)]">
+              <td
+                className="py-1.5 text-right font-mono tabular-nums text-[var(--ink-muted)]"
+                title={
+                  l.speed_source === "modelled"
+                    ? "derived from the congestion index — no camera speed for this link"
+                    : "measured"
+                }
+              >
                 {l.speed_kmh.toFixed(0)}
+                {l.speed_source === "modelled" && (
+                  <span className="text-[var(--ink-faint)]">~</span>
+                )}
               </td>
             </tr>
           ))}

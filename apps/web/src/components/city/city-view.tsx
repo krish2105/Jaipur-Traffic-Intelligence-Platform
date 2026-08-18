@@ -53,6 +53,9 @@ export interface SceneLink {
   congestion_index: number;
   flow: number;
   speed_kmh: number;
+  /** Whether that speed was seen by a camera or derived from the index. */
+  speed_source?: "measured" | "modelled";
+  free_flow_kmh?: number;
   suppressed: boolean;
   class_mix?: Record<string, number>;
 }
