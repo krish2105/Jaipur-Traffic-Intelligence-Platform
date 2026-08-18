@@ -1204,3 +1204,68 @@ The worker registers in production only. In development it caches the very files
 that are meant to be hot-reloading, and `next dev` serves a different asset
 graph than a build, so a worker trained on it would cache paths production does
 not have.
+
+---
+
+## ADR-042 — One unsargable predicate cost 3.6 seconds
+**Date:** 2026-08-18 · **Status:** Accepted
+
+The console took **3.6 s to first byte**. All of it was one line, repeated four
+times:
+
+```sql
+WHERE (tc.bucket_start AT TIME ZONE 'Asia/Kolkata')::date = :on
+```
+
+Wrapping the indexed column in an expression makes the predicate unsargable.
+Postgres must transform all 1.4 million rows before it can compare one, the
+index is unusable, and TimescaleDB cannot exclude a single chunk. `/counts/
+summary` runs three such queries, so it paid the full scan three times: 2.2 s
+for one endpoint, and the server-rendered page waited on it.
+
+Replaced with a half-open range on the raw column, bounds computed once per
+request:
+
+```sql
+WHERE tc.bucket_start >= :day_start AND tc.bucket_start < :day_end
+```
+
+Half-open rather than `BETWEEN`, which includes both ends and would double-count
+the midnight bucket.
+
+| | before | after |
+|---|---|---|
+| `/counts/summary` | 2215 ms | **127 ms** |
+| `/congestion/day-profile` | 215 ms | **8 ms** |
+| page TTFB | 3599 ms | **526 ms** |
+| first contentful paint | 3816 ms | **572 ms** |
+
+Values verified identical before and after — 293,035 vehicles, 161,545.8 PCU,
+peak 18:00 at 14,067.5 PCU. A fast wrong answer would have been worse than a
+slow right one.
+
+The subquery that found "the latest day" had the same fault in miniature:
+`max(bucket_start AT TIME ZONE …)` cannot use the index, while `max(bucket_start)`
+is an index scan. The conversion now happens once, in Python, on a single value.
+
+**The rule:** never wrap an indexed column in a function on the left of a
+comparison. Convert the *parameter* to the column's type and space, not the
+column to the parameter's. The IST/UTC timezone care that ADR-012's seed work
+established is right; it just belongs on the bind value.
+
+---
+
+## ADR-043 — The theme script goes through next/script
+**Date:** 2026-08-18 · **Status:** Accepted · **Corrects:** ADR-036's note
+
+A bare `<script>` rendered by a component made React 19 warn on every page —
+"scripts inside React components are never executed when rendering on the
+client" — and the warning was accurate: it ran in the server-rendered HTML but
+not after a client navigation. That was the dev-overlay issue visible in the
+corner of every screenshot.
+
+An earlier comment in that file asserted `next/script`'s `beforeInteractive` was
+"only valid in pages/_document". That was wrong; the bundled Next docs state it
+must be placed in the **root layout** in the App Router, which
+`[locale]/layout.tsx` is. Checking the version's own documentation rather than
+trusting a recalled API was the whole fix.

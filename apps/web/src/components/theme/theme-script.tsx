@@ -1,3 +1,5 @@
+import Script from "next/script";
+
 /**
  * Runs before first paint. Sets both theme axes on <html> so there is no FOUC
  * and no flash of the wrong direction (docs/06 §6).
@@ -25,28 +27,28 @@ document.documentElement.setAttribute('data-scene','night');
 }})();`;
 
 /**
- * Delivered through next/script, not a raw <script> element.
+ * Delivered through `next/script` with `strategy="beforeInteractive"`.
  *
- * React 19 refuses to render a script tag inside a component — it never
- * executes it on the client — and the result was a hydration failure on every
- * page, which in turn blanked the 3D scene. `beforeInteractive` is the
- * supported way to run something ahead of paint, which is what a no-FOUC theme
- * script needs.
+ * A bare `<script>` rendered by a component makes React 19 warn — "scripts
+ * inside React components are never executed when rendering on the client" —
+ * and the warning is accurate: it runs on the server-rendered HTML but not
+ * after a client navigation. That was the dev-overlay issue on every page.
+ *
+ * `beforeInteractive` is the supported App Router route for a pre-paint script
+ * and must live in the root layout, which `[locale]/layout.tsx` is (it renders
+ * <html>). An `id` is required for Next to track an inline script.
+ *
+ * The palette itself no longer depends on this at all (ADR-036) — Jaipur Night
+ * is the CSS default at :root. This only applies a stored light/dark
+ * preference, so the worst case if it never runs is that someone who chose
+ * light mode gets dark until they toggle, rather than a page with no colours.
  */
 export function ThemeScript() {
   return (
-    // Rendered as the first child of <body> by the layout. See the comment
-    // there: <head> placement loses the attributes to hydration.
-    //
-    // The palette itself no longer depends on this script at all (ADR-036) —
-    // Jaipur Night is the CSS default at :root. This only applies a stored
-    // light/dark preference, so the worst case if it never runs is that an
-    // officer who chose light mode gets dark until they toggle, rather than a
-    // page with no colours.
-    <script
+    <Script
       id="pravaah-theme"
+      strategy="beforeInteractive"
       dangerouslySetInnerHTML={{ __html: script }}
-      suppressHydrationWarning
     />
   );
 }

@@ -7,13 +7,15 @@ Every response that carries a measurement also carries its data quality. docs/06
 from __future__ import annotations
 
 import json
-from datetime import date, datetime
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from typing import Annotated, Any, Final
+from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Query
 from pravaah.adapters.profiles import CALIBRATION_FREE_FLOW_KMH, speed_kmh
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..deps import SessionDep
 
@@ -29,6 +31,38 @@ MIN_QUALITY = 0.6
 #: Render.
 TZ = "Asia/Kolkata"
 
+
+
+IST = ZoneInfo("Asia/Kolkata")
+
+
+async def _ist_day_bounds(
+    session: AsyncSession, on: date | None
+) -> tuple[datetime, datetime, date]:
+    """Half-open [start, end) bounds in UTC for one IST calendar day.
+
+    This exists because the obvious filter is a trap:
+
+        WHERE (bucket_start AT TIME ZONE 'Asia/Kolkata')::date = :on
+
+    Wrapping the indexed column in an expression makes the predicate
+    unsargable — Postgres must transform all 1.4 million rows before it can
+    compare one, and TimescaleDB cannot exclude a single chunk. That one line
+    cost 2.2 s per request, three times over in `/counts/summary`, and was the
+    whole of a 3.6 s time-to-first-byte.
+
+    A half-open range on the raw column is sargable, uses the index, and lets
+    the hypertable skip every chunk outside the day. Half-open rather than
+    BETWEEN because BETWEEN includes both ends and would double-count the
+    midnight bucket.
+    """
+    if on is None:
+        # max() on an indexed column is an index scan; the previous version
+        # applied AT TIME ZONE inside the aggregate, which was not.
+        latest = await session.scalar(text("SELECT max(bucket_start) FROM traffic_counts"))
+        on = (latest.astimezone(IST).date() if latest else datetime.now(IST).date())
+    start_local = datetime.combine(on, time.min, tzinfo=IST)
+    return start_local, start_local + timedelta(days=1), on
 
 @router.get("/corridors")
 async def list_corridors(session: SessionDep) -> list[dict[str, Any]]:
@@ -66,10 +100,12 @@ async def counts_summary(
 ) -> dict[str, Any]:
     """Headline figures for the right rail: total vehicles, PCU, class mix,
     peak hour, and how today compares to the weekly baseline."""
+    day_start, day_end, _ = await _ist_day_bounds(session, on)
     params: dict[str, Any] = {
         "min_quality": MIN_QUALITY,
         "corridor_id": corridor_id,
-        "on": on,
+        "day_start": day_start,
+        "day_end": day_end,
     }
 
     totals = await session.execute(
@@ -82,10 +118,8 @@ async def counts_summary(
                    bool_or(tc.is_synthetic)          AS is_synthetic
             FROM traffic_counts_scoped tc
             JOIN road_links l ON l.link_id = tc.link_id
-            WHERE (tc.bucket_start AT TIME ZONE 'Asia/Kolkata')::date = COALESCE(
-                    CAST(:on AS date),
-                    (SELECT max(bucket_start AT TIME ZONE 'Asia/Kolkata')::date
-                       FROM traffic_counts))
+            WHERE tc.bucket_start >= :day_start
+              AND tc.bucket_start <  :day_end
               AND (CAST(:corridor_id AS bigint) IS NULL OR l.corridor_id = :corridor_id)
         """),
         params,
@@ -100,10 +134,8 @@ async def counts_summary(
             JOIN road_links l ON l.link_id = tc.link_id
             JOIN vehicle_classes v ON v.class_code = tc.class_code
             WHERE tc.quality_score >= :min_quality
-              AND (tc.bucket_start AT TIME ZONE 'Asia/Kolkata')::date = COALESCE(
-                    CAST(:on AS date),
-                    (SELECT max(bucket_start AT TIME ZONE 'Asia/Kolkata')::date
-                       FROM traffic_counts))
+              AND tc.bucket_start >= :day_start
+              AND tc.bucket_start <  :day_end
               AND (CAST(:corridor_id AS bigint) IS NULL OR l.corridor_id = :corridor_id)
             GROUP BY tc.class_code, v.name_en, v.name_hi
             ORDER BY vehicles DESC
@@ -120,10 +152,8 @@ async def counts_summary(
             FROM traffic_counts_scoped tc
             JOIN road_links l ON l.link_id = tc.link_id
             WHERE tc.quality_score >= :min_quality
-              AND (tc.bucket_start AT TIME ZONE 'Asia/Kolkata')::date = COALESCE(
-                    CAST(:on AS date),
-                    (SELECT max(bucket_start AT TIME ZONE 'Asia/Kolkata')::date
-                       FROM traffic_counts))
+              AND tc.bucket_start >= :day_start
+              AND tc.bucket_start <  :day_end
               AND (CAST(:corridor_id AS bigint) IS NULL OR l.corridor_id = :corridor_id)
             GROUP BY hour ORDER BY pcu DESC LIMIT 1
         """),
@@ -168,7 +198,12 @@ async def day_profile(
     Returned at 15-minute resolution so the arc reads as a curve, with the
     measured peaks identifiable rather than smoothed away.
     """
-    params: dict[str, Any] = {"corridor_id": corridor_id, "on": on}
+    day_start, day_end, _ = await _ist_day_bounds(session, on)
+    params: dict[str, Any] = {
+        "corridor_id": corridor_id,
+        "day_start": day_start,
+        "day_end": day_end,
+    }
 
     rows = await session.execute(
         text("""
@@ -179,10 +214,8 @@ async def day_profile(
                    bool_or(lc.is_synthetic) AS is_synthetic
             FROM link_congestion lc
             JOIN road_links l ON l.link_id = lc.link_id
-            WHERE (lc.bucket_start AT TIME ZONE 'Asia/Kolkata')::date = COALESCE(
-                    CAST(:on AS date),
-                    (SELECT max(bucket_start AT TIME ZONE 'Asia/Kolkata')::date
-                       FROM link_congestion))
+            WHERE lc.bucket_start >= :day_start
+              AND lc.bucket_start <  :day_end
               AND (CAST(:corridor_id AS bigint) IS NULL OR l.corridor_id = :corridor_id)
             GROUP BY hour, minute
             ORDER BY hour, minute
