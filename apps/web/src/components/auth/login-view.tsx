@@ -167,6 +167,7 @@ export function LoginView() {
                 {hi ? "नाम (वैकल्पिक)" : "Name (optional)"}
               </span>
               <input
+                aria-label={hi ? "अधिकारी का नाम" : "Officer name"}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 autoComplete="off"

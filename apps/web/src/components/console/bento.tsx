@@ -232,7 +232,11 @@ export function BentoShell({
           aria-label={focused.label}
           onClick={() => setExpanded(null)}
         >
+          {/* Presentational: exists only so a click inside the dialog does not
+              reach the backdrop and close it. Escape still closes, handled at
+              document level, so this adds no behaviour a keyboard user needs. */}
           <div
+            role="presentation"
             className="max-h-[92vh] w-full max-w-5xl overflow-auto"
             onClick={(e) => e.stopPropagation()}
           >

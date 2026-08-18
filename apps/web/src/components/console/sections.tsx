@@ -1,5 +1,6 @@
 "use client";
 
+import { CorpusSearch } from "./corpus-search";
 import { useEffect, useState } from "react";
 
 import {
@@ -902,6 +903,10 @@ function NeetiSection({ hi, locale }: { hi: boolean; locale: Locale }) {
         <Loading label={hi ? "मॉडल चल रहा है" : "Running the model"} />
       ) : (
         <>
+          {/* The catalogue answers questions someone thought to anticipate.
+              This answers the rest, from the specification, with citations. */}
+          <CorpusSearch hi={hi} />
+
           <RepresentationPanel hi={hi} locale={locale} />
 
           {/* The PCU argument, which is the whole reason class mix matters. */}
