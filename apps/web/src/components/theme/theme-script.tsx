@@ -4,21 +4,26 @@ import Script from "next/script";
  * Runs before first paint. Sets both theme axes on <html> so there is no FOUC
  * and no flash of the wrong direction (docs/06 §6).
  *
- * Order of precedence for theme: stored user choice > prefers-color-scheme.
- * Dark is the control-room native mode, but we still respect the OS on a
- * first visit and let the user's explicit choice win thereafter.
+ * Jaipur Night is the product palette (ADR-016) and dark is the control-room
+ * native mode (docs/06 §6), so that is the default rather than the OS
+ * preference — an officer opening this on a bright laptop should still get the
+ * interface the product was designed in. Their explicit choice wins after that.
+ *
+ * The old `data-direction` attribute is gone: those were evaluation presets and
+ * the evaluation is over. Leaving its default in place meant every page fell
+ * back to tokens that no longer existed.
  */
 const script = `(function(){try{
 var d=document.documentElement;
 var t=localStorage.getItem('pravaah-theme');
-if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+if(t!=='light'&&t!=='dark'){t='dark';}
 d.setAttribute('data-theme',t);
-var v=localStorage.getItem('pravaah-direction');
-if(v!=='instrument'&&v!=='control'&&v!=='editorial'){v='instrument';}
-d.setAttribute('data-direction',v);
+d.setAttribute('data-palette','night');
+d.setAttribute('data-scene',t==='light'?'day':'night');
 }catch(e){
-document.documentElement.setAttribute('data-theme','light');
-document.documentElement.setAttribute('data-direction','instrument');
+document.documentElement.setAttribute('data-theme','dark');
+document.documentElement.setAttribute('data-palette','night');
+document.documentElement.setAttribute('data-scene','night');
 }})();`;
 
 /**

@@ -6,7 +6,7 @@
  * a component cannot render a figure without having its quality in hand.
  */
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8001";
 
 export interface Bilingual {
   en: string;
