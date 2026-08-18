@@ -9,9 +9,10 @@ from __future__ import annotations
 import json
 from datetime import date, datetime
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated, Any, Final
 
 from fastapi import APIRouter, Query
+from pravaah.adapters.profiles import CALIBRATION_FREE_FLOW_KMH, speed_kmh
 from sqlalchemy import text
 
 from ..deps import SessionDep
@@ -903,5 +904,165 @@ async def junctions(session: SessionDep) -> dict[str, Any]:
             }
             for r in rows
         ],
+        "is_synthetic": True,
+    }
+
+
+#: Classes an Indian low-emission zone actually targets. Older diesel goods
+#: vehicles and the pre-BS-VI three-wheeler fleet, not private cars — the
+#: politically survivable version of an LEZ, and the one with the better
+#: emissions-per-vehicle case.
+_LEZ_CLASSES: Final = ("TRK2", "TRKM", "LCV", "TRAC")
+
+#: Congestion pricing, if levied, is levied on PCU rather than on vehicles. A
+#: two-wheeler occupies a quarter of the road a car does and paying the same
+#: charge would be indefensible; PCU is already the unit every capacity
+#: calculation uses, so it is the unit with a defensible basis.
+_PRICE_PER_PCU_INR: Final = 12.0
+
+
+@router.get("/policy/scenarios")
+async def policy_scenarios(
+    session: SessionDep,
+    corridor_id: Annotated[int | None, Query()] = None,
+    hour: Annotated[int | None, Query(ge=0, le=23)] = None,
+) -> dict[str, Any]:
+    """What a low-emission zone or a congestion charge would actually do here.
+
+    This is the section of the pitch where a platform usually shows a slide.
+    Instead it computes, from this corridor's own measured class mix and the
+    calibrated speed curve in `pravaah.adapters.profiles`:
+
+    * the PCU each class contributes — not the vehicle count, because a
+      two-wheeler at 0.25 PCU and a multi-axle truck at 4.5 are eighteen
+      vehicles apart in road space and one vehicle apart in a count;
+    * what removing a share of the targeted classes does to the congestion
+      index, and what the speed curve says that is worth in km/h;
+    * what a PCU-based charge would raise, stated beside the delay it buys
+      rather than instead of it.
+
+    **The elasticity is an assumption, and it is returned as one.** Nothing in
+    the seeded data tells us how many freight operators would reroute rather
+    than pay. The response names the assumption, its source, and the fact that
+    it is the single number a department should argue with — which is more
+    useful than a confident figure with the assumption buried.
+    """
+    target_hour = hour if hour is not None else 19  # the published evening peak
+
+    rows = await session.execute(
+        text("""
+            SELECT tc.class_code,
+                   v.name_en,
+                   v.name_hi,
+                   v.pcu_factor,
+                   sum(tc.vehicle_count) AS vehicles
+            FROM traffic_counts tc
+            JOIN vehicle_classes v ON v.class_code = tc.class_code
+            JOIN road_links l      ON l.link_id = tc.link_id
+            WHERE tc.bucket_start >= now() - INTERVAL '7 days'
+              AND extract(hour FROM tc.bucket_start AT TIME ZONE 'Asia/Kolkata')::int = :hour
+              AND (CAST(:corridor_id AS bigint) IS NULL OR l.corridor_id = :corridor_id)
+            GROUP BY tc.class_code, v.name_en, v.name_hi, v.pcu_factor
+        """),
+        {"hour": target_hour, "corridor_id": corridor_id},
+    )
+    classes = [
+        {
+            "class_code": r.class_code,
+            "name": {"en": r.name_en, "hi": r.name_hi},
+            "pcu_factor": float(r.pcu_factor),
+            "vehicles": int(r.vehicles),
+            "pcu": float(r.pcu_factor) * int(r.vehicles),
+        }
+        for r in rows
+    ]
+    total_pcu = sum(c["pcu"] for c in classes)
+    total_vehicles = sum(c["vehicles"] for c in classes)
+
+    index_row = await session.execute(
+        text("""
+            SELECT avg(lc.congestion_index) AS congestion_index
+            FROM link_congestion lc
+            JOIN road_links l ON l.link_id = lc.link_id
+            WHERE lc.bucket_start >= now() - INTERVAL '7 days'
+              AND extract(hour FROM lc.bucket_start AT TIME ZONE 'Asia/Kolkata')::int = :hour
+              AND (CAST(:corridor_id AS bigint) IS NULL OR l.corridor_id = :corridor_id)
+        """),
+        {"hour": target_hour, "corridor_id": corridor_id},
+    )
+    baseline_index = float(index_row.scalar() or 0.0)
+
+    def scenario(
+        name: str,
+        targeted: tuple[str, ...],
+        removed_share: float,
+        note_en: str,
+        note_hi: str,
+    ) -> dict[str, Any]:
+        removed_pcu = sum(c["pcu"] for c in classes if c["class_code"] in targeted) * removed_share
+        share_removed = removed_pcu / total_pcu if total_pcu else 0.0
+        # Congestion is taken as proportional to PCU demand against a fixed
+        # capacity. That is a first-order model and is labelled as one: it holds
+        # while the corridor is at or near saturation, which at the evening peak
+        # it is, and overstates the benefit once flow becomes free.
+        new_index = max(0.0, baseline_index * (1.0 - share_removed))
+        return {
+            "scenario": name,
+            "targeted_classes": list(targeted),
+            "removed_share": round(removed_share, 3),
+            "pcu_removed": round(removed_pcu, 1),
+            "pcu_removed_pct": round(share_removed * 100, 1),
+            "baseline_index": round(baseline_index, 1),
+            "modelled_index": round(new_index, 1),
+            "baseline_speed_kmh": speed_kmh(baseline_index, CALIBRATION_FREE_FLOW_KMH),
+            "modelled_speed_kmh": speed_kmh(new_index, CALIBRATION_FREE_FLOW_KMH),
+            "note": {"en": note_en, "hi": note_hi},
+        }
+
+    lez = scenario(
+        "low_emission_zone",
+        _LEZ_CLASSES,
+        0.60,
+        "Older goods vehicles and farm traffic restricted at peak. 60% compliance "
+        "assumed — the number to argue with, not a measurement.",
+        "शीर्ष समय में पुराने माल वाहन और कृषि यातायात प्रतिबंधित। 60% अनुपालन "
+        "मान लिया गया — यह मापा गया आँकड़ा नहीं, बहस का विषय है।",
+    )
+    charge = scenario(
+        "congestion_charge",
+        tuple(c["class_code"] for c in classes if c["pcu_factor"] >= 1.0),
+        0.18,
+        "Charge levied per PCU, not per vehicle. 18% diversion assumed, at the "
+        "low end of the published range for Indian cities.",
+        "शुल्क प्रति PCU, प्रति वाहन नहीं। 18% विचलन मान लिया गया, भारतीय शहरों "
+        "के प्रकाशित परास के निचले सिरे पर।",
+    )
+    charged_pcu = sum(c["pcu"] for c in classes if c["pcu_factor"] >= 1.0) * (1 - 0.18)
+    charge["revenue_inr_per_peak_hour"] = round(charged_pcu * _PRICE_PER_PCU_INR, 0)
+    charge["price_per_pcu_inr"] = _PRICE_PER_PCU_INR
+
+    return {
+        "hour": target_hour,
+        "totals": {
+            "vehicles": total_vehicles,
+            "pcu": round(total_pcu, 1),
+            "congestion_index": round(baseline_index, 1),
+        },
+        "classes": sorted(classes, key=lambda c: c["pcu"], reverse=True),
+        "scenarios": [lez, charge],
+        "assumptions": {
+            "model": (
+                "Congestion taken as proportional to PCU demand against fixed capacity. "
+                "First-order, valid near saturation, optimistic once flow is free."
+            ),
+            "speed_curve": (
+                "Calibrated in pravaah.adapters.profiles so the rush-window mean "
+                "reproduces the published 17.5 km/h."
+            ),
+            "elasticity": (
+                "Compliance and diversion shares are assumptions, not measurements. "
+                "They are the numbers a department should argue with."
+            ),
+        },
         "is_synthetic": True,
     }

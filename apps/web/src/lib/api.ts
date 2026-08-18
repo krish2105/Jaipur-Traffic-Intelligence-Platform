@@ -112,6 +112,38 @@ export interface Junctions {
   is_synthetic: boolean;
 }
 
+export interface PolicyClass {
+  class_code: string;
+  name: Bilingual;
+  pcu_factor: number;
+  vehicles: number;
+  pcu: number;
+}
+
+export interface PolicyScenario {
+  scenario: string;
+  targeted_classes: string[];
+  removed_share: number;
+  pcu_removed: number;
+  pcu_removed_pct: number;
+  baseline_index: number;
+  modelled_index: number;
+  baseline_speed_kmh: number;
+  modelled_speed_kmh: number;
+  note: Bilingual;
+  revenue_inr_per_peak_hour?: number;
+  price_per_pcu_inr?: number;
+}
+
+export interface PolicyScenarios {
+  hour: number;
+  totals: { vehicles: number; pcu: number; congestion_index: number };
+  classes: PolicyClass[];
+  scenarios: PolicyScenario[];
+  assumptions: { model: string; speed_curve: string; elasticity: string };
+  is_synthetic: boolean;
+}
+
 export interface CountsSummary {
   total_vehicles: number;
   total_pcu: number;
@@ -287,6 +319,8 @@ export const api = {
   enforcement: () => get<EnforcementSummary>("/enforcement/summary"),
   defaulters: (limit = 10) => get<Defaulters>(`/enforcement/defaulters?limit=${limit}`),
   junctions: () => get<Junctions>("/junctions"),
+  policy: (corridorId = 1) =>
+    get<PolicyScenarios>(`/policy/scenarios?corridor_id=${corridorId}`),
 };
 
 /**

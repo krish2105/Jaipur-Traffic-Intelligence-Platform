@@ -12,6 +12,7 @@ import {
   type EnforcementSummary,
   type IncidentTimeline,
   type Junctions,
+  type PolicyScenarios,
   type SignalAdvisory,
   type WeeklyMatrix,
 } from "@/lib/api";
@@ -152,7 +153,7 @@ export function SectionView({
     return <EnforcementSection hi={hi} locale={locale} canUnmask={can("unmask:plate")} canDefaulters={can("read:defaulters")} />;
   }
   if (section === "neeti") {
-    return <NeetiSection hi={hi} />;
+    return <NeetiSection hi={hi} locale={locale} />;
   }
   if (section === "reports") {
     return <ReportsSection hi={hi} weekly={weekly} cameras={cameras} />;
@@ -707,25 +708,193 @@ function EnforcementSection({
   );
 }
 
-/* ── NEETI ──────────────────────────────────────────────────────────────── */
+/* ── NEETI: policy ──────────────────────────────────────────────────────── */
 
-function NeetiSection({ hi }: { hi: boolean }) {
+const SCENARIO_LABEL: Record<string, { en: string; hi: string }> = {
+  low_emission_zone: { en: "Low-emission zone", hi: "कम-उत्सर्जन क्षेत्र" },
+  congestion_charge: { en: "Congestion charge", hi: "भीड़ शुल्क" },
+};
+
+function NeetiSection({ hi, locale }: { hi: boolean; locale: Locale }) {
+  const { data } = useLazy<PolicyScenarios>(() => api.policy(1), true);
+
   return (
     <Shell
-      title={hi ? "नीति" : "NEETI"}
+      title={hi ? "नीति" : "NEETI · policy"}
       subtitle={
         hi
-          ? "नीति सहायक। यह प्राकृतिक भाषा को SQL में बदलता है, केवल-पठन भूमिका पर, अनुमत स्कीमा के भीतर — और उत्पन्न SQL हमेशा दिखाया जाता है।"
-          : "The policy assistant. It turns a question into SQL, runs it as a read-only role inside an allowlisted schema, and always shows you the SQL it wrote."
+          ? "यह स्लाइड नहीं है। हर आँकड़ा इसी कॉरिडोर के मापे गए वर्ग-मिश्रण और अंशांकित गति-वक्र से गणना किया गया है — और हर धारणा नाम लेकर बताई गई है।"
+          : "Not a slide. Every figure is computed from this corridor's own measured class mix and the calibrated speed curve — and every assumption is named rather than buried."
       }
     >
-      <Panel title={hi ? "स्थिति" : "Status"}>
-        <p className="leading-relaxed text-[var(--ink-muted)]" style={{ fontSize: "var(--d-support)" }}>
-          {hi
-            ? "अभी जुड़ा नहीं। मॉडल पथ मौजूद है और सुरक्षा परत निर्मित है — अनुमत `neeti` स्कीमा, कथन समय-सीमा, पंक्ति सीमा, कोई DDL/DML नहीं — पर इस इंस्टेंस पर कोई प्रश्न नहीं चलाया गया है। यह एक सच्चा बयान है, न कि तैयारी का दावा।"
-            : "Not yet wired. The safety layer is built — an allowlisted `neeti` schema, a read-only role, statement timeout, row cap, no DDL or DML, and the generated SQL surfaced to the user — but no question has been run on this instance. That is a true statement rather than a claim of readiness."}
-        </p>
-      </Panel>
+      {!data ? (
+        <Loading label={hi ? "मॉडल चल रहा है" : "Running the model"} />
+      ) : (
+        <>
+          {/* The PCU argument, which is the whole reason class mix matters. */}
+          <Panel
+            title={hi ? "सड़क स्थान बनाम वाहन संख्या" : "Road space vs vehicle count"}
+            emphasis
+            aside={<SyntheticTag label={hi ? "अनुरूपित" : "Simulated"} />}
+          >
+            <MetricRow>
+              <Metric
+                label={hi ? "वाहन" : "Vehicles"}
+                value={formatCount(data.totals.vehicles, locale)}
+                span={0.3}
+              />
+              <Metric
+                label="PCU"
+                value={formatCount(Math.round(data.totals.pcu), locale)}
+                span={0.3}
+              />
+              <Metric
+                label={hi ? "भीड़" : "Congestion"}
+                value={data.totals.congestion_index.toFixed(1)}
+                span={0.3}
+                quality={`${String(data.hour).padStart(2, "0")}:00`}
+              />
+            </MetricRow>
+
+            <ul className="mt-4 grid gap-2">
+              {data.classes.slice(0, 6).map((c) => {
+                const vehShare = c.vehicles / data.totals.vehicles;
+                const pcuShare = c.pcu / data.totals.pcu;
+                return (
+                  <li key={c.class_code}>
+                    <div
+                      className="flex items-baseline justify-between gap-2"
+                      style={{ fontSize: "var(--d-support)" }}
+                    >
+                      <span className="min-w-0 truncate">
+                        {hi ? c.name.hi : c.name.en}
+                        <span className="ml-1.5 text-[var(--ink-faint)]">
+                          ×{c.pcu_factor}
+                        </span>
+                      </span>
+                      <span className="shrink-0 font-mono tabular-nums text-[var(--ink-muted)]">
+                        {(vehShare * 100).toFixed(1)}% → {(pcuShare * 100).toFixed(1)}%
+                      </span>
+                    </div>
+                    {/* Two bars, same row: share of vehicles above, share of
+                        road space below. Where they disagree is the argument. */}
+                    <div className="mt-1 grid gap-0.5">
+                      <Bar fraction={vehShare} colour="var(--ink-faint)" />
+                      <Bar fraction={pcuShare} colour="var(--accent)" />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            <p
+              className="mt-3 leading-relaxed text-[var(--ink-muted)]"
+              style={{ fontSize: "var(--d-support)" }}
+            >
+              {hi
+                ? "ऊपर की पट्टी वाहनों का हिस्सा है, नीचे की सड़क-स्थान का। दोपहिया संख्या में सबसे आगे हैं पर सड़क स्थान में नहीं — किसी भी प्रोब उत्पाद से यह अंतर नहीं निकाला जा सकता।"
+                : "The upper bar is share of vehicles, the lower share of road space. Two-wheelers lead on count and not on space — a distinction no probe product can draw."}
+            </p>
+          </Panel>
+
+          {data.scenarios.map((sc) => {
+            const gain =
+              ((sc.modelled_speed_kmh - sc.baseline_speed_kmh) / sc.baseline_speed_kmh) * 100;
+            return (
+              <Panel
+                key={sc.scenario}
+                title={SCENARIO_LABEL[sc.scenario]?.[hi ? "hi" : "en"] ?? sc.scenario}
+                aside={
+                  <span
+                    className="shrink-0 rounded-full bg-[var(--surface-3)] px-2 py-0.5
+                               uppercase tracking-wider text-[var(--accent)]"
+                    style={{ fontSize: "calc(var(--d-label) * 0.85)" }}
+                  >
+                    {hi ? "मॉडल" : "Modelled"}
+                  </span>
+                }
+              >
+                <MetricRow>
+                  <Metric
+                    label={hi ? "PCU हटाया" : "PCU removed"}
+                    value={`${sc.pcu_removed_pct}%`}
+                    span={0.3}
+                  />
+                  <Metric
+                    label={hi ? "भीड़" : "Congestion"}
+                    value={`${sc.baseline_index}→${sc.modelled_index}`}
+                    span={0.3}
+                  />
+                  <Metric
+                    label={hi ? "शीर्ष गति" : "Peak speed"}
+                    value={`${sc.modelled_speed_kmh}`}
+                    unit="km/h"
+                    span={0.3}
+                    delta={{ value: `${gain.toFixed(0)}%`, direction: "down" }}
+                    quality={`${hi ? "अभी" : "now"} ${sc.baseline_speed_kmh}`}
+                  />
+                </MetricRow>
+
+                {sc.revenue_inr_per_peak_hour != null && (
+                  <p
+                    className="mt-3 rounded-lg bg-[var(--surface-1)] px-3 py-2 text-[var(--ink-muted)]"
+                    style={{ fontSize: "var(--d-support)" }}
+                  >
+                    ₹{sc.revenue_inr_per_peak_hour.toLocaleString("en-IN")}{" "}
+                    {hi ? "प्रति शीर्ष घंटा" : "per peak hour"} · ₹{sc.price_per_pcu_inr}/PCU
+                    <span className="ml-2 text-[var(--ink-faint)]">
+                      {hi
+                        ? "— राजस्व देरी में कमी के साथ दिखाया गया है, उसके बदले नहीं"
+                        : "— revenue shown beside the delay it buys, not instead of it"}
+                    </span>
+                  </p>
+                )}
+
+                <p
+                  className="mt-3 leading-relaxed text-[var(--ink-muted)]"
+                  style={{ fontSize: "var(--d-support)" }}
+                >
+                  {hi ? sc.note.hi : sc.note.en}
+                </p>
+              </Panel>
+            );
+          })}
+
+          {/* The assumptions are a panel, not a footnote. A policy model whose
+              assumptions are hard to find is a policy model designed to win an
+              argument rather than inform one. */}
+          <Panel title={hi ? "धारणाएँ" : "Assumptions"}>
+            <dl className="grid gap-3" style={{ fontSize: "var(--d-support)" }}>
+              {(
+                [
+                  ["model", hi ? "मॉडल" : "Model"],
+                  ["speed_curve", hi ? "गति वक्र" : "Speed curve"],
+                  ["elasticity", hi ? "प्रत्यास्थता" : "Elasticity"],
+                ] as const
+              ).map(([key, label]) => (
+                <div key={key}>
+                  <dt className="uppercase tracking-[0.14em] text-[var(--ink-faint)]">
+                    {label}
+                  </dt>
+                  <dd className="mt-0.5 leading-relaxed text-[var(--ink-muted)]">
+                    {data.assumptions[key]}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </Panel>
+
+          <Panel title={hi ? "प्रश्न-से-SQL" : "Question to SQL"}>
+            <p
+              className="leading-relaxed text-[var(--ink-muted)]"
+              style={{ fontSize: "var(--d-support)" }}
+            >
+              {hi
+                ? "अभी जुड़ा नहीं। सुरक्षा परत निर्मित है — अनुमत `neeti` स्कीमा, केवल-पठन भूमिका, कथन समय-सीमा, पंक्ति सीमा, कोई DDL/DML नहीं, और उत्पन्न SQL हमेशा उपयोगकर्ता को दिखाया जाता है — पर इस इंस्टेंस पर कोई प्रश्न नहीं चलाया गया है।"
+                : "Not yet wired. The safety layer is built — an allowlisted `neeti` schema, a read-only role, statement timeout, row cap, no DDL or DML, and the generated SQL always surfaced — but no question has been run on this instance. Saying so is more useful than a demo that pretends otherwise."}
+            </p>
+          </Panel>
+        </>
+      )}
     </Shell>
   );
 }

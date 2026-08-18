@@ -841,3 +841,43 @@ polling:
 The pulse keys on the **value changing**, not on the poll completing. A poll
 returning the same count does not flash, because nothing happened — an animation
 on a static number is a lie told in motion.
+
+---
+
+## ADR-032 — The policy case is computed, not asserted
+**Date:** 2026-08-18 · **Status:** Accepted
+
+Low-emission zones and congestion pricing are where a traffic platform normally
+shows a slide. NEETI computes them instead, from this corridor's own measured
+class mix and the speed curve already calibrated against the published 17.5
+km/h rush-window mean.
+
+The lead panel is **road space against vehicle count**, two bars per class on
+one row. At the evening peak two-wheelers are 61.0% of vehicles and 27.6% of
+PCU; cars are 24.0% of vehicles and 43.4% of road space. Where the two bars
+disagree is the entire argument for counting and classifying rather than
+sampling probes — no probe product can draw that distinction, and every capacity
+calculation and signal plan depends on it.
+
+Modelled outcomes, at 19:00 on the model corridor:
+
+| Scenario | PCU removed | Index | Peak speed |
+|---|---|---|---|
+| Low-emission zone (older goods + farm, 60% compliance) | 8.1% | 86.5 → 79.5 | 15.4 → 18.0 km/h |
+| Congestion charge (₹12/PCU, 18% diversion) | 11.4% | 86.5 → 76.6 | 15.4 → 19.1 km/h |
+
+Three decisions worth defending:
+
+**The charge is per PCU, not per vehicle.** A two-wheeler occupies a quarter of
+the road a car does; charging both the same is indefensible, and PCU is already
+the unit every capacity calculation uses.
+
+**Revenue is shown beside the delay it buys, never instead of it.** ₹6.7 lakh
+per peak hour is reported next to +3.7 km/h, because a congestion charge sold on
+revenue is a tax and a congestion charge sold on delay is a policy.
+
+**Assumptions are a panel, not a footnote.** Compliance and diversion shares are
+assumptions and are labelled as "the numbers a department should argue with".
+The congestion-vs-PCU relationship is stated as first-order, valid near
+saturation, optimistic once flow is free. A policy model whose assumptions are
+hard to find is one designed to win an argument rather than inform one.
