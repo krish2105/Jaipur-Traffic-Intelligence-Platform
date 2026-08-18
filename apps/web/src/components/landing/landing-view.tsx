@@ -9,6 +9,7 @@ import { formatCount } from "@/lib/format";
 import { DayProfileChart } from "@/components/charts/day-profile";
 import { IncidentTimelineChart } from "@/components/charts/incident-timeline";
 import { ThemeToggle } from "@/components/console/theme-toggle";
+import { Counter, Magnetic, SplitText } from "./motion-primitives";
 
 /**
  * The landing page.
@@ -51,17 +52,27 @@ function Reveal({
 
 function Stat({
   value,
+  count,
+  locale,
   label,
   note,
 }: {
   value: string;
+  /** Counts up when scrolled into view.
+   *
+   *  Deliberately used on one figure only: vehicles counted. A percentage
+   *  climbing reads as instability rather than emphasis, and casualty figures
+   *  are not to be animated at all — a death toll ticking up from zero is a
+   *  scoreboard, and this is a page a Principal Secretary reads. */
+  count?: number;
+  locale?: Locale;
   label: string;
   note?: string;
 }) {
   return (
     <div className="min-w-0">
       <p className="font-mono text-[clamp(1.75rem,4.5vw,3rem)] leading-none tabular-nums">
-        {value}
+        {count != null && locale ? <Counter to={count} locale={locale} /> : value}
       </p>
       <p className="mt-2 text-[var(--ink-muted)]" style={{ fontSize: "var(--d-support)" }}>
         {label}
@@ -176,10 +187,15 @@ export function LandingView({
             </p>
           </Reveal>
           <Reveal delay={80}>
-            <h1 className="mt-4 max-w-4xl font-display text-[clamp(2.25rem,6vw,4.5rem)] leading-[1.04] tracking-tight">
-              {hi
-                ? "शाम को जयपुर की यात्रा में 94.9% अतिरिक्त समय लगता है।"
-                : "At the evening peak, a Jaipur journey takes 94.9% longer."}
+            <h1 className="mt-4 max-w-4xl font-display text-[clamp(2.5rem,6.6vw,5.25rem)] leading-[1.02] tracking-tight">
+              <SplitText
+                delay={0.12}
+                text={
+                  hi
+                    ? "शाम को जयपुर की यात्रा में 94.9% अतिरिक्त समय लगता है।"
+                    : "At the evening peak, a Jaipur journey takes 94.9% longer."
+                }
+              />
             </h1>
           </Reveal>
           <Reveal delay={160}>
@@ -194,13 +210,18 @@ export function LandingView({
           </Reveal>
           <Reveal delay={240}>
             <div className="mt-10 flex flex-wrap gap-3">
-              <Link
-                href={`/${locale}/console`}
-                className="rounded-xl bg-[var(--accent)] px-5 py-3 font-medium text-[var(--accent-ink)]
-                           transition-transform motion-safe:hover:-translate-y-px"
-              >
-                {hi ? "लाइव कंसोल खोलें" : "Open the live console"}
-              </Link>
+              <Magnetic>
+                <Link
+                  href={`/${locale}/console`}
+                  className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-7 py-3.5
+                             font-medium text-[var(--accent-ink)] transition-colors
+                             hover:bg-[var(--accent-2)]"
+                  style={{ boxShadow: "0 8px 28px -10px var(--accent-glow)" }}
+                >
+                  {hi ? "लाइव कंसोल खोलें" : "Open the live console"}
+                  <span aria-hidden>&rarr;</span>
+                </Link>
+              </Magnetic>
               <Link
                 href={`/${locale}/login`}
                 className="rounded-xl bg-[var(--surface-2)] px-5 py-3 font-medium
@@ -221,6 +242,8 @@ export function LandingView({
               />
               <Stat
                 value={formatCount(summary.total_vehicles, locale)}
+                count={summary.total_vehicles}
+                locale={locale}
                 label={hi ? "आज गिने गए वाहन" : "vehicles counted today"}
                 note={`${hi ? "गुणवत्ता" : "quality"} ${summary.data_quality.mean_score.toFixed(2)}`}
               />

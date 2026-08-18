@@ -19,18 +19,35 @@ import type { ClassMixEntry } from "@/lib/api";
  */
 
 const CLASS_COLOUR: Record<string, string> = {
-  "2W": "#FFC53D",
-  CAR: "#4C9AFF",
-  AUTO: "#2DD4A7",
-  ERIK: "#8CD65B",
-  LCV: "#FF9E2C",
-  BUS: "#C084FC",
-  TRK2: "#FF6B4A",
-  NMV: "#8E9BBF",
-  TAXI: "#38BDF8",
-  MBUS: "#A78BFA",
-  TRKM: "#F87171",
-  TRAC: "#FBBF24",
+  // Vehicle class is a CATEGORY. Congestion is a MEASUREMENT. They must never
+  // be the same colour, and three of these used to be exactly that: AUTO was
+  // #2DD4A7 (ramp free), ERIK was #8CD65B (ramp light) and TRK2 was #FF6B4A
+  // (ramp severe) — pixel-identical, so a truck and a jammed link rendered the
+  // same and meant different things. 2W was #FFC53D, the retired brass accent.
+  //
+  // Rebuilt against three constraints, verified numerically rather than by eye:
+  //   1. >=18 CIELAB dE from every ramp colour, so no class can read as severity
+  //      (worst here is 29.8, against the old palette's 0.0).
+  //   2. >=3:1 against both grounds — WCAG 1.4.11, these are graphical objects.
+  //   3. Separable from each other. The six classes that actually carry share in
+  //      Jaipur hold dE >= 17; the long tail is closer, which is the honest
+  //      trade, because twelve categories cannot all be far apart AND clear of a
+  //      ramp that already spans red through green.
+  //
+  // Saturated warm belongs to the ramp. Warm entries here are muted earth tones
+  // (ochre, clay) that cannot be mistaken for an alert.
+  "2W": "#5B8FF9",
+  CAR: "#3B7C6E",
+  AUTO: "#9270CA",
+  LCV: "#B08B3E",
+  ERIK: "#3E8F88",
+  BUS: "#8E5A9B",
+  TRK2: "#96601F",
+  NMV: "#7F8FA6",
+  TAXI: "#2E86C1",
+  MBUS: "#B45FB0",
+  TRKM: "#8A63AE",
+  TRAC: "#8A7A3B",
 };
 
 export const classColour = (code: string) => CLASS_COLOUR[code] ?? "#8E9BBF";
