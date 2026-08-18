@@ -40,7 +40,15 @@ whenever a phase slips.
 | `/api/v1/health` 200 on Render | **not run** — needs a Render account |
 | pushed to GitHub | PASS — krish2105/Jaipur-Traffic-Intelligence-Platform |
 
+## Command centre (docs/11)
+
+The interface pivots to a Traffic Operations Centre dashboard; the 3D city
+becomes the map's 2D/3D toggle rather than the whole product. Plan, panel list
+and live-data order are in docs/11_COMMAND_CENTRE_PLAN.md.
+
 ## Open blockers
+- API keys outstanding: TomTom, OpenAQ, Google Maps (billing enabled).
+- ADR-019: orbit target is the link centroid, not a point on the carriageway.
 - No Jaipur junction footage yet. Accuracy certificates will be measured against
   public Indian datasets until it exists. Doc 08 §6 rates this High/Critical.
 - Doc 10 Tier-1 questions unanswered: which department, camera access, and
