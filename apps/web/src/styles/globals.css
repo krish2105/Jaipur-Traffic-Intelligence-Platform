@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "./tokens.css";
 @import "./palettes.css";
+@import "./density.css";
 
 /* ---------------------------------------------------------------------------
    Bridge the runtime CSS variables into Tailwind v4's utility generator.
