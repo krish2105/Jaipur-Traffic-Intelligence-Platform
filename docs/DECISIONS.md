@@ -1988,3 +1988,49 @@ had not verified was measuring the right rows — the same failure as ADR-020,
 where a screenshot taken too early produced a false negative. A verification
 query is code, and an unverified verification is worth less than none, because
 it is believed.
+
+## ADR-062 — The deployment ships a captured API snapshot, labelled as one
+
+**Status:** accepted · **Date:** 2026-08-19 · **Supersedes nothing**
+
+**Context.** Every panel on the deployed console read `0`. The cause was not a
+bug in the panels: `NEXT_PUBLIC_API_URL` is unset on Vercel and defaults to
+`http://localhost:8001`, which Vercel's servers cannot reach, so every call
+failed and every `.catch()` fallback returned its empty shape. The fallbacks
+worked exactly as designed — the platform was undeployed, not broken — but a
+reader cannot tell those apart, and a demo that shows zeros to a Principal
+Secretary has failed regardless of whose fault it is.
+
+The intended fix is hosting the API. Render is the committed target
+(`render.yaml` is in the tree) and it refuses to provision any Blueprint
+service, free tier included, until a payment card is on file. That card is the
+owner's to add; it is not something this work can route around.
+
+**Decision.** Capture the API's responses and ship them with the frontend.
+`scripts/export_snapshot.py` writes two files, split on size: everything except
+the 3D building footprints into `apps/web/src/data/snapshot.json` (72 KB,
+imported, so a Server Component has it with no fetch), and the footprints into
+`apps/web/public/data/buildings.json` (295 KB, a static asset that only the 3D
+scene fetches — bundling it would tax the pages with no map on them).
+`get()` consults the snapshot only after a request fails, so a reachable API
+always wins and the snapshot can never mask a backend that is up but wrong.
+
+Three things make this honest rather than a lie of omission:
+
+1. `apiIsLive()` probes separately, because a snapshot response is a *valid*
+   response and the panels cannot detect the substitution themselves.
+2. When the probe fails, the readiness panel — whose entire job is answering
+   "where did this come from" — says **Frozen snapshot**, in both languages.
+3. `/audit/recent` is deliberately not captured. It is role-gated, and a public
+   JSON bundle carrying an audit trail would contradict the access-control
+   story the rest of the platform makes. It stays empty until an API is real.
+
+**Consequences.** The deployment now shows the seed's actual figures (416,514
+vehicles, peak 18:00, 35 scene links) instead of zeros, and satisfies docs/03
+§5's standing requirement that the demo render with the network cable pulled —
+this is that offline mode, not a new idea. The cost is that the snapshot ages:
+it is a photograph of the warehouse on the day it was taken, and nothing
+refreshes it but re-running the script. That is acceptable only because it is
+labelled. **Remove this the moment the API is hosted** — set
+`NEXT_PUBLIC_API_URL` on Vercel and the snapshot silently stops being consulted,
+with no code change needed.

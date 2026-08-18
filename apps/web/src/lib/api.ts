@@ -6,7 +6,26 @@
  * a component cannot render a figure without having its quality in hand.
  */
 
+import snapshot from "@/data/snapshot.json";
+
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8001";
+
+/**
+ * Captured API responses, keyed by the exact request path.
+ *
+ * The deployed console rendered 0 for every figure: Vercel cannot reach a
+ * `localhost` API, so every call failed and every panel fell back to its
+ * "unavailable" shape. That is honest but useless — the platform looked broken
+ * rather than merely unhosted.
+ *
+ * docs/03 §5 already required the demo to render with the network cable
+ * pulled, so this is that offline mode rather than a new idea: regenerate with
+ * `uv run python scripts/export_snapshot.py` against a live API.
+ *
+ * It is a fallback, never a preference. A reachable API always wins, so the
+ * snapshot cannot mask a backend that is up but wrong.
+ */
+const SNAPSHOT = snapshot as Record<string, unknown>;
 
 export interface Bilingual {
   en: string;
@@ -485,17 +504,50 @@ function demoRoleHeader(): Record<string, string> {
 }
 
 async function get<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${BASE}/api/v1${path}`, {
-    // Measurements move every five minutes; a stale dashboard is a wrong one.
-    cache: "no-store",
-    ...init,
-    headers: { ...demoRoleHeader(), ...(init?.headers ?? {}) },
-  });
-  if (!response.ok) {
-    throw new Error(`PRAVAAH API ${path} responded ${response.status}`);
+  try {
+    const response = await fetch(`${BASE}/api/v1${path}`, {
+      // Measurements move every five minutes; a stale dashboard is a wrong one.
+      cache: "no-store",
+      ...init,
+      headers: { ...demoRoleHeader(), ...(init?.headers ?? {}) },
+    });
+    if (!response.ok) {
+      throw new Error(`PRAVAAH API ${path} responded ${response.status}`);
+    }
+    return (await response.json()) as T;
+  } catch (error) {
+    const frozen = SNAPSHOT[path];
+    // Rethrowing when there is no snapshot is deliberate: the caller's own
+    // `.catch()` still produces the empty state, and a path nobody captured
+    // stays visibly missing instead of silently resolving to something stale.
+    if (frozen === undefined) throw error;
+    return frozen as T;
   }
-  return (await response.json()) as T;
 }
+
+/**
+ * Whether the live API answered, resolved once per render.
+ *
+ * The snapshot is indistinguishable from live data by inspection — that is the
+ * point of capturing it — so the page has to ask separately in order to label
+ * it. Without this the deployment would present four-month-old figures as
+ * current, which is the precise failure docs/06 §8 exists to prevent.
+ */
+export async function apiIsLive(): Promise<boolean> {
+  try {
+    const response = await fetch(`${BASE}/api/v1/meta/sources`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(4000),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+/** When the bundled snapshot was captured, for the label that says so. */
+export const SNAPSHOT_CAPTURED_AT: string =
+  (SNAPSHOT["/meta/published"] as { generated_at?: string } | undefined)?.generated_at ?? "";
 
 /** POST, for the few actions that record a human decision. */
 export async function post<T>(path: string, body: unknown): Promise<T> {
@@ -527,6 +579,10 @@ const query = (params: Record<string, string | number | undefined>) => {
 
 export const api = {
   corridors: () => get<Corridor[]>("/corridors"),
+  // Routed through get() rather than fetched raw in the page, so the 3D scene
+  // falls back to the snapshot like every other panel. Fetched directly, it
+  // was the one call that still went dark on a deployment with no API.
+  scene: (corridorId = 1) => get<{ links: unknown[] }>(`/scene?corridor_id=${corridorId}`),
   summary: (corridorId?: number, date?: string) =>
     get<CountsSummary>(`/counts/summary${query({ corridor_id: corridorId, date })}`),
   dayProfile: (corridorId?: number, date?: string) =>

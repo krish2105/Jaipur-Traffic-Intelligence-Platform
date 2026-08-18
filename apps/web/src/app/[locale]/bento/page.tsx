@@ -1,6 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 
-import { api } from "@/lib/api";
+import { api, apiIsLive } from "@/lib/api";
 import { BentoShell } from "@/components/console/bento";
 import type { SceneLink } from "@/components/city/city-view";
 
@@ -14,9 +14,11 @@ export default async function BentoPage({ params }: { params: Promise<{ locale: 
   setRequestLocale(locale);
 
   const [
+    live,
     corridors, summary, cameras, forecast, scene, buildings, blackspots, signals,
     readiness, weather, incidents,
   ] = await Promise.all([
+    apiIsLive(),
     api.corridors().catch(() => []),
     // Both of these were bare — same fault as /console: an unreachable API
     // took the whole page down with an unhandled rejection instead of
@@ -36,9 +38,7 @@ export default async function BentoPage({ params }: { params: Promise<{ locale: 
       note: "",
       generated_at: "",
     })),
-    fetch(`${BASE}/api/v1/scene?corridor_id=1`, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : { links: [] }))
-      .catch(() => ({ links: [] })),
+    api.scene(1).catch(() => ({ links: [] })),
     fetch(`${BASE}/api/v1/scene/buildings`, { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : { buildings: [] }))
       .catch(() => ({ buildings: [] })),
@@ -52,6 +52,11 @@ export default async function BentoPage({ params }: { params: Promise<{ locale: 
     })),
   ]);
 
+  // The panel cannot detect this itself — a snapshot response is a
+  // valid response. Recording it on the object the panel already reads
+  // keeps the disclosure next to the sources it qualifies.
+  const sources = live ? readiness : { ...readiness, source_mode: "snapshot" };
+
   return (
     <BentoShell
       corridors={corridors}
@@ -62,7 +67,7 @@ export default async function BentoPage({ params }: { params: Promise<{ locale: 
       buildings={buildings.buildings ?? []}
       blackspots={blackspots}
       signals={signals}
-      readiness={readiness}
+      readiness={sources}
       weather={weather}
       incidents={incidents}
     />

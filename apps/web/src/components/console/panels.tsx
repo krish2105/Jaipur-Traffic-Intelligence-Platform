@@ -414,6 +414,15 @@ export function ReadinessPanel({ data }: { data: SourceReadiness }) {
           </li>
         ))}
       </ul>
+      {/* Snapshot data is indistinguishable from live data by inspection, which
+          is why it needs saying out loud. This panel already answers "where did
+          this come from", so the disclosure belongs here rather than in a
+          banner competing with it. */}
+      {data.source_mode === "snapshot" && (
+        <p className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] leading-relaxed text-[var(--accent)]">
+          <span className="font-medium">{t("snapshotMode")}</span> — {t("snapshotNote")}
+        </p>
+      )}
       <p className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] leading-relaxed text-[var(--ink-muted)]">
         {data.note}
       </p>

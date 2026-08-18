@@ -62,7 +62,7 @@ export interface SceneLink {
 
 export function CityView({
   links: initialLinks,
-  buildings,
+  buildings: servedBuildings,
   initialPalette = "night",
 }: {
   links: SceneLink[];
@@ -70,6 +70,29 @@ export function CityView({
   initialPalette?: PaletteId;
 }) {
   const palette = initialPalette;
+  // The building footprints are ~300 KB, so they are the one part of the
+  // snapshot served as a static file rather than bundled — putting them in the
+  // payload of every page would cost the pages with no map on them too.
+  // Fetched here, on the client, because that is the only place the 3D scene
+  // ever mounts, and only when the API returned nothing.
+  const [snapshotBuildings, setSnapshotBuildings] = useState<CityData["buildings"]>([]);
+  useEffect(() => {
+    if (servedBuildings.length > 0) return;
+    let cancelled = false;
+    fetch("/data/buildings.json")
+      .then((r) => (r.ok ? r.json() : { buildings: [] }))
+      .then((d: { buildings?: CityData["buildings"] }) => {
+        if (!cancelled) setSnapshotBuildings(d.buildings ?? []);
+      })
+      .catch(() => {
+        // A city with no buildings still renders its roads, which are the
+        // measurement. The massing is context, so its loss is not an error.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [servedBuildings.length]);
+  const buildings = servedBuildings.length > 0 ? servedBuildings : snapshotBuildings;
   // Night is the control-room native mode; day is the public-facing one. The
   // value is read from the document rather than held here — this component
   // previously owned a second copy, and its effect re-asserted night over

@@ -96,6 +96,11 @@ export const S = {
     "— वही घंटा जब भीड़ चरम पर है। शाम का जाम ही वह समय है जब लोग घायल होते हैं।",
   ],
   updated: ["updated", "अद्यतन"],
+  snapshotMode: ["Frozen snapshot", "स्थिर स्नैपशॉट"],
+  snapshotNote: [
+    "The API is not reachable from this deployment, so every figure below is a captured snapshot rather than a live reading. Connect a backend to see current numbers.",
+    "इस परिनियोजन से एपीआई तक पहुँच नहीं है, इसलिए नीचे दिया गया प्रत्येक आंकड़ा लाइव माप नहीं, बल्कि एक सहेजा गया स्नैपशॉट है। वर्तमान संख्याएँ देखने के लिए बैकएंड जोड़ें।",
+  ],
 } as const satisfies Record<string, Pair>;
 
 export type StringKey = keyof typeof S;
