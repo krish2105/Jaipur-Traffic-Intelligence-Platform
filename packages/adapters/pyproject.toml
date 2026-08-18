@@ -1,0 +1,13 @@
+[project]
+name = "pravaah-adapters"
+version = "0.1.0"
+description = "Government + external system adapters, replay-first"
+requires-python = ">=3.12,<3.14"
+dependencies = ["pravaah-contracts", "httpx>=0.28", "redis>=6.0", "boto3>=1.35"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pravaah"]

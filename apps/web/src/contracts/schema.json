@@ -1,0 +1,704 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PravaahContracts",
+  "type": "object",
+  "properties": {
+    "AlertEvent": {
+      "$ref": "#/$defs/AlertEvent"
+    },
+    "AuditEvent": {
+      "$ref": "#/$defs/AuditEvent"
+    },
+    "ClassCount": {
+      "$ref": "#/$defs/ClassCount"
+    },
+    "CongestionEvent": {
+      "$ref": "#/$defs/CongestionEvent"
+    },
+    "CountEvent": {
+      "$ref": "#/$defs/CountEvent"
+    },
+    "ForecastEvent": {
+      "$ref": "#/$defs/ForecastEvent"
+    },
+    "TurningMovementEvent": {
+      "$ref": "#/$defs/TurningMovementEvent"
+    },
+    "ViolationEvent": {
+      "$ref": "#/$defs/ViolationEvent"
+    }
+  },
+  "$defs": {
+    "AlertEvent": {
+      "description": "Pushed to the dashboard over WebSocket within 2s (docs/03 \u00a74).",
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "event_id": {
+          "type": "string"
+        },
+        "alert_type": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string"
+        },
+        "link_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "junction_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "message_key": {
+          "type": "string"
+        },
+        "message_params": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "type": "object"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "is_synthetic": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "event_id",
+        "alert_type",
+        "severity",
+        "message_key",
+        "occurred_at"
+      ],
+      "title": "AlertEvent",
+      "type": "object"
+    },
+    "AuditEvent": {
+      "description": "Append-only. docs/07 \u00a75: app roles hold INSERT only \u2014 no UPDATE, no\nDELETE grant. `reason_code` is required for sensitive actions.",
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "event_id": {
+          "type": "string"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "actor_id": {
+          "type": "string"
+        },
+        "actor_role": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "resource_type": {
+          "type": "string"
+        },
+        "resource_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "reason_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "case_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "ip_address": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "request_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "event_id",
+        "occurred_at",
+        "actor_id",
+        "actor_role",
+        "action",
+        "resource_type"
+      ],
+      "title": "AuditEvent",
+      "type": "object"
+    },
+    "ClassCount": {
+      "description": "Counts for one vehicle class within one bin, one direction.",
+      "properties": {
+        "class_code": {
+          "type": "string"
+        },
+        "vehicle_count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "pcu": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "mean_speed_kmh": {
+          "anyOf": [
+            {
+              "maximum": 200,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "p85_speed_kmh": {
+          "anyOf": [
+            {
+              "maximum": 200,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "class_code",
+        "vehicle_count",
+        "pcu"
+      ],
+      "title": "ClassCount",
+      "type": "object"
+    },
+    "CongestionEvent": {
+      "description": "Per-link congestion index. The formula is published (docs/03 \u00a73) \u2014 a\nblack-box index is unusable in a policy file; a published one becomes the\nnumber everyone quotes.",
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "event_id": {
+          "type": "string"
+        },
+        "link_id": {
+          "type": "integer"
+        },
+        "bucket_start": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "congestion_index": {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        },
+        "vc_ratio": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "speed_ratio": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "queue_persistence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "probe_delay_s": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source_mix": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "emitted_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_id",
+        "link_id",
+        "bucket_start",
+        "congestion_index",
+        "confidence",
+        "emitted_at"
+      ],
+      "title": "CongestionEvent",
+      "type": "object"
+    },
+    "CountEvent": {
+      "description": "Emitted once per 5-minute bin, per camera, per direction.\n\n`quality_score` drives suppression: bins below the policy threshold are\nexcluded from policy outputs *and the suppression is shown in the UI*\nrather than hidden (docs/03 \u00a73).",
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "event_id": {
+          "type": "string"
+        },
+        "camera_id": {
+          "type": "integer"
+        },
+        "link_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "bucket_start": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "bucket_seconds": {
+          "default": 300,
+          "type": "integer"
+        },
+        "direction": {
+          "$ref": "#/$defs/Direction"
+        },
+        "counts": {
+          "items": {
+            "$ref": "#/$defs/ClassCount"
+          },
+          "type": "array"
+        },
+        "total_pcu": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "occupancy_pct": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "queue_length_m": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "quality_score": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "quality_flags": {
+          "items": {
+            "$ref": "#/$defs/QualityFlag"
+          },
+          "type": "array"
+        },
+        "is_synthetic": {
+          "default": false,
+          "type": "boolean"
+        },
+        "model_version": {
+          "type": "string"
+        },
+        "edge_node_id": {
+          "type": "string"
+        },
+        "emitted_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_id",
+        "camera_id",
+        "bucket_start",
+        "direction",
+        "counts",
+        "total_pcu",
+        "quality_score",
+        "model_version",
+        "edge_node_id",
+        "emitted_at"
+      ],
+      "title": "CountEvent",
+      "type": "object"
+    },
+    "Direction": {
+      "description": "Approach direction at a count line. docs/05 \u00a71 `traffic_counts.direction`.",
+      "enum": [
+        "NB",
+        "SB",
+        "EB",
+        "WB"
+      ],
+      "title": "Direction",
+      "type": "string"
+    },
+    "ForecastEvent": {
+      "description": "A forecast is not decision-support without its uncertainty (docs/04 \u00a75),\nso the 80% interval is required, not optional.",
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "event_id": {
+          "type": "string"
+        },
+        "link_id": {
+          "type": "integer"
+        },
+        "issued_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "horizon_min": {
+          "enum": [
+            15,
+            30,
+            60
+          ],
+          "type": "integer"
+        },
+        "predicted_index": {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        },
+        "lower_80": {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        },
+        "upper_80": {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        },
+        "model_version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_id",
+        "link_id",
+        "issued_at",
+        "horizon_min",
+        "predicted_index",
+        "lower_80",
+        "upper_80",
+        "model_version"
+      ],
+      "title": "ForecastEvent",
+      "type": "object"
+    },
+    "QualityFlag": {
+      "description": "Why a bin's quality score is what it is. Surfaced in the UI \u2014 docs/03 \u00a73\nrequires degradation to be shown, not hidden.",
+      "enum": [
+        "low_light",
+        "rain",
+        "fog",
+        "glare",
+        "dust",
+        "occlusion",
+        "uncalibrated",
+        "partial_bin",
+        "camera_moved"
+      ],
+      "title": "QualityFlag",
+      "type": "string"
+    },
+    "TurningMovementEvent": {
+      "description": "Entry-leg x exit-leg matrix for a junction. docs/04 \u00a73 \u2014 this is what JDA\nactually needs for junction redesign, and most ITS deployments never\nproduce it.",
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "event_id": {
+          "type": "string"
+        },
+        "junction_id": {
+          "type": "integer"
+        },
+        "bucket_start": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "bucket_seconds": {
+          "default": 300,
+          "type": "integer"
+        },
+        "matrix": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "integer"
+              },
+              "type": "object"
+            },
+            "type": "object"
+          },
+          "type": "object"
+        },
+        "quality_score": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "is_synthetic": {
+          "default": false,
+          "type": "boolean"
+        },
+        "model_version": {
+          "type": "string"
+        },
+        "emitted_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_id",
+        "junction_id",
+        "bucket_start",
+        "matrix",
+        "quality_score",
+        "model_version",
+        "emitted_at"
+      ],
+      "title": "TurningMovementEvent",
+      "type": "object"
+    },
+    "ViolationEvent": {
+      "description": "A detected violation. Note what is absent: the plate itself.\n\n`requires_review` is True whenever OCR confidence is below the gate. A wrong\nchallan is worse than a missed one \u2014 it generates a grievance, a news story,\nand a loss of trust that costs more than the fine (docs/04 \u00a74).",
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "event_id": {
+          "type": "string"
+        },
+        "camera_id": {
+          "type": "integer"
+        },
+        "link_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "violation_type": {
+          "$ref": "#/$defs/ViolationType"
+        },
+        "plate_hash": {
+          "type": "string"
+        },
+        "ocr_confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "detection_confidence": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "evidence_uri": {
+          "type": "string"
+        },
+        "requires_review": {
+          "type": "boolean"
+        },
+        "is_synthetic": {
+          "default": false,
+          "type": "boolean"
+        },
+        "model_version": {
+          "type": "string"
+        },
+        "emitted_at": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_id",
+        "camera_id",
+        "occurred_at",
+        "violation_type",
+        "plate_hash",
+        "ocr_confidence",
+        "detection_confidence",
+        "evidence_uri",
+        "requires_review",
+        "model_version",
+        "emitted_at"
+      ],
+      "title": "ViolationEvent",
+      "type": "object"
+    },
+    "ViolationType": {
+      "enum": [
+        "red_light",
+        "speed",
+        "no_helmet",
+        "triple_riding",
+        "wrong_side",
+        "no_seatbelt",
+        "lane"
+      ],
+      "title": "ViolationType",
+      "type": "string"
+    }
+  }
+}

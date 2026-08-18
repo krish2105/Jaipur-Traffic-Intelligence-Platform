@@ -1,0 +1,46 @@
+# python
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# node
+node_modules/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+.vercel/
+
+# env & secrets — never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+!infra/**/*.example.key
+
+# data & models — versioned by DVC/R2, not git
+data/raw/**
+data/processed/**
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+ml/checkpoints/
+*.onnx
+*.pt
+*.pth
+*.mp4
+*.mkv
+*.pmtiles
+
+# sumo outputs
+sim/output/
+
+# os
+.DS_Store
+Thumbs.db

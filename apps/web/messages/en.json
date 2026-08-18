@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "title": "PRAVAAH — Traffic Decision Intelligence, Jaipur",
+    "shortTitle": "PRAVAAH",
+    "description": "Continuous, classified, corridor-level traffic measurement for Jaipur. Counts and composition, not just delay."
+  },
+  "nav": {
+    "switchToDark": "Switch to dark mode",
+    "switchToLight": "Switch to light mode",
+    "switchLanguage": "Switch language"
+  },
+  "home": {
+    "eyebrow": "Government of Rajasthan · Jaipur",
+    "headline": "The instrument that measures Jaipur",
+    "standfirst": "Jaipur runs 35 lakh vehicles on a network it cannot measure. PRAVAAH turns feeds the state already owns into counts, classifications, forecasts and policy evidence.",
+    "chooseDirectionTitle": "Visual direction",
+    "chooseDirectionHelp": "Three directions over the same components and the same data. Switch between them, and between light and dark, to compare.",
+    "band": {
+      "free": "Free flow",
+      "moderate": "Moderate congestion",
+      "critical": "Critical congestion"
+    }
+  },
+  "design": {
+    "chooseDirection": "Choose a visual direction",
+    "direction": {
+      "instrument": "Instrument",
+      "control": "Mission Control",
+      "editorial": "Editorial"
+    },
+    "galleryTitle": "Three directions, one dashboard, live data",
+    "galleryStandfirst": "The same components, the same corridor, the same moment — rendered three ways in both themes. Pick one and it goes to full depth.",
+    "compareAll": "Compare all three",
+    "apiUnavailable": "The API is not reachable. Start it with `make api`.",
+    "theme": {
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "blurb": {
+      "instrument": "The spec'd thesis. Araish plaster and basalt, brass as the only accent, engraved rules. An instrument that shows its own scale.",
+      "control": "Same thesis, operations-floor density. Tighter type, faster motion, more panes on a wall display.",
+      "editorial": "Magazine-grade and warmer. Sindoor accent, generous whitespace, oversized Devanagari. Loses the instrument argument."
+    }
+  },
+  "congestion": {
+    "free": "Free flow",
+    "light": "Light",
+    "moderate": "Moderate",
+    "severe": "Severe",
+    "critical": "Critical"
+  },
+  "quality": {
+    "label": "Data quality",
+    "good": "Good",
+    "degraded": "Degraded",
+    "suppressed": "Suppressed bins",
+    "simulated": "Simulated data",
+    "cameras": "Cameras reporting",
+    "meanScore": "Mean quality",
+    "certificate": "Validated at {day} in daylight, {night} at night, per camera.",
+    "provisional": "Provisional — measured against public Indian datasets, not yet against Jaipur video.",
+    "simulatedExplain": "Derived from synthetic records. Volumes are simulated on a profile calibrated to published TomTom measurements for Jaipur."
+  },
+  "arc": {
+    "title": "The corridor's day, on a calibrated arc",
+    "nowLabel": "Now",
+    "summary": "Congestion peaks at {peakIndex} out of 100 at {peakTime}. It is currently {nowIndex}."
+  },
+  "dashboard": {
+    "corridors": "Corridors",
+    "modelCorridor": "Model Traffic Corridor",
+    "modelCorridorNote": "Tonk Road, Yaadgaar to Sanganer, is the state's own declared first Model Traffic Corridor from the April 2026 reform plan.",
+    "dayTitle": "The corridor's day",
+    "calibratedAgainst": "Profile calibrated against {source}",
+    "now": "Now",
+    "vehicles": "Vehicles",
+    "pcu": "PCU",
+    "peakHour": "Peak hour {hour} at {pcu} PCU",
+    "classMix": "Composition",
+    "classMixNote": "Probe data cannot report composition. Every capacity calculation depends on it."
+  },
+  "forecast": {
+    "label": "Forecast",
+    "baselineNote": "Persistence baseline with an 80% interval. A learned model ships only once it beats this."
+  }
+}

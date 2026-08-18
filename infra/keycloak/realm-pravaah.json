@@ -1,0 +1,157 @@
+{
+  "realm": "pravaah",
+  "enabled": true,
+  "displayName": "PRAVAAH \u2014 Government of Rajasthan",
+  "internationalizationEnabled": true,
+  "supportedLocales": [
+    "en",
+    "hi"
+  ],
+  "defaultLocale": "en",
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "maxFailureWaitSeconds": 900,
+  "failureFactor": 5,
+  "passwordPolicy": "length(12) and upperCase(1) and lowerCase(1) and digits(1) and specialChars(1) and notUsername and passwordHistory(5)",
+  "accessTokenLifespan": 900,
+  "ssoSessionIdleTimeout": 1800,
+  "otpPolicyType": "totp",
+  "otpPolicyAlgorithm": "HmacSHA256",
+  "otpPolicyDigits": 6,
+  "roles": {
+    "realm": [
+      {
+        "name": "viewer",
+        "description": "P0 aggregates and public dashboards",
+        "attributes": {
+          "touches_p2": [
+            "false"
+          ],
+          "mfa_required": [
+            "false"
+          ]
+        }
+      },
+      {
+        "name": "analyst",
+        "description": "P0 + P1, scenario runner, reports",
+        "attributes": {
+          "touches_p2": [
+            "false"
+          ],
+          "mfa_required": [
+            "false"
+          ]
+        }
+      },
+      {
+        "name": "traffic_officer",
+        "description": "+ violation review, incident verification",
+        "attributes": {
+          "touches_p2": [
+            "false"
+          ],
+          "mfa_required": [
+            "false"
+          ]
+        }
+      },
+      {
+        "name": "enforcement_officer",
+        "description": "+ defaulter scores (masked), interception plans",
+        "attributes": {
+          "touches_p2": [
+            "true"
+          ],
+          "mfa_required": [
+            "true"
+          ]
+        }
+      },
+      {
+        "name": "enforcement_supervisor",
+        "description": "+ unmask with reason code",
+        "attributes": {
+          "touches_p2": [
+            "true"
+          ],
+          "mfa_required": [
+            "true"
+          ]
+        }
+      },
+      {
+        "name": "data_admin",
+        "description": "+ camera config, retention overrides (dual-control)",
+        "attributes": {
+          "touches_p2": [
+            "true"
+          ],
+          "mfa_required": [
+            "true"
+          ]
+        }
+      },
+      {
+        "name": "auditor",
+        "description": "Audit log read-only. Cannot read P2.",
+        "attributes": {
+          "touches_p2": [
+            "false"
+          ],
+          "mfa_required": [
+            "false"
+          ]
+        }
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "pravaah-web",
+      "name": "PRAVAAH SETU (browser)",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": [
+        "http://localhost:3000/*",
+        "https://pravaah.vercel.app/*"
+      ],
+      "webOrigins": [
+        "http://localhost:3000",
+        "https://pravaah.vercel.app"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "+"
+      }
+    },
+    {
+      "clientId": "pravaah-api",
+      "name": "PRAVAAH API (resource server)",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": true,
+      "protocol": "openid-connect"
+    }
+  ],
+  "defaultDefaultClientScopes": [
+    "roles",
+    "profile",
+    "email"
+  ],
+  "requiredActions": [
+    {
+      "alias": "CONFIGURE_TOTP",
+      "name": "Configure OTP",
+      "enabled": true,
+      "defaultAction": true,
+      "priority": 10
+    }
+  ]
+}

@@ -1,0 +1,219 @@
+/* ===========================================================================
+   PRAVAAH design tokens
+
+   Three visual directions over one component tree:
+     <html data-direction="instrument | control | editorial"
+           data-theme="light | dark">
+
+   Layer 1  :root            primitives that NEVER vary — the congestion ramp,
+                             spacing rhythm, motion curves.
+   Layer 2  [data-direction] semantic tokens per direction, light mode.
+   Layer 3  [data-theme=dark] the same semantics, dark mode. Dark is designed
+                             first (docs/06 §6) — it is the control-room native
+                             mode. Light is designed second, deliberately.
+                             Neither is an inversion of the other.
+
+   Every component consumes ONLY layer 2/3 semantic names (--ground, --ink,
+   --accent...). A component that hardcodes a hex is a bug.
+   =========================================================================== */
+
+:root {
+  /* --- the congestion ramp. Fixed, published, identical everywhere. --------
+     docs/06 §1: 0–25 verdigris · 26–50 · 51–70 amber · 71–85 sindoor ·
+     86–100 sindoor-deep. These NEVER appear on buttons, links, or badges.
+     The moment sindoor means "save", the safety layer loses its signal. */
+  --congestion-free:     #3E8E7E;   /* verdigris  0–25   */
+  --congestion-light:    #7FA05C;   /*           26–50   */
+  --congestion-moderate: #D98A1F;   /* amber     51–70   */
+  --congestion-severe:   #C63D22;   /* sindoor   71–85   */
+  --congestion-critical: #8E2415;   /* deep      86–100  */
+
+  /* --- data quality. Also semantic, also never decorative. --- */
+  --quality-good:        #3E8E7E;
+  --quality-degraded:    #D98A1F;
+  --quality-suppressed:  #8A8A8A;
+
+  /* --- spacing rhythm (4px base) --- */
+  --space-1: 0.25rem; --space-2: 0.5rem;  --space-3: 0.75rem;
+  --space-4: 1rem;    --space-5: 1.5rem;  --space-6: 2rem;
+  --space-7: 3rem;    --space-8: 4rem;    --space-9: 6rem;
+
+  /* --- motion. Overridden per direction; these are the fallbacks. ---
+     docs/06 §4: animate transform and opacity only. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:   cubic-bezier(0.65, 0, 0.35, 1);
+  --motion-fast:   150ms;
+  --motion-base:   400ms;
+  --motion-slow:   700ms;
+  --motion-stagger: 60ms;
+  --theme-swap:    200ms;   /* ground colour only. Text never cross-fades. */
+
+  /* --- typography families (docs/06 §Typography) --- */
+  --font-ui:   var(--font-anek), ui-sans-serif, system-ui, sans-serif;
+  --font-data: var(--font-plex-mono), ui-monospace, "SF Mono", monospace;
+
+  /* --- elevation --- */
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.06);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.08);
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.12);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DIRECTION A — JANTAR MANTAR INSTRUMENT            (docs/06 §1, the spec'd one)
+   araish plaster · basalt · brass. An instrument that shows its own scale.
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-direction="instrument"] {
+  --ground:        #F2EDE4;   /* araish, the lime plaster of Jaipur's walls */
+  --surface:       #FBF8F3;
+  --surface-sunk:  #E7E0D3;
+  --ink:           #1A1714;   /* engraved */
+  --ink-muted:     #5C554B;
+  --rule:          #CFC5B4;   /* gradation lines */
+
+  --accent:        #C9A227;   /* brass — the only accent that repeats */
+  --accent-dim:    #8A6F1B;
+  --accent-ink:    #1A1714;   /* text ON brass */
+  --selection:     #2B3A67;   /* indigo — the gnomon's shadow */
+
+  --focus-ring:    var(--accent);
+  --overlay:       rgb(26 23 20 / 0.44);
+
+  --radius:        2px;       /* engraved, not rounded */
+  --radius-lg:     4px;
+  --density-gap:   var(--space-5);
+  --density-pad:   var(--space-5);
+  --rule-width:    1px;
+
+  --motion-base:   400ms;
+  --motion-ease:   var(--ease-out-expo);
+  --motion-stagger: 60ms;
+
+  --type-display:  clamp(2.5rem, 5vw, 4.5rem);
+  --type-h1:       clamp(1.75rem, 3vw, 2.5rem);
+  --type-h2:       1.5rem;
+  --type-body:     1rem;
+  --type-caption:  0.8125rem;
+  --type-metric:   clamp(2rem, 4vw, 3.25rem);
+}
+
+[data-direction="instrument"][data-theme="dark"] {
+  --ground:        #14120F;   /* basalt — Jantar Mantar stone at night */
+  --surface:       #1D1A16;
+  --surface-sunk:  #0D0B09;
+  --ink:           #F2EDE4;
+  --ink-muted:     #9A9184;
+  --rule:          #332E27;
+
+  --accent:        #C9A227;
+  --accent-dim:    #8A6F1B;
+  --accent-ink:    #14120F;
+  --selection:     #4C639E;   /* indigo lifted for dark-ground contrast */
+  --overlay:       rgb(13 11 9 / 0.66);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DIRECTION B — MISSION CONTROL
+   Same thesis, operations-floor density. Reads on a wall display.
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-direction="control"] {
+  --ground:        #EDE8DE;
+  --surface:       #F8F5EF;
+  --surface-sunk:  #DFD8C9;
+  --ink:           #14120F;
+  --ink-muted:     #554E44;
+  --rule:          #C3B9A6;
+
+  --accent:        #C9A227;
+  --accent-dim:    #8A6F1B;
+  --accent-ink:    #14120F;
+  --selection:     #2B3A67;
+
+  --focus-ring:    var(--accent);
+  --overlay:       rgb(20 18 15 / 0.5);
+
+  --radius:        1px;
+  --radius-lg:     2px;
+  --density-gap:   var(--space-3);   /* tighter — more panes on screen */
+  --density-pad:   var(--space-3);
+  --rule-width:    1px;
+
+  --motion-base:   240ms;            /* data-first, minimal */
+  --motion-ease:   var(--ease-in-out);
+  --motion-stagger: 30ms;
+
+  --type-display:  clamp(2rem, 4vw, 3.25rem);
+  --type-h1:       clamp(1.5rem, 2.4vw, 2rem);
+  --type-h2:       1.25rem;
+  --type-body:     0.9375rem;
+  --type-caption:  0.75rem;
+  --type-metric:   clamp(1.75rem, 3.2vw, 2.75rem);
+}
+
+[data-direction="control"][data-theme="dark"] {
+  --ground:        #0D0B09;   /* deeper than instrument — glare control */
+  --surface:       #16130F;
+  --surface-sunk:  #060504;
+  --ink:           #F2EDE4;
+  --ink-muted:     #8F8578;
+  --rule:          #2A251E;
+
+  --accent:        #D4AE33;
+  --accent-dim:    #8A6F1B;
+  --accent-ink:    #0D0B09;
+  --selection:     #5570B0;
+  --overlay:       rgb(6 5 4 / 0.72);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DIRECTION C — PINK CITY EDITORIAL
+   Diverges from docs/06. Magazine-grade, jaali motifs, kinetic Devanagari.
+   Warmer for an administrative audience; loses the instrument argument.
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-direction="editorial"] {
+  --ground:        #F7F3EC;
+  --surface:       #FFFFFF;
+  --surface-sunk:  #EDE6DA;
+  --ink:           #201A16;
+  --ink-muted:     #6B6157;
+  --rule:          #DCD2C2;
+
+  --accent:        #C63D22;   /* sindoor as the brand accent here */
+  --accent-dim:    #8E2415;
+  --accent-ink:    #FFFFFF;
+  --selection:     #2B3A67;
+
+  --focus-ring:    var(--selection);
+  --overlay:       rgb(32 26 22 / 0.4);
+
+  --radius:        10px;
+  --radius-lg:     18px;
+  --density-gap:   var(--space-6);   /* generous */
+  --density-pad:   var(--space-6);
+  --rule-width:    1px;
+
+  --motion-base:   600ms;
+  --motion-ease:   var(--ease-out-expo);
+  --motion-stagger: 90ms;
+
+  --type-display:  clamp(3rem, 7vw, 6rem);   /* oversized kinetic Devanagari */
+  --type-h1:       clamp(2rem, 4vw, 3.25rem);
+  --type-h2:       1.75rem;
+  --type-body:     1.0625rem;
+  --type-caption:  0.875rem;
+  --type-metric:   clamp(2.25rem, 4.5vw, 3.75rem);
+}
+
+[data-direction="editorial"][data-theme="dark"] {
+  --ground:        #191512;
+  --surface:       #241E1A;
+  --surface-sunk:  #100D0B;
+  --ink:           #F7F3EC;
+  --ink-muted:     #A79C90;
+  --rule:          #38302A;
+
+  --accent:        #E05A3D;   /* sindoor lifted to clear 4.5:1 on dark ground */
+  --accent-dim:    #C63D22;
+  --accent-ink:    #191512;
+  --selection:     #5570B0;
+  --overlay:       rgb(16 13 11 / 0.7);
+}

@@ -1,0 +1,131 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+/* ---------------------------------------------------------------------------
+   Bridge the runtime CSS variables into Tailwind v4's utility generator.
+   `inline` means the utilities emit var(--x) rather than a resolved value, so
+   swapping data-direction / data-theme re-themes the whole app with no
+   recompilation and no flash.
+   --------------------------------------------------------------------------- */
+@theme inline {
+  --color-ground:       var(--ground);
+  --color-surface:      var(--surface);
+  --color-surface-sunk: var(--surface-sunk);
+  --color-ink:          var(--ink);
+  --color-ink-muted:    var(--ink-muted);
+  --color-rule:         var(--rule);
+  --color-accent:       var(--accent);
+  --color-accent-dim:   var(--accent-dim);
+  --color-accent-ink:   var(--accent-ink);
+  --color-selection:    var(--selection);
+
+  --color-congestion-free:     var(--congestion-free);
+  --color-congestion-light:    var(--congestion-light);
+  --color-congestion-moderate: var(--congestion-moderate);
+  --color-congestion-severe:   var(--congestion-severe);
+  --color-congestion-critical: var(--congestion-critical);
+  --color-quality-good:        var(--quality-good);
+  --color-quality-degraded:    var(--quality-degraded);
+  --color-quality-suppressed:  var(--quality-suppressed);
+
+  --font-ui:   var(--font-ui);
+  --font-data: var(--font-data);
+
+  --radius-token:    var(--radius);
+  --radius-token-lg: var(--radius-lg);
+
+  --ease-expo: var(--ease-out-expo);
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+   --------------------------------------------------------------------------- */
+html {
+  background: var(--ground);
+  color-scheme: light;
+}
+html[data-theme="dark"] { color-scheme: dark; }
+
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: var(--type-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  /* Only the ground colour transitions on a theme swap. Text is excluded on
+     purpose — cross-fading glyphs flickers (docs/06 §6). */
+  transition: background-color var(--theme-swap) var(--ease-in-out);
+}
+
+/* Devanagari needs more room or the matras collide (docs/06 §Typography).
+   This is a gate, not a nicety — every screen is checked in Hindi. */
+[lang="hi"] body,
+[lang="hi"] p,
+[lang="hi"] li,
+[lang="hi"] dd,
+[lang="hi"] .prose { line-height: 1.75; }
+
+/* Every measurement uses tabular figures so values don't jitter as they
+   update in real time (docs/06 §Typography). */
+.metric, .tabular, [data-metric] {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+::selection { background: var(--selection); color: var(--ground); }
+
+/* Brass focus ring. Real, visible, and on every interactive element
+   (docs/06 §8). */
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+hr, .rule { border: 0; border-top: var(--rule-width) solid var(--rule); }
+
+/* ---------------------------------------------------------------------------
+   Theme swap via the View Transitions API — a circular reveal from the toggle.
+   Falls back silently to an instant class swap where unsupported.
+   --------------------------------------------------------------------------- */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 2147483646; }
+html[data-theme-swapping="true"]::view-transition-old(root) { z-index: 2147483646; }
+html[data-theme-swapping="true"]::view-transition-new(root) { z-index: 1; }
+
+/* ---------------------------------------------------------------------------
+   Reduced motion. A genuine static fallback, not a shortened animation
+   (docs/06 §4, §8). Parallax, particles and auto-orbit are disabled in JS.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
+}
+
+/* ---------------------------------------------------------------------------
+   Entrance reveal. CSS rather than JS on purpose: a JS-driven reveal that
+   starts at opacity 0 leaves content permanently invisible if hydration fails.
+   `both` fill guarantees the final state, and the reduced-motion block above
+   collapses the duration so the content simply appears.
+   --------------------------------------------------------------------------- */
+@keyframes pravaah-reveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+.pravaah-reveal {
+  animation: pravaah-reveal var(--motion-base) var(--motion-ease, var(--ease-out-expo)) both;
+}

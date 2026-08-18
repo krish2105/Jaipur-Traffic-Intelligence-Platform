@@ -1,0 +1,85 @@
+[project]
+name = "pravaah"
+version = "0.1.0"
+description = "PRAVAAH — Traffic Decision Intelligence Platform, Government of Rajasthan"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "pravaah-contracts",
+  "pravaah-adapters",
+  "pravaah-ganana",
+  "pravaah-drishti",
+  "pravaah-kavach",
+  "pravaah-neeti",
+  "pravaah-api",
+  "pravaah-worker",
+]
+
+[dependency-groups]
+dev = [
+  "ruff>=0.14",
+  "mypy>=1.18",
+  "pytest>=8.4",
+  "pytest-asyncio>=1.0",
+  "pytest-cov>=6.0",
+  "httpx>=0.28",
+  "pip-audit>=2.9",
+  "bandit>=1.8",
+  "types-requests",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["packages/*", "apps/api", "apps/worker"]
+
+[tool.uv.sources]
+pravaah-contracts = { workspace = true }
+pravaah-adapters  = { workspace = true }
+pravaah-ganana    = { workspace = true }
+pravaah-drishti   = { workspace = true }
+pravaah-kavach    = { workspace = true }
+pravaah-neeti     = { workspace = true }
+pravaah-api       = { workspace = true }
+pravaah-worker    = { workspace = true }
+
+# ---------------- tooling ----------------
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["packages", "apps"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "ASYNC", "S", "RUF"]
+ignore = ["S101"]   # assert is fine in tests
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S", "B"]
+"ml/**"    = ["S"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+namespace_packages = true
+explicit_package_bases = true
+mypy_path = "packages/contracts/src:packages/adapters/src:packages/ganana/src:packages/drishti/src:packages/kavach/src:packages/neeti/src:apps/api/src:apps/worker/src"
+plugins = ["pydantic.mypy"]
+warn_unreachable = true
+disallow_any_generics = true
+
+[[tool.mypy.overrides]]
+module = ["supervision.*", "cv2.*", "shap.*", "lightgbm.*", "xgboost.*", "traci.*", "sumolib.*", "deck.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests", "packages", "apps"]
+python_files = ["test_*.py"]
+addopts = "-q --strict-markers"
+markers = [
+  "integration: requires a live database or network",
+  "slow: takes more than 5 seconds",
+]
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv", "ml/notebooks"]

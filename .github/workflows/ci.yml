@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push: { branches: [main] }
+  pull_request:
+
+env:
+  NODE_VERSION: "24"
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  python:
+    name: Python — lint, types, tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with: { enable-cache: true }
+      - run: uv python install ${{ env.PYTHON_VERSION }}
+      - run: uv sync --all-packages
+      - name: Ruff lint
+        run: uv run ruff check .
+      - name: Ruff format
+        run: uv run ruff format --check .
+      - name: Mypy
+        run: uv run mypy packages/contracts/src
+      - name: Tests
+        run: uv run pytest -q
+
+  web:
+    name: Web — lint, types, tests, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @pravaah/web lint
+      - run: pnpm --filter @pravaah/web typecheck
+      - run: pnpm --filter @pravaah/web test
+      - run: pnpm --filter @pravaah/web build
+
+  contracts:
+    name: Contracts — generated TypeScript is in sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with: { node-version: "24", cache: pnpm }
+      - run: uv sync --all-packages
+      - run: pnpm install --frozen-lockfile
+      # docs/03 §6: never hand-maintain parallel type definitions. If a Pydantic
+      # model changed without regenerating, this fails.
+      - run: uv run python scripts/generate_ts_contracts.py
+      - name: Fail if generated types drifted
+        run: git diff --exit-code apps/web/src/contracts
+
+  governance:
+    name: Governance — licence, privacy, i18n
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # docs/DECISIONS.md ADR-009 — AGPL-3.0 is a procurement blocker.
+      - run: bash scripts/check_no_ultralytics.sh
+      # docs/07 §3 — the raw plate never reaches a log, bus, metric or cache.
+      - run: bash scripts/check_no_plates_in_logs.sh
+
+  security:
+    name: Security — dependencies, secrets, SAST
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 0 }
+      - uses: astral-sh/setup-uv@v7
+      - run: uv sync --all-packages
+      - name: Dependency audit (Python)
+        run: uv run pip-audit --strict || true    # advisory until deps settle
+      - name: SAST
+        run: uv run bandit -c pyproject.toml -r packages apps -q
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }

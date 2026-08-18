@@ -1,0 +1,24 @@
+{
+  "name": "pravaah",
+  "private": true,
+  "packageManager": "pnpm@10.30.3",
+  "engines": {
+    "node": ">=24.15.0",
+    "pnpm": ">=10"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @pravaah/web dev",
+    "build": "pnpm --filter @pravaah/web build",
+    "lint": "pnpm --filter @pravaah/web lint",
+    "typecheck": "pnpm --filter @pravaah/web typecheck",
+    "test": "pnpm --filter @pravaah/web test"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@swc/core",
+      "unrs-resolver",
+      "@parcel/watcher",
+      "esbuild"
+    ]
+  }
+}
