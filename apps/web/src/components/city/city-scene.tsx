@@ -19,6 +19,63 @@ export interface CityData {
   buildings: BuildingBox[];
 }
 
+
+/**
+ * A point guaranteed to lie ON the carriageway.
+ *
+ * This closes ADR-019. Everything that framed this scene — the intro flight's
+ * lookAt and OrbitControls' target — pointed at (0,0,0), which is the centroid
+ * of every link. Tonk Road is a curve, and the centroid of a curve is not on
+ * the curve: it sits out in the fields beside it. On a wide desktop pane the
+ * corridor was still inside the frustum despite that, which is why it looked
+ * fine and hid the bug. Narrow the pane to a phone and the horizontal field of
+ * view collapses, the road leaves the shot, and what is left is a correctly
+ * rendered picture of empty ground — the "empty" mobile map.
+ *
+ * The midpoint by arc length of the longest road is the natural choice: longest
+ * because it is the corridor rather than a side stub, and by arc length rather
+ * than by index because the vertices are not evenly spaced.
+ */
+function carriagewayTarget(roads: CityData["roads"]): [number, number, number] {
+  let best: CityData["roads"][number] | null = null;
+  let bestLength = -1;
+
+  const lengthOf = (points: [number, number][]) => {
+    let total = 0;
+    for (let i = 1; i < points.length; i += 1) {
+      const a = points[i - 1];
+      const b = points[i];
+      if (a && b) total += Math.hypot(b[0] - a[0], b[1] - a[1]);
+    }
+    return total;
+  };
+
+  for (const road of roads) {
+    const length = lengthOf(road.points);
+    if (length > bestLength) {
+      bestLength = length;
+      best = road;
+    }
+  }
+  if (!best || best.points.length === 0 || bestLength <= 0) return [0, 0, 0];
+
+  const half = bestLength / 2;
+  let walked = 0;
+  for (let i = 1; i < best.points.length; i += 1) {
+    const a = best.points[i - 1];
+    const b = best.points[i];
+    if (!a || !b) continue;
+    const segment = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    if (walked + segment >= half) {
+      const t = segment === 0 ? 0 : (half - walked) / segment;
+      return [a[0] + (b[0] - a[0]) * t, 0, a[1] + (b[1] - a[1]) * t];
+    }
+    walked += segment;
+  }
+  const last = best.points[best.points.length - 1];
+  return last ? [last[0], 0, last[1]] : [0, 0, 0];
+}
+
 /**
  * Camera flight on load (docs plan, signature moment 1).
  *
@@ -30,10 +87,13 @@ function IntroFlight({
   onDone,
   skip,
   radius,
+  target,
 }: {
   onDone: () => void;
   skip: boolean;
   radius: number;
+  /** A point on the carriageway — see carriagewayTarget. */
+  target: [number, number, number];
 }) {
   const { camera } = useThree();
   const elapsed = useRef(0);
@@ -116,11 +176,11 @@ function IntroFlight({
     const elev = (38 * Math.PI) / 180;
     const azim = (35 * Math.PI) / 180;
     camera.position.set(
-      d * Math.cos(elev) * Math.sin(azim),
-      d * Math.sin(elev),
-      d * Math.cos(elev) * Math.cos(azim),
+      target[0] + d * Math.cos(elev) * Math.sin(azim),
+      target[1] + d * Math.sin(elev),
+      target[2] + d * Math.cos(elev) * Math.cos(azim),
     );
-    camera.lookAt(0, 0, 0);
+    camera.lookAt(target[0], target[1], target[2]);
     if (t >= 1) onDone();
   });
   return null;
@@ -179,7 +239,13 @@ function TrackContainerSize() {
  * old one, so the same fraction of the corridor stays in shot at whatever
  * aspect. Someone who had zoomed in keeps their zoom.
  */
-function RefitOnResize({ radius }: { radius: number }) {
+function RefitOnResize({
+  radius,
+  target,
+}: {
+  radius: number;
+  target: [number, number, number];
+}) {
   const { camera, size } = useThree();
   const lastFit = useRef<number | null>(null);
 
@@ -202,12 +268,16 @@ function RefitOnResize({ radius }: { radius: number }) {
     // finishes, and rescaling underneath it would fight the animation.
     if (previous === null || previous === fit) return;
 
-    const distance = camera.position.length();
-    if (distance === 0) return;
-    camera.position.multiplyScalar(fit / previous);
-    camera.lookAt(0, 0, 0);
+    // Scale the offset FROM the target, not the position from the world origin
+    // — otherwise a resize drags the camera back toward (0,0,0) and undoes the
+    // carriagewayTarget fix on the very first reflow.
+    const focus = new THREE.Vector3(target[0], target[1], target[2]);
+    const offset = camera.position.clone().sub(focus);
+    if (offset.lengthSq() === 0) return;
+    camera.position.copy(focus).add(offset.multiplyScalar(fit / previous));
+    camera.lookAt(focus);
     camera.updateProjectionMatrix();
-  }, [size.width, size.height, camera, fitFor]);
+  }, [size.width, size.height, camera, fitFor, target]);
 
   return null;
 }
@@ -282,6 +352,8 @@ function Scene({
 }) {
   const [flying, setFlying] = useState(true);
   const quality = useFrameBudget();
+  // Recomputed only when the roads change; every framing consumer shares it.
+  const target = useMemo(() => carriagewayTarget(data.roads), [data.roads]);
   const fogDensity = 1.6 / Math.max(60, radius);
   const mode = PALETTE_BY_MODE[scene];
 
@@ -333,9 +405,14 @@ function Scene({
       />
       <Traffic roads={data.traffic} quality={quality} daylight={scene === "day"} />
 
-      <IntroFlight skip={false} radius={radius} onDone={() => setFlying(false)} />
+      <IntroFlight
+        skip={false}
+        radius={radius}
+        target={target}
+        onDone={() => setFlying(false)}
+      />
       <TrackContainerSize />
-      <RefitOnResize radius={radius} />
+      <RefitOnResize radius={radius} target={target} />
       <OrbitControls
         enabled={!flying}
         enableDamping
@@ -343,7 +420,7 @@ function Scene({
         maxPolarAngle={Math.PI / 2.15}
         minDistance={radius * 0.04}
         maxDistance={radius * 5}
-        target={[0, 0, 0]}
+        target={target}
       />
 
       <EffectComposer enabled={scene === "night"}>
