@@ -308,6 +308,36 @@ Predictive policing of individuals. Any claim about a figure we cannot cite.
 
 ---
 
+---
+
+## 13. Build status
+
+Updated 19 August 2026, overnight run. Everything below is deployed and
+verified in production at
+<https://jaipur-traffic-intelligence-platfor-nine.vercel.app>.
+
+| Plan item | State | Evidence |
+|---|---|---|
+| §5 D1 · real crash + enforcement data | **done** | `/safety/severity`, no DB read, every figure carries its URL |
+| §5 D3 · enforcement allocator | **done** | `/enforcement/allocation` — 73.7 / 23.3 / 3.0, +18.5 lives/yr |
+| §5 D6 · RAG over the corpus | **done** | 362 chunks, 15 docs, BM25 in-browser, cited |
+| §5 D7 · agentic layer | **done** | plans before answering, shows the plan, refuses on a miss |
+| §5 D8 · pink UI | **done** | gulaabi default, contrast gate passes on 6 palettes |
+| §5 D9 · atlas maps | **partial** | console 2D done; citizen / officer / city still to wire |
+| §5 D2 · severity model | not started | |
+| §5 D4–5 · PCU vs count, corridor sync | not started | needs SUMO scenario work |
+| §5 D10–14 | not started | |
+
+**Free tier throughout.** No API host, no keyed tiles, no model provider, no
+paid storage. Total running cost is zero: the deployment serves a captured
+snapshot (ADR-062) and the RAG index is a static asset searched client-side.
+
+**Known limits, stated rather than buried.** The allocator's recommendation
+holds for saturation K ≥ 2 and is reported with that boundary. Retrieval is
+lexical, so a paraphrase sharing no vocabulary is missed. Per-link hourly counts
+and camera detections remain synthetic and badged; only the crash, enforcement
+and fleet figures are real.
+
 ## 12. Sources
 
 All accessed 19 August 2026.
