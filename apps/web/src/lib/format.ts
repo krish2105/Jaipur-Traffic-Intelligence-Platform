@@ -67,8 +67,8 @@ export function formatCompact(value: number, locale: Locale): string {
       minimumFractionDigits: digits,
       maximumFractionDigits: digits,
     }).format(v);
-  if (Math.abs(value) >= 1e7) return `${nf(value / 1e7, 2)} Cr`;
-  if (Math.abs(value) >= 1e5) return `${nf(value / 1e5, 2)} L`;
+  if (Math.abs(value) >= 1e7) return `${nf(value / 1e7, 2)}\u00A0Cr`;
+  if (Math.abs(value) >= 1e5) return `${nf(value / 1e5, 2)}\u00A0L`;
   if (Math.abs(value) >= 1e3) return nf(value, 0);
   return nf(value, 1);
 }

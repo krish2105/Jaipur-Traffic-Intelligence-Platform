@@ -11,6 +11,12 @@
    =========================================================================== */
 
 :root {
+  /* Rail and nav are density, not layout: a rail fixed in pixels while the
+     figures inside it scale is what collided "2.93 L" and "1.62 L" into
+     "2.931.62" on a control-room wall. They apply only at >=1024px, where
+     the three-column grid exists. */
+  --d-rail: 312px;
+  --d-nav: 168px;
   /* laptop — the default, and the pitch-day machine */
   --d-label: 0.75rem;      /* 12px */
   --d-figure: 2.375rem;    /* 38px */
@@ -39,6 +45,8 @@
 /* desktop */
 @media (min-width: 1280px) {
   :root {
+    --d-rail: 352px;
+    --d-nav: 180px;
     --d-figure: 2.75rem;
     --d-pad: 1.5rem;
     --d-gap: 1rem;
@@ -49,6 +57,8 @@
 /* control-room wall — more on screen, viewed close, operator watches all day */
 @media (min-width: 1920px) {
   :root {
+    --d-rail: 420px;
+    --d-nav: 208px;
     --d-label: 0.8125rem;
     --d-figure: 3.25rem;
     --d-support: 0.875rem;
@@ -59,11 +69,21 @@
   }
 }
 
-/* projector — coarse pixels, six metres, a lit room. Everything grows. */
-@media (min-width: 2560px), (min-resolution: 0.75dppx) and (min-width: 1600px) {
+/* Projector — coarse pixels, six metres, a lit room. Everything grows.
+   The second clause used to read `(min-resolution: 0.75dppx) and
+   (min-width: 1600px)`, intending "a low-DPI surface", but 0.75dppx is a
+   FLOOR: every ordinary 1x display is 1dppx and every retina one is 2dppx, so
+   it matched them all and silently gave every desktop wider than 1600px the
+   projector's sizing — a 1920 control-room wall included. `max-resolution` is
+   the test that was meant. */
+@media (min-width: 2560px), (max-resolution: 1dppx) and (min-width: 1600px) {
   :root {
+    --d-rail: 504px;
+    --d-nav: 240px;
     --d-label: 0.9375rem;
     --d-figure: 4rem;
+  --d-rail: 504px;
+  --d-nav: 240px;
     --d-support: 1rem;
     --d-body: 1.0625rem;
     --d-pad: 2rem;
@@ -83,6 +103,8 @@
 [data-density="compact"] {
   --d-label: 0.6875rem;
   --d-figure: 1.75rem;
+  --d-rail: 288px;
+  --d-nav: 152px;
   --d-support: 0.75rem;
   --d-pad: 1rem;
   --d-gap: 0.625rem;

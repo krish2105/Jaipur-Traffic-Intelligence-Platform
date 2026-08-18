@@ -144,7 +144,7 @@ export function ConsoleShell({
   return (
     <div className="grid h-dvh grid-rows-[auto_1fr_auto] bg-[var(--ground)] text-[var(--ink)]">
       {/* ── top bar ─────────────────────────────────────────────────────── */}
-      <header className="flex items-center gap-4 border-b border-[var(--rule)] bg-[var(--surface)] px-4 py-2.5">
+      <header className="flex items-center gap-2 border-b border-[var(--rule)] bg-[var(--surface)] px-3 py-2.5 sm:gap-4 sm:px-4">
         <div className="flex items-baseline gap-2">
           <span className="font-display text-lg leading-none tracking-tight">PRAVAAH</span>
           <span className="text-sm text-[var(--ink-muted)]" lang="hi">प्रवाह</span>
@@ -155,13 +155,13 @@ export function ConsoleShell({
         >
           <ModeDot live title="System operational" /> Operational
         </span>
-        <span className="ml-2 text-xs text-[var(--ink-muted)]">
+        <span className="ml-2 hidden text-xs text-[var(--ink-muted)] sm:inline">
           {corridor ? (locale === "hi" ? corridor.name.hi : corridor.name.en) : "—"} ·{" "}
           {measured} of {links.length} links instrumented
         </span>
         <div className="ml-auto flex items-center gap-3">
         <ThemeToggle />
-        <span className="font-mono text-xs tabular-nums text-[var(--ink-muted)]">
+        <span className="hidden font-mono text-xs tabular-nums text-[var(--ink-muted)] sm:inline">
           {new Intl.DateTimeFormat(locale === "hi" ? "hi-IN" : "en-IN", {
             timeZone: "Asia/Kolkata",
             dateStyle: "medium",
@@ -172,22 +172,38 @@ export function ConsoleShell({
         </div>
       </header>
 
-      {/* ── nav | map | rail ────────────────────────────────────────────── */}
-      <div className="grid min-h-0 grid-cols-[168px_1fr_312px]">
-        <nav className="overflow-y-auto border-r border-[var(--rule)] bg-[var(--surface)] py-2">
-          <ul>
+      {/* ── nav | map | rail ─────────────────────────────────────────────
+          Three columns need roughly 900px before the map is worth looking at:
+          a 168px nav and a 312px rail leave a tablet with a 288px sliver. So
+          below 1024px the whole thing stacks and the page itself scrolls,
+          rather than three columns each scrolling inside a viewport that
+          cannot hold them. */}
+      <div
+        className="grid min-h-0 grid-cols-1 overflow-y-auto
+                   lg:grid-cols-[var(--d-nav)_1fr_var(--d-rail)] lg:overflow-visible"
+      >
+        <nav
+          className="shrink-0 overflow-x-auto border-b border-[var(--rule)] bg-[var(--surface)]
+                     lg:overflow-y-auto lg:overflow-x-visible lg:border-b-0
+                     lg:border-r lg:py-2"
+        >
+          <ul className="flex lg:block">
             {NAV.map((item) => (
               <li key={item.id}>
                 <button
                   type="button"
                   onClick={() => setActive(item.id)}
                   aria-current={active === item.id ? "page" : undefined}
-                  className="flex w-full items-center gap-2 border-l-2 border-transparent px-3.5 py-2
-                             text-left text-[13px] text-[var(--ink-muted)] transition-colors
+                  className="flex w-full items-center gap-2 whitespace-nowrap border-b-2
+                             border-transparent px-3.5 py-2.5 text-left text-[13px]
+                             text-[var(--ink-muted)] transition-colors
                              hover:bg-[var(--surface-2)] hover:text-[var(--ink)]
-                             aria-[current=page]:border-l-[var(--accent)]
+                             aria-[current=page]:border-b-[var(--accent)]
                              aria-[current=page]:bg-[var(--surface-2)]
-                             aria-[current=page]:text-[var(--ink)]"
+                             aria-[current=page]:text-[var(--ink)]
+                             lg:border-b-0 lg:border-l-2 lg:py-2
+                             lg:aria-[current=page]:border-b-0
+                             lg:aria-[current=page]:border-l-[var(--accent)]"
                 >
                   {locale === "hi" ? item.hi : item.en}
                 </button>
@@ -196,7 +212,7 @@ export function ConsoleShell({
           </ul>
         </nav>
 
-        <main className="relative min-w-0">
+        <main className="relative min-w-0 max-lg:h-[45vh] max-lg:shrink-0">
           {threeD ? (
             <City
               data={scene.data}
@@ -226,7 +242,10 @@ export function ConsoleShell({
           </div>
         </main>
 
-        <aside className="min-h-0 space-y-2.5 overflow-y-auto border-l border-[var(--rule)] bg-[var(--ground)] p-2.5">
+        <aside
+          className="min-h-0 space-y-2.5 bg-[var(--ground)] p-2.5
+                     lg:overflow-y-auto lg:border-l lg:border-[var(--rule)]"
+        >
           <CountsPanel summary={summary} profile={profile} nowMinutes={jaipurNowMinutes()} />
           <CompositionPanel summary={summary} />
           <ForecastPanel forecast={forecast} />

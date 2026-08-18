@@ -636,3 +636,50 @@ scanning the code, and mypy types it as one. Labels are now `congestion_index`.
 Filed because "it works at runtime" is the reason this kind of shadowing
 survives review, and the failure mode when it eventually does not work is a
 silent wrong number rather than an exception.
+
+---
+
+## ADR-026 — Five densities means five layouts, not five font scales
+**Date:** 2026-08-18 · **Status:** Accepted
+
+The console was a fixed `168px | 1fr | 312px` grid with no collapse, so a phone
+rendered a desktop layout at phone width: the nav ate half the screen, the rail
+was cut off horizontally, and figures truncated to "6…". Below 1024px it now
+stacks — nav becomes a horizontal tab strip, the map takes 45vh, panels flow
+full width and the page itself scrolls. 1024 rather than 768 because a 168px
+nav and a 312px rail leave a tablet with a 288px sliver of map.
+
+**The rail and nav widths are density tokens now**, not layout constants. A rail
+fixed in pixels while the figures inside it scale with density is precisely what
+collided "2.93 L" and "1.62 L" into "2.931.62" on a control-room wall. Anything
+that must stay in proportion to type belongs in `density.css`.
+
+Two faults found by actually looking at each target rather than trusting the
+tokens:
+
+**The projector query was inverted.** It read `(min-resolution: 0.75dppx) and
+(min-width: 1600px)`, intending "a low-DPI surface". But `min-resolution` is a
+floor: every ordinary display is 1dppx and every retina one is 2dppx, so it
+matched all of them and silently gave every desktop wider than 1600px the
+projector's sizing — a 1920 control-room wall included. `max-resolution: 1dppx`
+is the test that was meant.
+
+**`lg:h-auto` on the map cell blanked the 3D pane.** The R3F canvas sizes itself
+at `height: 100%`, which needs a resolved height on the parent; a grid item set
+to `height: auto` does not provide one even while `align-self: stretch` makes it
+look correct in the inspector. The mobile height is now scoped with `max-lg:`
+so the desktop path keeps the height it always had. A percentage-height child
+makes its parent's height load-bearing — changing that parent to `auto` is never
+a no-op.
+
+**Figures carry their unit as a non-breaking space.** "2.93 L" was wrapping to
+put a lone "L" on the next line, which reads as a rendering fault rather than a
+number.
+
+### Open
+Day mode at 1920 renders a blank 3D pane. Night at 1920 renders, and both modes
+render at 1440 and at phone width. WebGL context is healthy, no GL error, the
+canvas is correctly sized, and the frame-budget guard floors at 0.25 and gates
+only vehicles — so none of those is the cause and the real one is not yet known.
+Recorded rather than guessed at, because ADR-020's lesson was exactly this:
+investigating a second hypothesis against an undiagnosed first one wastes both.

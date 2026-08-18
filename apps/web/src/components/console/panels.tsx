@@ -44,11 +44,13 @@ export function CountsPanel({
       <div className="grid grid-cols-2 gap-4">
         <Metric
           label="Vehicles"
+          scale={0.82}
           value={formatCompact(summary.total_vehicles, locale)}
           quality={`quality ${q.mean_score.toFixed(2)}`}
         />
         <Metric
           label="PCU"
+          scale={0.82}
           value={formatCompact(summary.total_pcu, locale)}
           quality={
             q.suppressed_bins > 0
