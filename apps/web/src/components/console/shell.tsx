@@ -3,7 +3,16 @@
 import { useMemo, useState } from "react";
 import { useLocale } from "next-intl";
 
-import type { BlackSpots, Camera, CountsSummary, Corridor, Forecast, SignalAdvisory } from "@/lib/api";
+import type {
+  BlackSpots,
+  Camera,
+  CountsSummary,
+  Corridor,
+  Forecast,
+  SignalAdvisory,
+  SourceReadiness,
+  WeatherNow,
+} from "@/lib/api";
 import type { SceneLink } from "@/components/city/city-view";
 import type { BuildingBox } from "@/components/city/buildings";
 import { City } from "@/components/city/city-scene.loader";
@@ -18,7 +27,9 @@ import {
   ForecastPanel,
   IncidentPanel,
   QualityPanel,
+  ReadinessPanel,
   SignalPanel,
+  WeatherPanel,
 } from "./panels";
 
 const NAV = [
@@ -50,6 +61,8 @@ export function ConsoleShell({
   buildings,
   blackspots,
   signals,
+  readiness,
+  weather,
 }: {
   corridors: Corridor[];
   summary: CountsSummary;
@@ -59,6 +72,8 @@ export function ConsoleShell({
   buildings: BuildingBox[];
   blackspots: BlackSpots;
   signals: SignalAdvisory;
+  readiness: SourceReadiness;
+  weather: WeatherNow;
 }) {
   const locale = useLocale() as Locale;
   const [active, setActive] = useState<string>("dashboard");
@@ -189,6 +204,8 @@ export function ConsoleShell({
           <IncidentPanel />
           <BlackSpotPanel data={blackspots} />
           <SignalPanel data={signals} />
+          <WeatherPanel data={weather} />
+          <ReadinessPanel data={readiness} />
         </aside>
       </div>
 

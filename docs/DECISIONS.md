@@ -459,8 +459,8 @@ range that reliably keeps the corridor in shot.
 
 ---
 
-## ADR-020 — The console's map pane renders nothing. Open.
-**Date:** 2026-08-18 · **Status:** Open defect · **Owner: next session**
+## ADR-020 — The console's map pane rendered nothing. RESOLVED.
+**Date:** 2026-08-18 · **Status:** Resolved — cause was hypothesis 3
 
 `/en/console` mounts a WebGL canvas at full size (measured 369 × 952, live GL
 context, not lost) and draws nothing. The identical `<City>` component renders
@@ -486,9 +486,17 @@ never executes on the console route. The render loop does not start. So the
 failure is above the scene graph, not in the geometry, the camera or the
 materials — which is where all three hypotheses were aimed.
 
-**Where to look next, in order:** whether `<Canvas>` receives a zero-sized
-parent at first measure and never re-measures inside a CSS grid track; whether
-the dynamic import resolves at all on this route; and whether `City`'s
-capability gate returns a third state that renders neither branch. Add a probe
-OUTSIDE `<Suspense>` first — the existing one was inside it, which is why it
-proved only that the boundary never resolved, not why.
+**Resolution.** It was hypothesis 3 — `<Environment preset>` suspending on its
+CDN fetch. Removing it fixed the pane. I recorded it as "not the cause" because
+I screenshotted before the scene had finished building and saw a blank frame,
+then moved on. The fix was already correct; the verification was not.
+
+**The lesson, which is the reason this ADR is worth keeping:** a negative result
+from a check that ran too early is not a negative result. Two subsequent
+hypotheses were investigated against a fault that had already been fixed. Where
+a scene takes seconds to build, wait for a positive signal — a draw call, a
+non-background pixel — rather than reading an empty frame as evidence.
+
+The `<Environment>` removal stands on its own merits regardless: a scene that
+waits on a CDN cannot satisfy docs/03 §5's requirement to render with the
+network cable pulled.

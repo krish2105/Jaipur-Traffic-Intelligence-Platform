@@ -16,7 +16,10 @@ export default async function ConsolePage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [corridors, summary, cameras, forecast, scene, buildings, blackspots, signals] =
+  const [
+    corridors, summary, cameras, forecast, scene, buildings, blackspots, signals,
+    readiness, weather,
+  ] =
     await Promise.all([
     api.corridors().catch(() => []),
     api.summary(1),
@@ -30,6 +33,8 @@ export default async function ConsolePage({
       .catch(() => ({ buildings: [] })),
       api.blackspots(1).catch(() => ({ segments: [], basis: "", note: "" })),
       api.signals().catch(() => ({ advisories: [], method: "", governance: "" })),
+      api.readiness().catch(() => ({ sources: [], live_count: 0, total: 0, source_mode: "", note: "" })),
+      api.weather().catch(() => ({ available: false })),
     ]);
 
   return (
@@ -42,6 +47,8 @@ export default async function ConsolePage({
       buildings={buildings.buildings ?? []}
       blackspots={blackspots}
       signals={signals}
+      readiness={readiness}
+      weather={weather}
     />
   );
 }

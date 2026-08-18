@@ -135,6 +135,36 @@ export interface SignalAdvisory {
   governance: string;
 }
 
+export interface SourceRow {
+  id: string;
+  name: string;
+  provider: string;
+  mode: "live" | "replay";
+  detail: string;
+  needs: string | null;
+}
+
+export interface SourceReadiness {
+  sources: SourceRow[];
+  live_count: number;
+  total: number;
+  source_mode: string;
+  note: string;
+}
+
+export interface WeatherNow {
+  available: boolean;
+  temperature_c?: number;
+  precipitation_mm?: number;
+  visibility_m?: number | null;
+  wind_kmh?: number;
+  is_day?: boolean;
+  summary?: string;
+  degrades_counting?: boolean;
+  observed_at?: string;
+  provider?: string;
+}
+
 async function get<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE}/api/v1${path}`, {
     // Measurements move every five minutes; a stale dashboard is a wrong one.
@@ -167,6 +197,8 @@ export const api = {
   blackspots: (corridorId?: number) =>
     get<BlackSpots>(`/safety/blackspots${query({ corridor_id: corridorId })}`),
   signals: () => get<SignalAdvisory>("/signals/advisory"),
+  readiness: () => get<SourceReadiness>("/meta/sources"),
+  weather: () => get<WeatherNow>("/meta/weather"),
 };
 
 /**
