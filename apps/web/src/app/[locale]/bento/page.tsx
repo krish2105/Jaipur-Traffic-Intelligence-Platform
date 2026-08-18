@@ -18,9 +18,24 @@ export default async function BentoPage({ params }: { params: Promise<{ locale: 
     readiness, weather, incidents,
   ] = await Promise.all([
     api.corridors().catch(() => []),
-    api.summary(1),
+    // Both of these were bare — same fault as /console: an unreachable API
+    // took the whole page down with an unhandled rejection instead of
+    // degrading like every other call in this list already does.
+    api.summary(1).catch(() => ({
+      total_vehicles: 0,
+      total_pcu: 0,
+      class_mix: [],
+      peak_hour: null,
+      data_quality: { mean_score: 0, bins: 0, suppressed_bins: 0, suppressed_pct: 0 },
+      is_synthetic: true,
+    })),
     api.cameras().catch(() => []),
-    api.forecast(),
+    api.forecast().catch(() => ({
+      horizons: [],
+      model_version: "",
+      note: "",
+      generated_at: "",
+    })),
     fetch(`${BASE}/api/v1/scene?corridor_id=1`, { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : { links: [] }))
       .catch(() => ({ links: [] })),

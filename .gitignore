@@ -45,3 +45,5 @@ sim/output/
 .DS_Store
 Thumbs.db
 apps/web/.env.local
+.vercel
+.env*

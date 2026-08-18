@@ -12,7 +12,19 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   setRequestLocale(locale);
 
   const [summary, profile, incidents, policy] = await Promise.all([
-    api.summary(1),
+    // `.catch()` here matches the other three calls below. Its absence was
+    // the actual production bug: one unreachable call took the whole
+    // Server Component down with an unhandled rejection (a bare 500, no
+    // digest a reader could act on) instead of the page degrading like its
+    // siblings already do.
+    api.summary(1).catch(() => ({
+      total_vehicles: 0,
+      total_pcu: 0,
+      class_mix: [],
+      peak_hour: null,
+      data_quality: { mean_score: 0, bins: 0, suppressed_bins: 0, suppressed_pct: 0 },
+      is_synthetic: true,
+    })),
     api.dayProfile(1).catch(() => ({
       points: [],
       peak: null,
