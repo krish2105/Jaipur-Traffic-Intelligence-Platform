@@ -8,7 +8,7 @@ import * as THREE from "three";
 
 import { Buildings, type BuildingBox } from "./buildings";
 import type { Origin } from "@/lib/geo";
-import { Roads } from "./roads";
+import { Ground, Roads } from "./roads";
 import { Traffic, type TrafficRoad } from "./traffic";
 import type { Ramp, RoadInput } from "@/lib/ribbon";
 
@@ -63,8 +63,11 @@ function IntroFlight({
     const e = t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
     // Framed off the scene's own bounding radius, so the flight always ends
     // with the whole corridor in shot whatever its extent.
-    const far = radius * 3.2;
-    const near = radius * 0.85;
+    const far = radius * 2.4;
+    // Close enough that a 21 m carriageway and a 12 m building are legible.
+    // Framing the entire 17 km corridor makes both sub-pixel — the overview is
+    // a different zoom level, not the default one.
+    const near = radius * 0.16;
     camera.position.set(
       THREE.MathUtils.lerp(far * 0.35, near * 0.32, e),
       THREE.MathUtils.lerp(far * 1.1, near * 0.62, e),
@@ -128,6 +131,7 @@ function Scene({
       />
       <Environment preset="night" />
 
+      <Ground radius={radius} />
       <Roads roads={data.roads} ramp={data.ramp} />
       <Buildings boxes={data.buildings} origin={origin} />
       <Traffic roads={data.traffic} quality={quality} />
@@ -138,7 +142,7 @@ function Scene({
         enableDamping
         dampingFactor={0.06}
         maxPolarAngle={Math.PI / 2.15}
-        minDistance={radius * 0.2}
+        minDistance={radius * 0.04}
         maxDistance={radius * 5}
         target={[0, 0, 0]}
       />
@@ -146,7 +150,7 @@ function Scene({
       <EffectComposer>
         {/* Bloom is what turns emissive ribbons into light. Kept tight so the
             whole screen does not wash out. */}
-        <Bloom intensity={1.5} luminanceThreshold={0.12} luminanceSmoothing={0.5} mipmapBlur />
+        <Bloom intensity={0.7} luminanceThreshold={0.45} luminanceSmoothing={0.5} mipmapBlur />
         <Vignette offset={0.28} darkness={0.68} />
       </EffectComposer>
 
@@ -172,7 +176,7 @@ export default function CityScene({
     <Canvas
       dpr={dpr}
       gl={{ antialias: false, powerPreference: "high-performance" }}
-      camera={{ position: [radius, radius * 3, radius * 3], fov: 42, near: 1, far: radius * 40 }}
+      camera={{ position: [radius * 0.8, radius * 2.4, radius * 2.2], fov: 42, near: 0.5, far: radius * 40 }}
       className="absolute inset-0"
     >
       <Suspense fallback={null}>

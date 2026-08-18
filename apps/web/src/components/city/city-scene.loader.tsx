@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useSyncExternalStore } from "react";
 import { useReducedMotion } from "motion/react";
 
 import type { CityData } from "./city-scene";
@@ -11,6 +11,26 @@ const CityScene = dynamic(() => import("./city-scene"), {
   ssr: false,
   loading: () => null,
 });
+
+const subscribeNever = () => () => {};
+
+let cachedCapability: boolean | null = null;
+
+/** Reads the platform once. The answer cannot change without a reload. */
+function detectCapability(): boolean {
+  if (cachedCapability !== null) return cachedCapability;
+  try {
+    const canvas = document.createElement("canvas");
+    const gl = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
+    const lowCores = (navigator.hardwareConcurrency ?? 4) <= 2;
+    const memory = (navigator as { deviceMemory?: number }).deviceMemory;
+    const lowMemory = memory !== undefined && memory <= 2;
+    cachedCapability = Boolean(gl) && !lowCores && !lowMemory;
+  } catch {
+    cachedCapability = false;
+  }
+  return cachedCapability;
+}
 
 /**
  * Capability gate for the 3D city.
@@ -34,23 +54,18 @@ export function City({
   force2D?: boolean;
 }) {
   const reduce = useReducedMotion();
-  // Computed once, lazily, instead of set from an effect: the check reads the
-  // platform and never changes afterwards, so an effect would only buy a
-  // cascading render. Guarded for SSR, where document does not exist.
-  const [capable] = useState<boolean | null>(() => {
-    if (typeof document === "undefined") return null;
-    if (force2D) return false;
-    try {
-      const canvas = document.createElement("canvas");
-      const gl = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
-      const lowCores = (navigator.hardwareConcurrency ?? 4) <= 2;
-      const memory = (navigator as { deviceMemory?: number }).deviceMemory;
-      const lowMemory = memory !== undefined && memory <= 2;
-      return Boolean(gl) && !lowCores && !lowMemory;
-    } catch {
-      return false;
-    }
-  });
+  // useSyncExternalStore, not useState or useEffect.
+  //
+  // A lazy useState initialiser that reads `document` renders one tree on the
+  // server and a different one on the client, which is a hydration mismatch —
+  // that shipped once and blanked the whole scene. An effect would fix the
+  // mismatch but reintroduces setState-in-effect. This reads a platform value
+  // with a distinct server snapshot, which is exactly what it is for.
+  const capable = useSyncExternalStore(
+    subscribeNever,
+    () => (force2D ? false : detectCapability()),
+    () => null,
+  );
 
   // Undecided on the first paint — render the 2D interface rather than a
   // spinner, so the content is never gated behind a capability check.

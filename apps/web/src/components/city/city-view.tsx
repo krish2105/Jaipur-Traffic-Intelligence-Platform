@@ -94,11 +94,11 @@ export function CityView({
       roads: projected.map(({ link, points }) => ({
         points,
         congestionIndex: link.congestion_index,
-        // Lane count drives relative width — a six-lane trunk must not render
-        // like a service road. Absolute width is generous: at a 700-unit view a
-        // true-to-scale 7 m carriageway is a hairline, and this is a data
-        // visualisation before it is a survey.
-        width: Math.max(1.1, link.lanes * 0.85),
+        // True-to-scale: ~3.5 m per lane, and one scene unit is 10 m. A
+        // six-lane trunk comes out at 21 m, which is what Tonk Road actually
+        // is. The previous value was up to 50 m wide and made every road look
+        // like a runway.
+        width: Math.max(0.7, link.lanes * 0.35),
         suppressed: link.suppressed,
       })),
       traffic: projected.map(({ link, points }) => ({

@@ -15,12 +15,15 @@ export interface BuildingBox {
 }
 
 /**
- * Urban context, as one InstancedMesh.
+ * Urban massing with lit windows.
  *
- * Deliberately very dark and unlit-looking: the buildings exist to give the
- * corridor a city to sit in, and the moment they compete with the roads for
- * attention the data stops being the subject. A faint emissive floor keeps
- * them from reading as black holes against the fog.
+ * Flat grey boxes read as crates, not buildings — the thing that makes a night
+ * city legible is the window grid, not the silhouette. So the material injects
+ * a procedural window pattern computed in each instance's own local metres,
+ * which means windows stay a constant real-world size whatever the building's
+ * dimensions, instead of stretching with it.
+ *
+ * Still one InstancedMesh and one draw call for several thousand buildings.
  */
 export function Buildings({
   boxes,
@@ -35,14 +38,94 @@ export function Buildings({
 
   const shown = useMemo(() => {
     if (boxes.length <= max) return boxes;
-    // Keep the tallest — they carry the skyline; the rest is visual noise.
     return [...boxes].sort((a, b) => b.h - a.h).slice(0, max);
   }, [boxes, max]);
+
+  const material = useMemo(() => {
+    const mat = new THREE.MeshStandardMaterial({
+      color: "#161C2B",
+      roughness: 0.86,
+      metalness: 0.08,
+    });
+
+    mat.onBeforeCompile = (shader) => {
+      shader.vertexShader = shader.vertexShader
+        .replace(
+          "#include <common>",
+          `#include <common>
+           attribute float aSeed;
+           varying float vSeed;
+           varying vec3 vLocal;
+           varying vec3 vScale;`,
+        )
+        .replace(
+          "#include <begin_vertex>",
+          `#include <begin_vertex>
+           vSeed = aSeed;
+           // Recover this instance's real-world size from its matrix, so the
+           // window grid is sized in metres rather than in box-fractions.
+           vScale = vec3(
+             length(instanceMatrix[0].xyz),
+             length(instanceMatrix[1].xyz),
+             length(instanceMatrix[2].xyz)
+           );
+           vLocal = position * vScale;`,
+        );
+
+      shader.fragmentShader = shader.fragmentShader
+        .replace(
+          "#include <common>",
+          `#include <common>
+           varying float vSeed;
+           varying vec3 vLocal;
+           varying vec3 vScale;
+           uniform vec3 uWindowWarm;
+           uniform vec3 uWindowCool;
+
+           float hash(vec2 p) {
+             return fract(sin(dot(p, vec2(41.3, 289.1))) * 43758.5453);
+           }`,
+        )
+        .replace(
+          "#include <emissivemap_fragment>",
+          `#include <emissivemap_fragment>
+           {
+             // Windows only on the vertical faces — a roof full of windows is
+             // the classic tell of a procedural city.
+             float verticality = 1.0 - abs(normalize(vNormal).y);
+             // ~3.2 m floors, ~2.6 m bays, in this instance's own metres.
+             vec2 grid = vec2(
+               abs(vLocal.x) > abs(vLocal.z) ? vLocal.z : vLocal.x,
+               vLocal.y
+             );
+             vec2 cell = floor(vec2(grid.x / 2.6, grid.y / 3.2));
+             float lit = step(0.62, hash(cell + vSeed * 97.0));
+             // Leave a margin so windows are panes, not a continuous band.
+             vec2 f = fract(vec2(grid.x / 2.6, grid.y / 3.2));
+             float pane = step(0.18, f.x) * step(f.x, 0.82)
+                        * step(0.22, f.y) * step(f.y, 0.78);
+             // Ground floor stays dark; shopfronts at this zoom are noise.
+             float aboveGround = step(3.4, vLocal.y + vScale.y * 0.5);
+             vec3 tint = mix(uWindowCool, uWindowWarm, hash(cell.yx + vSeed));
+             totalEmissiveRadiance += tint * lit * pane * verticality * aboveGround * 1.5;
+           }`,
+        );
+
+      shader.uniforms.uWindowWarm = { value: new THREE.Color("#FFD9A0") };
+      shader.uniforms.uWindowCool = { value: new THREE.Color("#9FC4FF") };
+    };
+    // Any change to the injected chunks needs a distinct cache key or three
+    // silently reuses the previous program.
+    mat.customProgramCacheKey = () => "pravaah-building-windows-v1";
+    return mat;
+  }, []);
 
   useLayoutEffect(() => {
     const mesh = ref.current;
     if (!mesh) return;
     const dummy = new THREE.Object3D();
+    const seeds = new Float32Array(shown.length);
+
     shown.forEach((b, i) => {
       const [x, z] = project(b.lon, b.lat, origin);
       const height = metres(b.h);
@@ -51,7 +134,11 @@ export function Buildings({
       dummy.scale.set(metres(b.w), height, metres(b.d));
       dummy.updateMatrix();
       mesh.setMatrixAt(i, dummy.matrix);
+      // Deterministic per building, so the same windows are lit on every run.
+      seeds[i] = ((Math.abs(Math.sin(b.lon * 127.1 + b.lat * 311.7)) * 43758.5453) % 1);
     });
+
+    mesh.geometry.setAttribute("aSeed", new THREE.InstancedBufferAttribute(seeds, 1));
     mesh.instanceMatrix.needsUpdate = true;
     mesh.computeBoundingSphere();
   }, [shown, origin]);
@@ -59,15 +146,13 @@ export function Buildings({
   if (shown.length === 0) return null;
 
   return (
-    <instancedMesh ref={ref} args={[undefined, undefined, shown.length]} castShadow={false}>
+    <instancedMesh
+      ref={ref}
+      args={[undefined, undefined, shown.length]}
+      material={material}
+      castShadow={false}
+    >
       <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial
-        color="#151C30"
-        roughness={0.92}
-        metalness={0.05}
-        emissive="#1B2440"
-        emissiveIntensity={0.85}
-      />
     </instancedMesh>
   );
 }
