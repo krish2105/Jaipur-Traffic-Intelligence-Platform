@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { AdaptiveDpr, OrbitControls, Stats } from "@react-three/drei";
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
@@ -98,6 +98,16 @@ function IntroFlight({
     // the corridor is a curve — its centroid is not on the carriageway. Fixing
     // that needs the target snapped to the nearest point ON a link, the same
     // machinery junction click-to-fly needs. See ADR-019.
+    // 0.12. Raised to 0.30 once to try to rescue the mobile framing; that did
+    // not fix mobile AND it pushed the desktop camera off the corridor, so it
+    // is back. The resting distance was never the problem.
+    //
+    // The real fault is the one ADR-019 already names: OrbitControls targets
+    // the centroid of every link, a curved corridor's centroid is not on the
+    // carriageway, and at a narrow aspect the camera therefore looks at empty
+    // ground. Fixing it needs the target snapped to a point ON a link. Until
+    // then the 3D scene is a desktop surface and the 2D atlas is the one that
+    // works everywhere.
     const near = fit * 0.12;
     // A fixed aerial-oblique bearing: 38 degrees elevation, 35 degrees round.
     // Only the distance changes during the flight, so the corridor stays framed
@@ -113,6 +123,92 @@ function IntroFlight({
     camera.lookAt(0, 0, 0);
     if (t >= 1) onDone();
   });
+  return null;
+}
+
+
+
+/**
+ * Drive the renderer's size from the container, not from React Three Fiber's
+ * own measurement.
+ *
+ * R3F measures the container once at mount and relies on a ResizeObserver
+ * afterwards. When this canvas mounts inside a pane that has not laid out yet —
+ * which is what happens on the console, where the map column is sized by a flex
+ * rule that settles a frame later — the measurement is zero, and the canvas
+ * falls back to its intrinsic 300x150 and stays there. A 300x150 canvas
+ * stretched across an 876x457 pane is what "the live map is empty" looked like:
+ * the scene is rendering perfectly, into a viewport the size of a postage stamp.
+ *
+ * Exactly the fault MapLibre had in corridor-map.tsx, for exactly the same
+ * reason, so it gets the same remedy: observe the box and re-measure whenever
+ * it changes, rather than trusting the first read.
+ */
+function TrackContainerSize() {
+  const gl = useThree((state) => state.gl);
+  const setSize = useThree((state) => state.setSize);
+
+  useEffect(() => {
+    const parent = gl.domElement.parentElement;
+    if (!parent) return;
+    const apply = () => {
+      const { width, height } = parent.getBoundingClientRect();
+      if (width > 0 && height > 0) setSize(width, height);
+    };
+    apply();
+    const observer = new ResizeObserver(apply);
+    observer.observe(parent);
+    return () => observer.disconnect();
+  }, [gl, setSize]);
+
+  return null;
+}
+
+/**
+ * Keep the corridor framed when the pane changes shape.
+ *
+ * `IntroFlight` fits the camera to the viewport aspect once, during its four
+ * seconds, and then hands over to OrbitControls. That is fine until the pane
+ * itself resizes — which it does every time an officer switches from Dashboard,
+ * where the map is 45vh, to Live map, where it is the full column. The canvas
+ * resizes, the camera does not re-frame, and the corridor slides into a corner
+ * of a mostly empty black panel. That is what "the live map is empty" was.
+ *
+ * The fix preserves what the user was looking at rather than snapping home:
+ * the camera's distance is rescaled by the ratio of the new fit distance to the
+ * old one, so the same fraction of the corridor stays in shot at whatever
+ * aspect. Someone who had zoomed in keeps their zoom.
+ */
+function RefitOnResize({ radius }: { radius: number }) {
+  const { camera, size } = useThree();
+  const lastFit = useRef<number | null>(null);
+
+  const fitFor = useCallback(
+    (aspect: number) => {
+      const perspective = camera as THREE.PerspectiveCamera;
+      const fovRad = ((perspective.fov ?? 40) * Math.PI) / 180;
+      const hFovRad = 2 * Math.atan(Math.tan(fovRad / 2) * Math.max(aspect, 0.0001));
+      return Math.max(radius / Math.sin(fovRad / 2), radius / Math.sin(hFovRad / 2));
+    },
+    [camera, radius],
+  );
+
+  useEffect(() => {
+    if (size.width === 0 || size.height === 0) return;
+    const fit = fitFor(size.width / size.height);
+    const previous = lastFit.current;
+    lastFit.current = fit;
+    // First measurement is the baseline; IntroFlight owns the framing until it
+    // finishes, and rescaling underneath it would fight the animation.
+    if (previous === null || previous === fit) return;
+
+    const distance = camera.position.length();
+    if (distance === 0) return;
+    camera.position.multiplyScalar(fit / previous);
+    camera.lookAt(0, 0, 0);
+    camera.updateProjectionMatrix();
+  }, [size.width, size.height, camera, fitFor]);
+
   return null;
 }
 
@@ -238,6 +334,8 @@ function Scene({
       <Traffic roads={data.traffic} quality={quality} daylight={scene === "day"} />
 
       <IntroFlight skip={false} radius={radius} onDone={() => setFlying(false)} />
+      <TrackContainerSize />
+      <RefitOnResize radius={radius} />
       <OrbitControls
         enabled={!flying}
         enableDamping

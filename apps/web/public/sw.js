@@ -28,7 +28,7 @@
  *     nobody signed off, and docs/07 keeps P2 data off the device.
  */
 
-const VERSION = "pravaah-v2";  // v2: document-key caching, see documentKey()
+const VERSION = "pravaah-v3";  // v3: documents network-first, see the fetch handler
 const SHELL = `${VERSION}-shell`;
 const DATA = `${VERSION}-data`;
 
@@ -68,9 +68,23 @@ self.addEventListener("fetch", (event) => {
   if (SENSITIVE.some((re) => re.test(url.pathname))) return;
 
   const isData = url.pathname.startsWith("/api/");
+  const isDocument = request.mode === "navigate";
 
+  // Documents are network-first, hashed assets are cache-first.
+  //
+  // Documents were cache-first, and once documentKey() made document caching
+  // actually work that became a trap: the HTML is the one file whose URL does
+  // NOT change between deploys, so a cached copy is served forever and keeps
+  // pointing at the chunk hashes of the build it came from. A new deploy would
+  // never be picked up. Caught while testing an unrelated chart change that
+  // simply never appeared.
+  //
+  // Network-first restores the offline guarantee without the trap: online, the
+  // freshest page always wins; offline, the last good copy is served and
+  // labelled stale. Static assets stay cache-first because their filenames are
+  // content-hashed, so a stale one cannot exist.
   event.respondWith(
-    isData ? networkFirst(request) : cacheFirst(request),
+    isData || isDocument ? networkFirst(request) : cacheFirst(request),
   );
 });
 
@@ -92,29 +106,15 @@ function documentKey(url) {
 }
 
 async function cacheFirst(request) {
-  const url = new URL(request.url);
-  const isDocument = request.mode === "navigate";
-  // `ignoreVary` only on the document key, and only for navigations: a blanket
-  // ignoreVary could hand a navigation the RSC flight payload cached for the
-  // same path, which would render as garbage rather than as a page.
-  const cached = isDocument
-    ? await caches.match(documentKey(url), { ignoreVary: true })
-    : await caches.match(request);
+  // Assets only — documents take networkFirst above. Every URL reaching here is
+  // content-hashed by the build, so a cached copy can never be the wrong one.
+  const cached = await caches.match(request);
   if (cached) return cached;
   try {
     const response = await fetch(request);
     if (response.ok) {
       const cache = await caches.open(SHELL);
-      if (isDocument) {
-        // Only a real HTML document is stored under the document key, so the
-        // offline reload cannot be answered with an RSC payload.
-        const type = response.headers.get("content-type") || "";
-        if (type.includes("text/html")) {
-          cache.put(documentKey(url), response.clone());
-        }
-      } else {
-        cache.put(request, response.clone());
-      }
+      cache.put(request, response.clone());
     }
     return response;
   } catch {
@@ -126,15 +126,24 @@ async function cacheFirst(request) {
 }
 
 async function networkFirst(request) {
+  const url = new URL(request.url);
+  const isDocument = request.mode === "navigate";
   try {
     const response = await fetch(request);
     if (response.ok) {
-      const cache = await caches.open(DATA);
-      cache.put(request, response.clone());
+      // A document goes to the shell under its URL-only key so a later reload
+      // finds it; anything else keeps its own request as the key.
+      const cache = await caches.open(isDocument ? SHELL : DATA);
+      const type = response.headers.get("content-type") || "";
+      if (!isDocument || type.includes("text/html")) {
+        cache.put(isDocument ? documentKey(url) : request, response.clone());
+      }
     }
     return response;
   } catch {
-    const cached = await caches.match(request);
+    const cached = isDocument
+      ? await caches.match(documentKey(url), { ignoreVary: true })
+      : await caches.match(request);
     if (!cached) throw new Error("offline and nothing cached");
     // Re-wrap so the app can tell a served-from-disk answer from a live one.
     // A stale figure shown as live is worse than no figure at all.

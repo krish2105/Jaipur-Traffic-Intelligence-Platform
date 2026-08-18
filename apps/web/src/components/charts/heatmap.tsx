@@ -22,32 +22,48 @@ export function CongestionHeatmap({
   days: string[];
 }) {
   return (
+    // Genuinely fluid rather than a 420px block behind a scrollbar. The gap and
+    // the day-label column shrink with the container, so 24 hours fit at 360px
+    // without sideways scrolling — a heatmap you have to drag is one nobody
+    // reads the right-hand end of, and the evening peak lives there.
+    //
+    // `overflow-x-auto` stays as the floor: below ~300px the cells would fall
+    // under a pixel and the row would stop being a chart at all.
     <div className="w-full overflow-x-auto">
-      <div className="min-w-[420px]">
-        <div className="flex gap-[3px]">
-          <div className="w-8 shrink-0" />
+      <div className="min-w-[300px]">
+        <div className="flex gap-[1px] sm:gap-[3px]">
+          <div className="w-5 shrink-0 sm:w-8" />
           {Array.from({ length: 24 }, (_, h) => (
             <div
               key={h}
-              className="flex-1 text-center font-mono text-[var(--ink-faint)]"
+              className="min-w-0 flex-1 text-center font-mono text-[var(--ink-faint)]"
               style={{ fontSize: "calc(var(--d-label) * 0.8)" }}
             >
-              {h % 6 === 0 ? String(h).padStart(2, "0") : ""}
+              {/* Every sixth hour on a phone, every third once there is room:
+                  a label per hour turns into a grey smear at this width. */}
+              <span className="hidden sm:inline">{h % 3 === 0 ? String(h).padStart(2, "0") : ""}</span>
+              <span className="sm:hidden">{h % 6 === 0 ? String(h).padStart(2, "0") : ""}</span>
             </div>
           ))}
         </div>
         {matrix.map((row, d) => (
-          <div key={days[d] ?? d} className="mt-[3px] flex items-center gap-[3px]">
+          <div
+            key={days[d] ?? d}
+            className="mt-[1px] flex items-center gap-[1px] sm:mt-[3px] sm:gap-[3px]"
+          >
             <div
-              className="w-8 shrink-0 text-[var(--ink-muted)]"
+              className="w-5 shrink-0 truncate text-[var(--ink-muted)] sm:w-8"
               style={{ fontSize: "calc(var(--d-label) * 0.85)" }}
             >
-              {days[d]}
+              {/* One letter on a phone, three once the column is wide enough. */}
+              <span className="hidden sm:inline">{days[d]}</span>
+              <span className="sm:hidden">{(days[d] ?? "").slice(0, 1)}</span>
             </div>
             {row.map((value, h) => (
               <div
                 key={h}
-                className="h-4 flex-1 rounded-[2px] transition-opacity hover:opacity-70"
+                className="h-3 min-w-0 flex-1 rounded-[1px] transition-opacity hover:opacity-70
+                           sm:h-4 sm:rounded-[2px]"
                 style={{ background: congestionVar(value), opacity: 0.25 + (value / 100) * 0.75 }}
                 title={`${days[d]} ${String(h).padStart(2, "0")}:00 — ${value.toFixed(0)}`}
               />

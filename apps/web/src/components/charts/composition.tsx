@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import type { ClassMixEntry } from "@/lib/api";
 
@@ -75,6 +75,16 @@ function arc(cx: number, cy: number, r: number, from: number, to: number, width:
 }
 
 export function CompositionChart({ mix }: { mix: ClassMixEntry[] }) {
+  /**
+   * One hover state shared by all three representations.
+   *
+   * The donut, the bar and the legend are the same numbers drawn three ways, so
+   * pointing at a class in any of them should light it up in the other two.
+   * Without that they read as three separate charts that happen to sit together.
+   * Keyboard-reachable via the legend, which is the only one of the three that
+   * is a list of real controls.
+   */
+  const [active, setActive] = useState<string | null>(null);
   // A fold rather than a mutable cursor: React's compiler rejects reassigning a
   // variable that outlives the render, and the running offset is exactly that.
   // The 1-degree inset on each side leaves a visible gap so adjacent classes
@@ -90,34 +100,59 @@ export function CompositionChart({ mix }: { mix: ClassMixEntry[] }) {
 
   const lead = mix[0];
 
+  const shown = active ? mix.find((m) => m.class_code === active) : lead;
+
   return (
-    <div className="flex items-center gap-4">
-      <svg viewBox="0 0 120 120" className="h-28 w-28 shrink-0" role="img" aria-label="Vehicle composition">
+    // Stacks below 420px rather than squeezing a 112px donut against a legend
+    // that then has nowhere to go, and top-aligns when side by side so the
+    // donut lines up with the bar rather than floating against a 3-row legend.
+    <div className="flex flex-col gap-4 min-[420px]:flex-row min-[420px]:items-start">
+      <svg
+        viewBox="0 0 120 120"
+        className="h-28 w-28 shrink-0 self-center min-[420px]:self-start"
+        role="img"
+        aria-label="Vehicle composition"
+        onMouseLeave={() => setActive(null)}
+      >
         {segments.map(({ entry, from, to }) =>
           to > from ? (
             <path
               key={entry.class_code}
               d={arc(60, 60, 54, from, to, 15)}
               fill={classColour(entry.class_code)}
-              opacity={0.92}
-            />
+              opacity={active && active !== entry.class_code ? 0.28 : 0.92}
+              style={{ transition: "opacity 140ms var(--ease-out-expo)", cursor: "pointer" }}
+              onMouseEnter={() => setActive(entry.class_code)}
+            >
+              <title>
+                {entry.class_code} {(entry.share * 100).toFixed(1)}%
+              </title>
+            </path>
           ) : null,
         )}
-        {lead && (
+        {shown && (
           <>
             <text
-              x="60" y="58" textAnchor="middle"
+              x="60" y="57" textAnchor="middle"
               className="fill-[var(--ink)]"
-              style={{ fontSize: 26, fontFamily: "var(--font-mono)", fontVariantNumeric: "tabular-nums" }}
+              style={{
+                fontSize: 25,
+                fontFamily: "var(--font-mono)",
+                fontVariantNumeric: "tabular-nums",
+              }}
             >
-              {Math.round(lead.share * 100)}
+              {Math.round(shown.share * 100)}
             </text>
+            {/* The class code, not its full name. "% TWO-WHEELER" at 9px with
+                0.12em tracking is wider than the 78px hole it sits in, so it
+                crossed the ring on both sides — which is the misalignment that
+                was visible. A code fits at any share and stays legible. */}
             <text
-              x="60" y="74" textAnchor="middle"
+              x="60" y="72" textAnchor="middle"
               className="fill-[var(--ink-muted)]"
-              style={{ fontSize: 9, letterSpacing: "0.12em" }}
+              style={{ fontSize: 10, letterSpacing: "0.1em" }}
             >
-              % TWO-WHEELER
+              % {shown.class_code}
             </text>
           </>
         )}
@@ -130,30 +165,50 @@ export function CompositionChart({ mix }: { mix: ClassMixEntry[] }) {
           {mix.map((entry) => (
             <div
               key={entry.class_code}
-              style={{ width: `${entry.share * 100}%`, background: classColour(entry.class_code) }}
+              style={{
+                width: `${entry.share * 100}%`,
+                background: classColour(entry.class_code),
+                opacity: active && active !== entry.class_code ? 0.28 : 1,
+                transition: "opacity 140ms var(--ease-out-expo)",
+              }}
               title={`${entry.class_code} ${(entry.share * 100).toFixed(1)}%`}
+              onMouseEnter={() => setActive(entry.class_code)}
+              onMouseLeave={() => setActive(null)}
             />
           ))}
         </div>
         <ul className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5">
           {mix.slice(0, 6).map((entry) => (
-            <li key={entry.class_code} className="flex items-center gap-1.5 min-w-0">
-              <span
-                className="size-2 shrink-0 rounded-[2px]"
-                style={{ background: classColour(entry.class_code) }}
-              />
-              <span
-                className="min-w-0 flex-1 truncate text-[var(--ink-muted)]"
-                style={{ fontSize: "var(--d-support)" }}
+            <li key={entry.class_code} className="min-w-0">
+              <button
+                type="button"
+                className="flex w-full items-center gap-1.5 rounded-[4px] text-left
+                           transition-opacity focus-visible:outline focus-visible:outline-2
+                           focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+                style={{ opacity: active && active !== entry.class_code ? 0.4 : 1 }}
+                onMouseEnter={() => setActive(entry.class_code)}
+                onMouseLeave={() => setActive(null)}
+                onFocus={() => setActive(entry.class_code)}
+                onBlur={() => setActive(null)}
+                aria-label={`${entry.class_code}, ${(entry.share * 100).toFixed(1)} percent`}
               >
-                {entry.class_code}
-              </span>
-              <span
-                className="shrink-0 font-mono tabular-nums text-[var(--ink)]"
-                style={{ fontSize: "var(--d-support)" }}
-              >
-                {(entry.share * 100).toFixed(1)}
-              </span>
+                <span
+                  className="size-2 shrink-0 rounded-[2px]"
+                  style={{ background: classColour(entry.class_code) }}
+                />
+                <span
+                  className="min-w-0 flex-1 truncate text-[var(--ink-muted)]"
+                  style={{ fontSize: "var(--d-support)" }}
+                >
+                  {entry.class_code}
+                </span>
+                <span
+                  className="shrink-0 font-mono tabular-nums text-[var(--ink)]"
+                  style={{ fontSize: "var(--d-support)" }}
+                >
+                  {(entry.share * 100).toFixed(1)}
+                </span>
+              </button>
             </li>
           ))}
         </ul>
