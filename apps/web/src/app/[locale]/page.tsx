@@ -1,63 +1,42 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { LanguageToggle } from "@/components/theme/language-toggle";
-import { DirectionSwitcher } from "@/components/theme/direction-switcher";
+import { setRequestLocale } from "next-intl/server";
 
+import { api } from "@/lib/api";
+import { LandingView } from "@/components/landing/landing-view";
+
+export const dynamic = "force-dynamic";
+
+/** The landing page runs on the same endpoints as the console, deliberately:
+ *  no marketing copy can then hold a figure the product would contradict. */
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations("home");
+
+  const [summary, profile, incidents, policy] = await Promise.all([
+    api.summary(1),
+    api.dayProfile(1).catch(() => ({
+      points: [],
+      peak: null,
+      is_synthetic: true,
+      calibration: { source: "", morning_peak_pct: 0, evening_peak_pct: 0 },
+    })),
+    api.incidentTimeline().catch(() => ({
+      hours: [],
+      totals: { crashes: 0, deaths: 0, since: 0, until: 0 },
+      peak_hour: 0,
+      detector: { active: 0, detected_24h: 0, method: "" },
+      is_synthetic: true,
+    })),
+    api.policy(1).catch(() => ({
+      hour: 19,
+      totals: { vehicles: 0, pcu: 0, congestion_index: 0 },
+      classes: [],
+      scenarios: [],
+      assumptions: { model: "", speed_curve: "", elasticity: "" },
+      is_synthetic: true,
+    })),
+  ]);
 
   return (
-    <main className="min-h-dvh">
-      <header className="flex items-center justify-between border-b border-rule px-(--density-pad) py-3">
-        <div className="flex items-baseline gap-2">
-          <span className="text-lg font-semibold tracking-tight">PRAVAAH</span>
-          <span className="text-ink-muted" lang="hi">प्रवाह</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
-      </header>
-
-      <section className="mx-auto max-w-3xl px-(--density-pad) py-(--space-9)">
-        <p className="text-ink-muted text-(length:--type-caption) uppercase tracking-widest">
-          {t("eyebrow")}
-        </p>
-        <h1 className="mt-3 text-(length:--type-display) leading-[1.05] font-semibold tracking-tight">
-          {t("headline")}
-        </h1>
-        <p className="mt-5 max-w-prose text-ink-muted">{t("standfirst")}</p>
-
-        <hr className="my-(--space-7) rule" />
-
-        <h2 className="text-(length:--type-h2) font-medium">{t("chooseDirectionTitle")}</h2>
-        <p className="mt-2 max-w-prose text-ink-muted text-(length:--type-caption)">
-          {t("chooseDirectionHelp")}
-        </p>
-        <div className="mt-4">
-          <DirectionSwitcher />
-        </div>
-
-        <div className="mt-(--space-7) grid gap-(--density-gap) sm:grid-cols-3">
-          {(["free", "moderate", "critical"] as const).map((band) => (
-            <div key={band} className="border border-rule p-(--density-pad) rounded-(--radius-token-lg)">
-              <div
-                className="h-1.5 w-full rounded-full"
-                style={{ background: `var(--congestion-${band})` }}
-                aria-hidden="true"
-              />
-              <p className="mt-3 text-(length:--type-caption) text-ink-muted">
-                {t(`band.${band}`)}
-              </p>
-              <p className="metric mt-1 text-(length:--type-metric) leading-none">
-                {band === "free" ? "18" : band === "moderate" ? "61" : "94"}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-    </main>
+    <LandingView summary={summary} profile={profile} incidents={incidents} policy={policy} />
   );
 }

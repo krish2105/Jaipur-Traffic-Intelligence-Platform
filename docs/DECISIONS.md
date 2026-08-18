@@ -989,3 +989,67 @@ different faults with different causes, and I spent a round checking WebGL
 context state, GPU limits and canvas sizing on the first reading when the
 evidence — a pane the same colour as the panel beside it — pointed at the
 second.
+
+---
+
+## ADR-036 — A theme must not depend on a component's side effect
+**Date:** 2026-08-18 · **Status:** Accepted
+
+The new landing page rendered **black text on a transparent background** — every
+palette variable undefined. `--ink`, `--ground`, the congestion ramp: all empty.
+
+The cause: those colours were only ever defined under `[data-palette="night"]`,
+and the only thing that reliably set that attribute was an effect inside the 3D
+city view. The console therefore looked fine, because it mounts a 3D scene. Any
+page **without** one — the landing page, the citizen view — got no colours at
+all. The pre-paint `ThemeScript` was supposed to set the attribute and was not
+running; that is worth fixing separately, but it should never have been the
+thing standing between the product and legible text.
+
+ADR-016 already settled that Jaipur Night is *the* product palette rather than
+one of four candidates, so it now lives on bare `:root`. The
+`[data-palette="…"]` blocks are kept so the `/design` comparison page can still
+switch, but nothing needs them to be readable. The congestion ramp is on `:root`
+for the same reason, and a stronger one: a link rendered without its band is a
+measurement rendered without its meaning.
+
+**Rule:** base colours belong in CSS at `:root`, not behind an attribute that
+JavaScript has to set. A theme that depends on hydration is a theme that fails
+exactly when hydration does — and the failure mode here was the *first screen an
+official opens*, unreadable.
+
+---
+
+## ADR-037 — Public surfaces: landing and citizen
+**Date:** 2026-08-18 · **Status:** Accepted
+
+**The landing page runs on the same endpoints as the console.** No marketing
+copy holds a figure the product could contradict: the 94.9% in the headline, the
+2,93,035 vehicles, the 18,578 crashes and the modelled LEZ speeds are all
+fetched, not typed. If the seed changes, the pitch changes with it.
+
+Its structure is the argument in the order the argument actually runs — the
+published peak, what a probe cannot tell you, composition, crashes peaking at
+the same hour, and what a policy built on that composition does. No hero video
+and no floating dashboard mockup: a government reviewer has seen the decoration
+before, and the evidence is the more persuasive object.
+
+**The citizen view is a different product, not a smaller console.** A citizen is
+on a footpath with one hand on a phone and exactly one question — *is it worth
+leaving now?* — so that is answered first, in one line, above everything.
+
+It asks for **no location, creates no account, and stores nothing**. Asking for
+a location to describe a corridor the user already named would be collecting a
+trajectory to answer a question that does not need one — the opposite of
+docs/07's data-minimisation position.
+
+The advice always shows its reasoning. "Leave now" with nothing behind it is an
+oracle, and an oracle is something people stop believing the first time it is
+wrong; "leave now — 41 and rising into the evening peak, slowest stretch is X"
+is information a person can disagree with.
+
+The PWA manifest starts at the citizen view rather than the console, because an
+installed app should open on the thing the installer wanted, and uses
+`standalone` rather than `fullscreen` — someone deciding whether to leave needs
+their clock and battery visible, and taking the status bar away to look more
+like an app is a trade against them.

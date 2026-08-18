@@ -26,7 +26,22 @@
   --glass-blur: 20px;
 }
 
-/* ── NIGHT · indigo + molten brass ──────────────────────────────────────── */
+/* ── NIGHT · indigo + molten brass ──────────────────────────────────────────
+   Jaipur Night is THE product palette (ADR-016), so it is defined on bare
+   `:root` and not only behind its attribute selector.
+
+   This mattered more than it sounds. The colours previously lived only under
+   `[data-palette="night"]`, and the only thing that reliably set that
+   attribute was an effect inside the 3D city view. Every page WITHOUT a 3D
+   scene — the landing page, the citizen view — therefore rendered with `--ink`
+   and `--ground` undefined: black text on a transparent background, unreadable,
+   and it was the first screen an official would open.
+
+   A theme must never depend on a component's side effect for its base colours.
+   The attribute selector is kept so the /design comparison page can still
+   switch palettes, but nothing needs it to be legible.
+   ------------------------------------------------------------------------- */
+:root,
 [data-palette="night"] {
   --ground:        #070B18;
   --ground-deep:   #04060F;
@@ -108,6 +123,10 @@
    severity. A success green that works on white looks radioactive on dark, so
    these are desaturated and shifted rather than reused from the light theme.
    ------------------------------------------------------------------------ */
+/* The congestion ramp, on :root as well for the same reason. It is the one
+   set of colours that must never be missing: a link rendered without its band
+   is a measurement rendered without its meaning. */
+:root,
 [data-palette] {
   --congestion-free:     #2DD4A7;
   --congestion-light:    #8CD65B;
