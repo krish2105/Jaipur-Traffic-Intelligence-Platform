@@ -6,6 +6,7 @@ import * as THREE from "three";
 
 import { SCENE_SCALE, polylineLength } from "@/lib/geo";
 import { DEFAULT_MIX, FLEET, TAIL_LIGHT, type VehicleType } from "./fleet";
+import { vehicleGeometry } from "./vehicle-geometry";
 
 export interface TrafficRoad {
   points: [number, number][];
@@ -49,7 +50,7 @@ function buildVehicles(roads: TrafficRoad[], budget: number) {
     const onThisLink = Math.max(1, Math.round(budget * share));
     const mix = road.classMix && Object.keys(road.classMix).length ? road.classMix : DEFAULT_MIX;
     // km/h -> scene units per second (SCENE_SCALE units per metre).
-    const base = (road.speedKmh * 1000) / 3600 * SCENE_SCALE;
+    const base = ((road.speedKmh * 1000) / 3600) * SCENE_SCALE;
 
     for (const type of FLEET) {
       const classShare = Number(mix[type.code] ?? 0);
@@ -88,8 +89,9 @@ function ClassLayer({
   const scratch = useMemo(() => new THREE.Color(), []);
   const live = useRef<Vehicle[]>([]);
 
-  const [w, h, l] = type.dims;
-  const size: [number, number, number] = [w * SCENE_SCALE, h * SCENE_SCALE, l * SCENE_SCALE];
+  // The silhouette is already built to scale, in metres, and cached per class.
+  const geometry = useMemo(() => vehicleGeometry(type.code), [type.code]);
+  const rideHeight = 0.02;
 
   useLayoutEffect(() => {
     const mesh = ref.current;
@@ -153,7 +155,7 @@ function ClassLayer({
       // Lateral offset places the class across the carriageway: two-wheelers
       // filtering, buses holding the left lane.
       const across = v.lateral * 0.32;
-      dummy.position.set(x - dz * across, size[1] / 2 + 0.06, z + dx * across);
+      dummy.position.set(x - dz * across, rideHeight, z + dx * across);
       dummy.rotation.set(0, Math.atan2(dx, dz), 0);
       dummy.updateMatrix();
       mesh.setMatrixAt(i, dummy.matrix);
@@ -164,9 +166,14 @@ function ClassLayer({
   if (vehicles.length === 0) return null;
 
   return (
-    <instancedMesh ref={ref} args={[undefined, undefined, vehicles.length]} frustumCulled={false}>
-      <boxGeometry args={size} />
-      <meshBasicMaterial toneMapped={false} />
+    <instancedMesh
+      ref={ref}
+      args={[geometry, undefined, vehicles.length]}
+      frustumCulled={false}
+    >
+      {/* vertexColors carries the material — bodywork takes the instance colour,
+          glass is dimmer, tyres stay dark whatever the body is lit to. */}
+      <meshBasicMaterial vertexColors toneMapped={false} />
     </instancedMesh>
   );
 }
