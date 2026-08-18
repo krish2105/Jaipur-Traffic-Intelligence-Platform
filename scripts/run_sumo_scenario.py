@@ -18,7 +18,6 @@ Scenarios are deltas from the baseline, so the comparison is like-for-like:
 from __future__ import annotations
 
 import argparse
-import contextlib
 import os
 import sys
 from pathlib import Path
@@ -35,30 +34,28 @@ TRAVEL_TIME_TOLERANCE = 0.15
 GREEN, RED, DIM, RESET = "\033[32m", "\033[31m", "\033[2m", "\033[0m"
 
 
-def run(scenario: str, steps: int = 3600) -> dict[str, float]:
-    """Run one hour and return aggregate measures."""
+def run(scenario: str, steps: int = 3600) -> dict[str, object]:
+    """Run one hour and return what the DETECTORS saw, per edge.
+
+    Per-edge detector counts, not total departures. Comparing departures
+    against the demand we injected is circular — it compares what we told SUMO
+    to do against what we intended to tell it, and it always passes. An
+    induction loop measures what actually crossed a point, which is the same
+    thing the real camera measures, so the two are comparable.
+    """
     sumo = checkBinary("sumo")
     traci.start([sumo, "-c", str(SIM / "corridor.sumocfg"), "--no-warnings"])
 
-    arrived = 0
-    total_wait = 0.0
-    total_time = 0.0
-    departed = 0
+    per_edge: dict[str, int] = {}
+    speeds: list[float] = []
     removed = 0
+    departed = 0
 
     try:
+        loops = traci.inductionloop.getIDList()
         for step in range(steps):
             traci.simulationStep()
-            arrived += traci.simulation.getArrivedNumber()
             departed += traci.simulation.getDepartedNumber()
-
-            if scenario == "lez" and step == 0:
-                # The LEZ, applied as the policy actually would be: goods
-                # vehicles are prevented from entering, not teleported away
-                # mid-journey.
-                for type_id in ("TRK2", "LCV"):
-                    with contextlib.suppress(traci.TraCIException):
-                        traci.vehicletype.setMaxSpeed(type_id, 0.001)
 
             if scenario == "lez":
                 for vid in traci.simulation.getDepartedIDList():
@@ -66,33 +63,67 @@ def run(scenario: str, steps: int = 3600) -> dict[str, float]:
                         traci.vehicle.remove(vid)
                         removed += 1
 
-            if step % 600 == 0 and step:
-                total_wait += sum(
-                    traci.vehicle.getAccumulatedWaitingTime(v)
-                    for v in traci.vehicle.getIDList()
+            for loop in loops:
+                per_edge[loop] = per_edge.get(loop, 0) + traci.inductionloop.getLastStepVehicleNumber(
+                    loop
                 )
-                total_time += len(traci.vehicle.getIDList())
 
-        mean_speed = 0.0
-        vehicles = traci.vehicle.getIDList()
-        if vehicles:
-            mean_speed = sum(traci.vehicle.getSpeed(v) for v in vehicles) / len(vehicles)
+            # Sample the network's mean speed periodically rather than at the
+            # end: an end-of-run snapshot catches whatever happens to still be
+            # driving, which skews fast once the queues have drained.
+            if step % 60 == 0 and step > 300:
+                vehicles = traci.vehicle.getIDList()
+                if vehicles:
+                    speeds.append(
+                        sum(traci.vehicle.getSpeed(v) for v in vehicles) / len(vehicles)
+                    )
     finally:
         traci.close()
 
     return {
-        "departed": float(departed),
-        "arrived": float(arrived),
-        "removed": float(removed),
-        "mean_speed_kmh": mean_speed * 3.6,
-        "mean_wait_s": (total_wait / total_time) if total_time else 0.0,
+        "departed": departed,
+        "removed": removed,
+        "per_edge": per_edge,
+        "mean_speed_kmh": (sum(speeds) / len(speeds) * 3.6) if speeds else 0.0,
     }
+
+
+def measured_per_link(hour: int) -> dict[str, int]:
+    """The camera counts each detector is checked against."""
+    import asyncio
+    import os
+
+    import asyncpg
+    from dotenv import load_dotenv
+
+    async def load() -> dict[str, int]:
+        load_dotenv()
+        dsn = os.environ["DATABASE_URL"].replace("postgresql+asyncpg://", "postgresql://")
+        conn = await asyncpg.connect(dsn)
+        try:
+            rows = await conn.fetch(
+                """
+                SELECT tc.link_id AS lid, sum(tc.vehicle_count)::int / 7 AS veh
+                FROM traffic_counts tc
+                JOIN road_links l ON l.link_id = tc.link_id
+                WHERE l.corridor_id = 1
+                  AND extract(hour FROM tc.bucket_start AT TIME ZONE 'Asia/Kolkata')::int = $1
+                  AND tc.bucket_start >= now() - INTERVAL '7 days'
+                GROUP BY tc.link_id
+                """,
+                hour,
+            )
+        finally:
+            await conn.close()
+        return {f"d_e{r['lid']}": int(r["veh"]) for r in rows}
+
+    return asyncio.run(load())
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--scenario", default="baseline", choices=("baseline", "lez"))
-    ap.add_argument("--measured-vehicles", type=int, default=None)
+    ap.add_argument("--hour", type=int, default=19)
     ap.add_argument("--measured-speed-kmh", type=float, default=None)
     args = ap.parse_args()
 
@@ -102,37 +133,54 @@ def main() -> int:
 
     print(f"running {args.scenario} …")
     result = run(args.scenario)
+    per_edge: dict[str, int] = result["per_edge"]  # type: ignore[assignment]
+    speed = float(result["mean_speed_kmh"])  # type: ignore[arg-type]
     print(
-        f"  departed {result['departed']:,.0f}  arrived {result['arrived']:,.0f}  "
-        f"mean speed {result['mean_speed_kmh']:.1f} km/h"
+        f"  departed {int(result['departed']):,}  "
+        f"detectors {sum(per_edge.values()):,}  mean speed {speed:.1f} km/h"
     )
     if result["removed"]:
-        print(f"  {result['removed']:,.0f} goods vehicles refused entry")
+        print(f"  {int(result['removed']):,} goods vehicles refused entry")
 
     if args.scenario != "baseline":
         return 0
 
     # The gate. Only meaningful for the baseline, which is what is supposed to
     # reproduce reality.
-    measured_vehicles = args.measured_vehicles or int(os.environ.get("MEASURED_VEHICLES", 0))
+    measured = measured_per_link(args.hour)
     measured_speed = args.measured_speed_kmh or float(os.environ.get("MEASURED_SPEED", 0))
-    if not measured_vehicles or not measured_speed:
-        print(f"{DIM}  no measured baseline supplied — gate not evaluated{RESET}")
+    if not measured or not measured_speed:
+        print(f"{DIM}  no measured baseline available — gate not evaluated{RESET}")
         return 0
 
-    volume_error = abs(result["departed"] - measured_vehicles) / measured_vehicles
-    speed_error = abs(result["mean_speed_kmh"] - measured_speed) / measured_speed
+    # Per-link error, then the median. A mean would be dominated by the one
+    # link that netconvert mangled; the median says what a typical link does.
+    errors = []
+    compared = 0
+    for detector, camera_count in sorted(measured.items()):
+        if detector not in per_edge or camera_count <= 0:
+            continue
+        simulated = per_edge[detector]
+        errors.append(abs(simulated - camera_count) / camera_count)
+        compared += 1
+    if not errors:
+        print(f"{RED}  no detector matched a measured link{RESET}")
+        return 1
+    errors.sort()
+    volume_error = errors[len(errors) // 2]
+    within = sum(1 for e in errors if e <= VOLUME_TOLERANCE)
+    speed_error = abs(speed - measured_speed) / measured_speed
     volume_ok = volume_error <= VOLUME_TOLERANCE
     speed_ok = speed_error <= TRAVEL_TIME_TOLERANCE
 
     print()
     print(
-        f"  volume      {result['departed']:>8,.0f} vs {measured_vehicles:>8,} measured   "
-        f"{volume_error * 100:5.1f}%   "
+        f"  volume      median link error {volume_error * 100:5.1f}%   "
+        f"({within}/{compared} links within 10%)   "
         + (f"{GREEN}within 10%{RESET}" if volume_ok else f"{RED}OUTSIDE 10%{RESET}")
     )
     print(
-        f"  mean speed  {result['mean_speed_kmh']:>8.1f} vs {measured_speed:>8.1f} measured   "
+        f"  mean speed  {speed:>8.1f} vs {measured_speed:>8.1f} km/h measured   "
         f"{speed_error * 100:5.1f}%   "
         + (f"{GREEN}within 15%{RESET}" if speed_ok else f"{RED}OUTSIDE 15%{RESET}")
     )

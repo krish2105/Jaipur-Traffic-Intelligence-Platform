@@ -1744,3 +1744,53 @@ because it is wrong in a form that looks like evidence.
 Closing the gap needs signal timings from the department for the eight
 instrumented junctions. That is the same conversation as the RTSP feed, and it
 is now a specific ask rather than a vague one.
+
+---
+
+## ADR-056 — Fixing the calibration check made calibration look worse
+**Date:** 2026-08-18 · **Status:** Accepted · **Corrects:** ADR-055
+
+ADR-055 reported the baseline reproducing volume to **1.0%**. That number was
+meaningless and I should have caught it before writing it down.
+
+It compared `traci.simulation.getDepartedNumber()` against the demand the build
+script had just injected — **what we told SUMO to do, against what we intended
+to tell it.** It is circular. It cannot fail. A gate that cannot fail is not a
+gate, and it sat in an ADR looking like evidence.
+
+Three corrections, all of which made the numbers worse and the gate real:
+
+**Induction loops, not departures.** Thirty-five detectors now measure what
+actually crossed a point — the same quantity a real camera measures, so the two
+are comparable. Median per-link error: **69.7%**.
+
+**Per-link demand, not a corridor total.** The corridor's 24,446 is a sum of
+link-*crossings*: a vehicle traversing ten links is counted ten times. Injecting
+that total as fresh demand puts an order of magnitude too many vehicles in.
+Demand is now each link's own measured volume.
+
+**Edges 1:1 with links.** `--geometry.remove` and `--junctions.join` had
+collapsed 35 measured links into 17 edges, so two thirds of the demand had
+nowhere to be injected and the comparison was against a different road. Both
+flags are off; the network is uglier and the comparison means something.
+
+Current state, honestly:
+
+| | value | gate |
+|---|---|---|
+| volume | 69.7% median link error, 0/6 links within 10% | **fails** |
+| mean speed | 36.1 km/h vs 15.5 measured, 132.9% | **fails** |
+
+The runner exits non-zero. Nothing from this network may be presented.
+
+**What is actually missing is data, not tuning.** The network free-flows because
+it has netconvert's *guessed* signal plans rather than the department's, no
+turning-movement proportions, no side friction, no on-street parking and no
+cross-traffic. Only 6 of 35 detectors matched a measured link, because most
+vehicles depart and arrive without crossing a loop — routes are short where the
+real corridor is through-running, which is a turning-movement problem.
+
+I could make these numbers pass by tuning parameters until they did. That would
+produce a model calibrated to nothing, and it is precisely the failure this gate
+exists to prevent. The specific asks that close it are now concrete: **signal
+timings and turning-movement counts for the eight instrumented junctions.**

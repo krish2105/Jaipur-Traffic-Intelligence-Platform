@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<additional>
+  <inductionLoop id="d_e117" lane="e117_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e142" lane="e142_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e145" lane="e145_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e154" lane="e154_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e204" lane="e204_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e223" lane="e223_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e224" lane="e224_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e225" lane="e225_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e226" lane="e226_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e251" lane="e251_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e252" lane="e252_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e258" lane="e258_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e259" lane="e259_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e260" lane="e260_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e261" lane="e261_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e262" lane="e262_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e311" lane="e311_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e368" lane="e368_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e422" lane="e422_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e424" lane="e424_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e425" lane="e425_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e437" lane="e437_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e452" lane="e452_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e454" lane="e454_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e479" lane="e479_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e501" lane="e501_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e502" lane="e502_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e516" lane="e516_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e517" lane="e517_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e518" lane="e518_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e519" lane="e519_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e52" lane="e52_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e520" lane="e520_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e541" lane="e541_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+  <inductionLoop id="d_e593" lane="e593_0" pos="-5" freq="3600" file="detectors.out.xml"/>
+</additional>

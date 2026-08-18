@@ -57,32 +57,56 @@ async def load_links(conn: asyncpg.Connection, corridor_id: int) -> list[Link]:
     return links
 
 
-async def load_demand(conn: asyncpg.Connection, corridor_id: int, hour: int) -> dict[str, int]:
-    """Vehicles by class in the given hour — the demand the sim must reproduce."""
+async def load_demand(
+    conn: asyncpg.Connection, corridor_id: int, hour: int
+) -> dict[int, dict[str, int]]:
+    """Measured hourly volume PER LINK, by class.
+
+    Per link rather than a corridor total, because the corridor total is a sum
+    of link-crossings: a vehicle traversing ten links is counted ten times, so
+    injecting that total as fresh demand would put an order of magnitude too
+    many vehicles into the network. Reproducing each link's own volume is both
+    correct and the only thing a detector can be checked against.
+    """
     rows = await conn.fetch(
         """
-        SELECT tc.class_code, sum(tc.vehicle_count)::int AS vehicles
+        SELECT tc.link_id AS lid,
+               tc.class_code,
+               sum(tc.vehicle_count)::int AS vehicles
         FROM traffic_counts tc
         JOIN road_links l ON l.link_id = tc.link_id
         WHERE l.corridor_id = $1
           AND extract(hour FROM tc.bucket_start AT TIME ZONE 'Asia/Kolkata')::int = $2
           AND tc.bucket_start >= now() - INTERVAL '7 days'
-        GROUP BY tc.class_code
+        GROUP BY tc.link_id, tc.class_code
         """,
         corridor_id,
         hour,
     )
-    # Divided by seven: the query spans a week, the simulation runs one hour.
-    return {r["class_code"]: max(0, int(r["vehicles"]) // 7) for r in rows}
+    demand: dict[int, dict[str, int]] = {}
+    for r in rows:
+        # Seven days of that hour; the simulation runs one.
+        demand.setdefault(int(r["lid"]), {})[r["class_code"]] = max(
+            0, int(r["vehicles"]) // 7
+        )
+    return demand
 
 
-def write_routes(path: Path, demand: dict[str, int], edges: list[str], seconds: int) -> int:
-    """One `flow` per class per entry edge, spread over the hour.
+def write_routes(
+    path: Path,
+    demand: dict[int, dict[str, int]],
+    available_edges: set[str],
+    seconds: int,
+) -> int:
+    """One `flow` per class per link, departing on that link's own edge.
 
-    Flows rather than individually enumerated trips: SUMO spaces a flow evenly
-    and reproducibly, and an hour of Tonk Road is tens of thousands of vehicles
-    — writing each as a `<trip>` produces a 50 MB file that takes longer to
-    parse than to simulate.
+    Flows rather than enumerated trips: SUMO spaces a flow evenly and
+    reproducibly, and writing tens of thousands of `<trip>` elements produces a
+    file that takes longer to parse than to simulate.
+
+    A link whose edge did not survive netconvert's junction joining is skipped
+    and reported. Silently dropping its demand would quietly under-load the
+    corridor and make the calibration look better than it is.
     """
     known = {vt.id for vt in VEHICLE_TYPES}
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', "<routes>"]
@@ -94,20 +118,26 @@ def write_routes(path: Path, demand: dict[str, int], edges: list[str], seconds: 
             f'vClass="{"motorcycle" if vt.id == "2W" else "passenger"}"/>'
         )
     total = 0
-    for class_code, vehicles in sorted(demand.items()):
-        if class_code not in known or vehicles <= 0:
-            # A class with no vType cannot be simulated. Skipped rather than
-            # mapped onto a car, which would inflate PCU.
+    missing = 0
+    for link_id, by_class in sorted(demand.items()):
+        edge = f"e{link_id}"
+        if edge not in available_edges:
+            missing += 1
             continue
-        per_edge = max(1, vehicles // max(1, len(edges)))
-        for i, edge in enumerate(edges):
+        for class_code, vehicles in sorted(by_class.items()):
+            if class_code not in known or vehicles <= 0:
+                # A class with no vType cannot be simulated. Skipped rather
+                # than mapped onto a car, which would inflate PCU.
+                continue
             lines.append(
-                f'  <flow id="f_{class_code}_{i}" type="{class_code}" from="{edge}" '
-                f'begin="0" end="{seconds}" number="{per_edge}"/>'
+                f'  <flow id="f{link_id}_{class_code}" type="{class_code}" from="{edge}" '
+                f'begin="0" end="{seconds}" number="{vehicles}"/>'
             )
-            total += per_edge
+            total += vehicles
     lines.append("</routes>")
     path.write_text("\n".join(lines))
+    if missing:
+        print(f"  {missing} links had no surviving edge — their demand is not injected")
     return total
 
 
@@ -148,9 +178,24 @@ def main() -> None:
             # Our coordinates are lon/lat; without this netconvert treats them
             # as metres and builds a network 13 metres across.
             "--proj.utm",
-            "--geometry.remove",
-            "--junctions.join",
+            # NOT --geometry.remove and NOT --junctions.join. Both merge
+            # edges, and a merged edge cannot be compared against the link it
+            # came from: the first attempt collapsed 35 measured links into 17
+            # edges, so two thirds of the corridor's demand had nowhere to be
+            # injected and the calibration was measuring a different road.
+            # Keeping edges 1:1 with links costs a slightly uglier network and
+            # buys a comparison that means something.
+            "--no-internal-links",
+            # Signals. The department has not supplied timings, so these are
+            # netconvert's own plans at junctions it identifies as signalised,
+            # with a cycle in the range Webster gives for this corridor's
+            # saturation. Stated as an assumption in the calibration output —
+            # a simulation whose delay comes from invented signal timings is
+            # not evidence about this corridor.
+            "--tls.guess",
             "--tls.guess-signals",
+            "--tls.default-type", "static",
+            "--tls.cycle.time", "90",
             "--no-turnarounds",
         ],
         capture_output=True,
@@ -179,9 +224,24 @@ def main() -> None:
           f"{len(entries)} entry points")
 
     seconds = 3600
-    written = write_routes(OUT / "corridor.rou.xml", demand, entries, seconds)
-    print(f"demand hour {args.hour:02d}: {sum(demand.values()):,} vehicles measured, "
-          f"{written:,} written as flows")
+    edge_ids = set(all_edges)
+    written = write_routes(OUT / "corridor.rou.xml", demand, edge_ids, seconds)
+    measured_total = sum(sum(c.values()) for c in demand.values())
+    print(f"demand hour {args.hour:02d}: {measured_total:,} link-crossings measured, "
+          f"{written:,} injected")
+
+    # Induction loops, one per edge. Without these the "volume check" compares
+    # what we injected against what we intended to inject, which is circular
+    # and always passes. A detector measures what actually crossed.
+    detectors = ['<?xml version="1.0" encoding="UTF-8"?>', "<additional>"]
+    for edge_id in sorted(edge_ids):
+        detectors.append(
+            f'  <inductionLoop id="d_{edge_id}" lane="{edge_id}_0" pos="-5" '
+            f'freq="{seconds}" file="detectors.out.xml"/>'
+        )
+    detectors.append("</additional>")
+    (OUT / "detectors.add.xml").write_text("\n".join(detectors))
+    print(f"wrote {len(edge_ids)} induction loops")
 
     (OUT / "corridor.sumocfg").write_text(
         f"""<?xml version="1.0" encoding="UTF-8"?>
@@ -189,6 +249,7 @@ def main() -> None:
   <input>
     <net-file value="corridor.net.xml"/>
     <route-files value="corridor.rou.xml"/>
+    <additional-files value="detectors.add.xml"/>
   </input>
   <time><begin value="0"/><end value="{seconds}"/></time>
   <processing>
