@@ -105,5 +105,19 @@ def main() -> int:
     return 0
 
 
+def _apply_heights() -> None:
+    """Height variation is not optional, so it is not a separate step.
+
+    OSM rarely tags levels in Jaipur, so the fetcher's fallback gives every
+    building the same 6.4 m and the skyline comes out as a field of matching
+    blocks. Running it here means a fetch can never leave the seed in that
+    state — remembering to run a second script is exactly how it went wrong
+    after the tile re-fetch, where 440 buildings arrived at a single height.
+    """
+    from scripts.vary_building_heights import main as vary
+
+    vary()
+
+
 if __name__ == "__main__":
     raise SystemExit(main())
