@@ -1794,3 +1794,34 @@ I could make these numbers pass by tuning parameters until they did. That would
 produce a model calibrated to nothing, and it is precisely the failure this gate
 exists to prevent. The specific asks that close it are now concrete: **signal
 timings and turning-movement counts for the eight instrumented junctions.**
+
+---
+
+## ADR-057 — Sprint 5's verify condition, executed
+**Date:** 2026-08-18 · **Status:** Accepted
+
+docs/08 set the gate: *"20 test questions (10 Hindi, 10 English) answered
+correctly with citations; zero unsourced numerals; SQL injection attempts
+blocked."* It had never been run. It runs now, as 15 integration tests against
+the live API, testing the three claims separately because they fail differently:
+
+**Bilingual.** Every catalogued question answers in both languages, and the
+Hindi is asserted to contain Devanagari — a question list that is English in
+Hindi clothing is not a bilingual product, and a string check is the only thing
+that catches it.
+
+**Cited.** Every answer carries the SQL that produced it and the columns its
+figures sit in. A bare scalar with no header is the unsourced numeral the
+condition forbids; a query the reader cannot see is not a citation.
+
+**Injection refused, not sanitised.** Eight payloads — statement termination,
+`OR '1'='1'`, `UNION SELECT plate_hash`, `DELETE FROM audit_log`, path
+traversal, a null byte, URL encoding — all return **404**, because the planner
+selects a whole statement from a catalogue keyed by id and there is no code path
+where user text becomes SQL text. They cannot be escaped badly; they simply do
+not name a question. A test then re-queries the violations table to confirm
+nothing executed.
+
+Two additions beyond the sprint's wording, both worth having: a role without
+`use:neeti` is **refused with 403** rather than merely not shown the button, and
+no answer may contain a plate or a 64-character digest at any role.
