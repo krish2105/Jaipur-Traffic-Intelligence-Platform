@@ -64,9 +64,8 @@ def run(scenario: str, steps: int = 3600) -> dict[str, object]:
                         removed += 1
 
             for loop in loops:
-                per_edge[loop] = per_edge.get(loop, 0) + traci.inductionloop.getLastStepVehicleNumber(
-                    loop
-                )
+                crossed = traci.inductionloop.getLastStepVehicleNumber(loop)
+                per_edge[loop] = per_edge.get(loop, 0) + crossed
 
             # Sample the network's mean speed periodically rather than at the
             # end: an end-of-run snapshot catches whatever happens to still be
