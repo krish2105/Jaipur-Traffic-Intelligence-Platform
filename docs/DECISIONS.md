@@ -1128,3 +1128,43 @@ The interface is built for one hand, outdoors, on a phone that is not new:
 
 Every card carries the sentence *"This records a decision. It does not change a
 signal."* on the card itself, not in a help page nobody opens.
+
+---
+
+## ADR-040 — NEETI: build the rails first, the planner second
+**Date:** 2026-08-18 · **Status:** Accepted
+
+NEETI ships as a **deterministic planner over a catalogue of five policy
+questions**, with every guardrail docs/07 §5 requires already in place: a
+read-only role, a 200-row cap, a 3-second statement timeout, DDL and DML
+refused, and the SQL shown with every answer.
+
+The order matters and is the decision. A text-to-SQL feature whose guardrails
+arrive in version two is a text-to-SQL feature that has already run unguarded
+against a government database. The rails are the product; the part that turns a
+question into SQL is replaceable, and a language model would widen the question
+space without changing a single guarantee.
+
+**Every statement is a literal in the source.** The planner selects a whole
+statement and binds parameters; no SQL is assembled from user input anywhere.
+That makes injection *structurally impossible* rather than filtered — there is
+no code path in which user text becomes SQL text. It is a stronger claim than
+"we sanitise inputs", and it is the claim a security reviewer can verify by
+reading one file.
+
+**The catalogue is listed, not hidden behind a prompt.** A user who can see
+exactly what may be asked does not guess, and the question space stays honest.
+Free-text entry that quietly fails on anything outside a template is worse than
+a list.
+
+**The SQL is shown on every answer**, not behind a debug flag. An answer whose
+query the reader cannot see is not evidence, and this platform's whole argument
+is that its numbers are checkable.
+
+The five questions are the ones a department actually asks: worst hours,
+quietest freight window, vehicle mix by count *and* by road space, hours when a
+crash is most likely to be fatal, and how many violations fall below the
+confidence gate. Each returns its own reading, so a number never lands without
+what it means. The crash-severity question excludes hours with fewer than 50
+crashes — a percentage over a small base is noise, and shipping it as a finding
+would be the platform doing the thing it criticises probe products for.

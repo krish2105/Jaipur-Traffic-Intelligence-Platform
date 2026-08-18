@@ -14,6 +14,8 @@ import {
   type Junctions,
   type PolicyScenarios,
   type EdgeCameras,
+  type NeetiAnswer,
+  type NeetiCatalogue,
   type SignalAdvisory,
   type WeeklyMatrix,
 } from "@/lib/api";
@@ -1043,16 +1045,7 @@ function NeetiSection({ hi, locale }: { hi: boolean; locale: Locale }) {
             </dl>
           </Panel>
 
-          <Panel title={hi ? "प्रश्न-से-SQL" : "Question to SQL"}>
-            <p
-              className="leading-relaxed text-[var(--ink-muted)]"
-              style={{ fontSize: "var(--d-support)" }}
-            >
-              {hi
-                ? "अभी जुड़ा नहीं। सुरक्षा परत निर्मित है — अनुमत `neeti` स्कीमा, केवल-पठन भूमिका, कथन समय-सीमा, पंक्ति सीमा, कोई DDL/DML नहीं, और उत्पन्न SQL हमेशा उपयोगकर्ता को दिखाया जाता है — पर इस इंस्टेंस पर कोई प्रश्न नहीं चलाया गया है।"
-                : "Not yet wired. The safety layer is built — an allowlisted `neeti` schema, a read-only role, statement timeout, row cap, no DDL or DML, and the generated SQL always surfaced — but no question has been run on this instance. Saying so is more useful than a demo that pretends otherwise."}
-            </p>
-          </Panel>
+          <NeetiAsk hi={hi} />
         </>
       )}
     </Shell>
@@ -1123,5 +1116,146 @@ function ReportsSection({
         </div>
       </Panel>
     </Shell>
+  );
+}
+
+
+/* ── NEETI: ask ─────────────────────────────────────────────────────────── */
+
+function NeetiAsk({ hi }: { hi: boolean }) {
+  const { data: catalogue } = useLazy<NeetiCatalogue>(() => api.neetiQuestions(), true);
+  const [answer, setAnswer] = useState<NeetiAnswer | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function ask(id: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      setAnswer(await api.neetiAsk(id));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Panel title={hi ? "प्रश्न-से-SQL" : "Question to SQL"}>
+      {!catalogue ? (
+        <Loading label={hi ? "सूची" : "Catalogue"} />
+      ) : (
+        <>
+          {/* The catalogue is listed rather than hidden behind a prompt. A user
+              who can see exactly what may be asked does not have to guess, and
+              the question space stays honest. */}
+          <div className="flex flex-wrap gap-1.5">
+            {catalogue.questions.map((q) => (
+              <button
+                key={q.id}
+                type="button"
+                disabled={busy}
+                onClick={() => void ask(q.id)}
+                aria-current={answer?.question.id === q.id}
+                className="rounded-full bg-[var(--surface-1)] px-3 py-1.5 text-left
+                           text-[var(--ink-muted)] transition-colors
+                           hover:bg-[var(--surface-3)] hover:text-[var(--ink)]
+                           disabled:opacity-50
+                           aria-[current=true]:bg-[var(--surface-3)]
+                           aria-[current=true]:text-[var(--ink)]"
+                style={{ fontSize: "var(--d-support)" }}
+              >
+                {hi ? q.hi : q.en}
+              </button>
+            ))}
+          </div>
+
+          {error && (
+            <p
+              className="mt-3 text-[var(--congestion-severe)]"
+              style={{ fontSize: "var(--d-support)" }}
+            >
+              {error}
+            </p>
+          )}
+
+          {answer && (
+            <div className="mt-4">
+              <div className="overflow-x-auto">
+                <table className="w-full" style={{ fontSize: "var(--d-support)" }}>
+                  <thead>
+                    <tr
+                      className="text-left uppercase tracking-widest text-[var(--ink-muted)]"
+                      style={{ fontSize: "calc(var(--d-label) * 0.9)" }}
+                    >
+                      {answer.columns.map((c) => (
+                        <th key={c} className="whitespace-nowrap pb-2 pr-4 font-medium">
+                          {c.replace(/_/g, " ")}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {answer.rows.slice(0, 8).map((row, i) => (
+                      <tr key={i} className="border-t border-[var(--rule)]">
+                        {answer.columns.map((c) => (
+                          <td
+                            key={c}
+                            className="whitespace-nowrap py-1.5 pr-4 font-mono tabular-nums"
+                          >
+                            {row[c] ?? "—"}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <p
+                className="mt-3 leading-relaxed text-[var(--ink-muted)]"
+                style={{ fontSize: "var(--d-support)" }}
+              >
+                {hi ? answer.reading.hi : answer.reading.en}
+              </p>
+
+              {/* Shown every time, never behind a disclosure. An answer whose
+                  query the reader cannot see is not evidence. */}
+              <details className="mt-3">
+                <summary
+                  className="cursor-pointer text-[var(--accent)]"
+                  style={{ fontSize: "var(--d-support)" }}
+                >
+                  {hi
+                    ? `चलाया गया SQL · ${answer.row_count} पंक्तियाँ · ${answer.elapsed_ms} ms`
+                    : `SQL that ran · ${answer.row_count} rows · ${answer.elapsed_ms} ms`}
+                </summary>
+                <pre
+                  className="mt-2 overflow-x-auto rounded-lg bg-[var(--surface-1)] p-3
+                             font-mono leading-relaxed text-[var(--ink-muted)]"
+                  style={{ fontSize: "calc(var(--d-support) * 0.92)" }}
+                >
+                  {answer.sql}
+                </pre>
+              </details>
+            </div>
+          )}
+
+          <p
+            className="mt-4 leading-relaxed text-[var(--ink-faint)]"
+            style={{ fontSize: "var(--d-support)" }}
+          >
+            {catalogue.planner}
+          </p>
+          <p
+            className="mt-2 font-mono text-[var(--ink-faint)]"
+            style={{ fontSize: "calc(var(--d-support) * 0.92)" }}
+          >
+            {catalogue.rails.role} · cap {catalogue.rails.row_cap} ·{" "}
+            {catalogue.rails.statement_timeout_ms} ms · DDL/DML {catalogue.rails.ddl_dml}
+          </p>
+        </>
+      )}
+    </Panel>
   );
 }

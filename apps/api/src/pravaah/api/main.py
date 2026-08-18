@@ -15,7 +15,7 @@ from fastapi.responses import JSONResponse
 
 from .core.db import dispose
 from .core.settings import get_settings
-from .routers import decisions, system, traffic
+from .routers import decisions, neeti, system, traffic
 
 settings = get_settings()
 
@@ -73,3 +73,4 @@ async def unhandled(_request: Request, exc: Exception) -> JSONResponse:
 app.include_router(system.router, prefix="/api/v1")
 app.include_router(traffic.router, prefix="/api/v1")
 app.include_router(decisions.router, prefix="/api/v1")
+app.include_router(neeti.router, prefix="/api/v1")

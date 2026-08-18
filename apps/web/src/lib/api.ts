@@ -195,6 +195,35 @@ export interface AuditTrail {
   immutability: string;
 }
 
+export interface NeetiQuestion {
+  id: string;
+  en: string;
+  hi: string;
+}
+
+export interface NeetiCatalogue {
+  questions: NeetiQuestion[];
+  planner: string;
+  rails: {
+    role: string;
+    row_cap: number;
+    statement_timeout_ms: number;
+    ddl_dml: string;
+    sql_shown: boolean;
+  };
+}
+
+export interface NeetiAnswer {
+  question: NeetiQuestion;
+  sql: string;
+  columns: string[];
+  rows: Record<string, string | number | null>[];
+  row_count: number;
+  elapsed_ms: number;
+  reading: Bilingual;
+  is_synthetic: boolean;
+}
+
 export interface CountsSummary {
   total_vehicles: number;
   total_pcu: number;
@@ -416,6 +445,8 @@ export const api = {
   junctions: () => get<Junctions>("/junctions"),
   edge: () => get<EdgeCameras>("/edge/cameras"),
   audit: () => get<AuditTrail>("/audit/recent"),
+  neetiQuestions: () => get<NeetiCatalogue>("/neeti/questions"),
+  neetiAsk: (id: string) => get<NeetiAnswer>(`/neeti/ask?question_id=${encodeURIComponent(id)}`),
   decideSignal: (body: {
     junction_id: number;
     decision: "accepted" | "rejected" | "deferred";
