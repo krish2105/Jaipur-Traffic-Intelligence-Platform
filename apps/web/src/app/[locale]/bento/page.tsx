@@ -15,7 +15,7 @@ export default async function BentoPage({ params }: { params: Promise<{ locale: 
 
   const [
     corridors, summary, cameras, forecast, scene, buildings, blackspots, signals,
-    readiness, weather,
+    readiness, weather, incidents,
   ] = await Promise.all([
     api.corridors().catch(() => []),
     api.summary(1),
@@ -31,6 +31,10 @@ export default async function BentoPage({ params }: { params: Promise<{ locale: 
     api.signals().catch(() => ({ advisories: [], method: "", governance: "" })),
     api.readiness().catch(() => ({ sources: [], live_count: 0, total: 0, source_mode: "", note: "" })),
     api.weather().catch(() => ({ available: false })),
+    api.incidentTimeline().catch(() => ({
+      hours: [], totals: { crashes: 0, deaths: 0, since: 0, until: 0 }, peak_hour: 0,
+      detector: { active: 0, detected_24h: 0, method: "" }, is_synthetic: true,
+    })),
   ]);
 
   return (
@@ -45,6 +49,7 @@ export default async function BentoPage({ params }: { params: Promise<{ locale: 
       signals={signals}
       readiness={readiness}
       weather={weather}
+      incidents={incidents}
     />
   );
 }

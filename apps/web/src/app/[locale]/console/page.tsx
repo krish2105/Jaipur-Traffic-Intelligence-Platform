@@ -18,7 +18,7 @@ export default async function ConsolePage({
 
   const [
     corridors, summary, cameras, forecast, scene, buildings, blackspots, signals,
-    readiness, weather, profile, weekly,
+    readiness, weather, profile, weekly, incidents,
   ] =
     await Promise.all([
     api.corridors().catch(() => []),
@@ -38,6 +38,10 @@ export default async function ConsolePage({
       api.dayProfile(1).catch(() => ({ points: [], peak: null, is_synthetic: true,
         calibration: { source: "", morning_peak_pct: 0, evening_peak_pct: 0 } })),
       api.weekly(1).catch(() => ({ matrix: [], days: [], window: "", is_synthetic: true })),
+      api.incidentTimeline().catch(() => ({
+        hours: [], totals: { crashes: 0, deaths: 0, since: 0, until: 0 }, peak_hour: 0,
+        detector: { active: 0, detected_24h: 0, method: "" }, is_synthetic: true,
+      })),
     ]);
 
   return (
@@ -54,6 +58,7 @@ export default async function ConsolePage({
       weather={weather}
       profile={profile}
       weekly={weekly}
+      incidents={incidents}
     />
   );
 }

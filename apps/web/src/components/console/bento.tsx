@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode, useSyncExternalStore } from "react";
 import { useLocale } from "next-intl";
 
 import type {
@@ -12,11 +12,13 @@ import type {
   SignalAdvisory,
   SourceReadiness,
   WeatherNow,
+  IncidentTimeline,
 } from "@/lib/api";
 import type { SceneLink } from "@/components/city/city-view";
 import type { BuildingBox } from "@/components/city/buildings";
 import { City } from "@/components/city/city-scene.loader";
 import { RAMP_NIGHT } from "@/components/city/ramp";
+import { currentScene, serverScene, subscribeScene } from "@/lib/theme";
 import { boundsOf, centroidOf, projectLine } from "@/lib/geo";
 import type { Locale } from "@/i18n/routing";
 import {
@@ -63,6 +65,7 @@ export function BentoShell({
   signals,
   readiness,
   weather,
+  incidents,
 }: {
   corridors: Corridor[];
   summary: CountsSummary;
@@ -74,8 +77,13 @@ export function BentoShell({
   signals: SignalAdvisory;
   readiness: SourceReadiness;
   weather: WeatherNow;
+  incidents: IncidentTimeline;
 }) {
   const locale = useLocale() as Locale;
+  // The 3D pane follows the interface theme. Hardcoding night here left a
+  // glowing night city sitting inside a white UI whenever an officer
+  // switched to daylight — the single worst thing in light mode.
+  const sceneMode = useSyncExternalStore(subscribeScene, currentScene, serverScene);
   const [expanded, setExpanded] = useState<string | null>(null);
   const corridor = corridors[0];
 
@@ -125,7 +133,7 @@ export function BentoShell({
           data={scene.data}
           radius={scene.radius}
           origin={scene.origin}
-          scene="night"
+          scene={sceneMode}
           fallback={
             <div className="grid h-full place-items-center text-[12px] text-[var(--ink-muted)]">
               2D view
@@ -161,7 +169,7 @@ export function BentoShell({
         render: () => <BlackSpotPanel data={blackspots} />,
       },
       { id: "signals", label: "Signals", span: "", render: () => <SignalPanel data={signals} /> },
-      { id: "incidents", label: "Incidents", span: "", render: () => <IncidentPanel /> },
+      { id: "incidents", label: "Incidents", span: "", render: () => <IncidentPanel data={incidents} /> },
       { id: "weather", label: "Conditions", span: "", render: () => <WeatherPanel data={weather} /> },
       {
         id: "readiness",

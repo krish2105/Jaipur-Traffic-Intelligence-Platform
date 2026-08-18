@@ -13,7 +13,6 @@ from __future__ import annotations
 from datetime import date
 
 import pytest
-
 from pravaah.adapters import profiles as P
 
 WEEKDAY = date(2026, 8, 17)  # a Monday

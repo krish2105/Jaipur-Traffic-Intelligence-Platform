@@ -540,3 +540,99 @@ guess is wrong.
 looks broken; a smaller number is merely smaller. Both failure modes appeared
 during this work — telemetry at three-across and the quality panel at rail
 width — and both are now structurally impossible.
+
+---
+
+## ADR-022 — One writer for day/night; the 3D pane follows the interface
+**Date:** 2026-08-18 · **Status:** Accepted
+
+Light mode was rendering a glowing night city inside a white interface, and the
+toggle looked broken. It was not. There were **two writers of the same DOM
+attribute**: the header toggle set `data-scene`, and the 3D view held its own
+`useState` whose effect re-asserted `night` on every render. The console shells
+made it worse by passing `scene="night"` as a literal.
+
+`apps/web/src/lib/theme.ts` is now the only writer. The store *is* the document
+— `currentScene()` reads the attribute rather than caching a copy — so there is
+no second value that can drift. Every consumer subscribes through
+`useSyncExternalStore`.
+
+The daylight scene already existed in full (sky, ground albedo, hemisphere
+light, bloom disabled). It had simply never been told the time of day. Nothing
+in the renderer needed changing.
+
+**Rule taken from this:** a DOM attribute has exactly one writer. A component
+that both owns state and writes it to the document will be overridden by, or
+will override, anything else that touches it, and the resulting bug looks like
+a rendering fault rather than a state fault — which is why it cost two rounds
+of "light mode looks very bad" before being found.
+
+---
+
+## ADR-023 — The resting zoom is the corridor, not the close-up
+**Date:** 2026-08-18 · **Status:** Accepted · **Refines:** ADR-018
+
+The camera flight rested at `fit * 0.028`, tuned to answer a one-off "zoom in
+and show me the vehicles close up". That close-up then silently became the view
+an official opens the dashboard to: two cars and a strip of tarmac, no city in
+shot.
+
+Resting zoom is now `fit * 0.12` — a readable stretch of corridor with vehicles
+still legible on it. **A close-up is a thing you zoom to, never the thing you
+land on.** ADR-018's zoom-level design already said the overview and the vehicle
+are four orders of magnitude apart and must be different zoom levels; this fixes
+which one is the default.
+
+Below roughly 0.03 the camera also passes *beside* the carriageway rather than
+along it, because OrbitControls targets the centroid of every link and a curved
+corridor's centroid is not on the road. That remains open as ADR-019.
+
+---
+
+## ADR-024 — Incidents come from a detector or from crash records, never from
+## invention
+**Date:** 2026-08-18 · **Status:** Accepted
+
+The incidents panel needed a chart, and the incidents table was empty. The
+tempting move — generate plausible incidents so the panel looks alive — is
+exactly what CLAUDE.md prohibits, and it is the kind of thing that survives
+until someone in the room asks where the number came from.
+
+Two honest sources were built instead.
+
+**A real detector.** `packages/adapters/.../anomaly.py` plus
+`scripts/detect_incidents.py` score every link-bucket as a robust residual
+against *that link's own* median for that weekday-hour, with MAD as the scale.
+Both statistics are robust deliberately: a mean and a standard deviation are
+dragged upward by the very incidents being searched for, so a z-score detector
+on incident data reports fewer incidents the more there are. Two tests must
+pass — statistically unusual *and* materially worse — because a near-constant
+link has a near-zero MAD that manufactures huge z-scores from a two-point
+wobble, and because an unsigned residual reports a public holiday as a city-wide
+emergency.
+
+Run over the seeded 24 hours it found **3 low-severity anomalies**. That is a
+true result and it is reported as such. The seed is a smooth deterministic
+profile; it contains almost no anomalies because nothing put any in. A detector
+that returned a satisfying number here would have been the broken one.
+
+**Crash records for the chart.** 18,578 crashes across 2021–2025, banded by
+injury outcome, by hour of day, with the congestion curve drawn over them. The
+two series peak at the same hour — 18:00 — which is the finding that turns a
+traffic-management pitch into a road-safety one: the evening jam is when people
+are hurt. Crashes and congestion anomalies are kept as separate objects on the
+panel; stacking them would produce a total that means nothing.
+
+---
+
+## ADR-025 — `Row.index` is `tuple.index`
+**Date:** 2026-08-18 · **Status:** Accepted
+
+Several queries labelled a column `AS index` and read it back as `r.index`.
+SQLAlchemy's `Row` resolves it to the column at runtime, so it worked — but
+`index` is also a tuple method, the expression reads as the method to anyone
+scanning the code, and mypy types it as one. Labels are now `congestion_index`.
+
+Filed because "it works at runtime" is the reason this kind of shadowing
+survives review, and the failure mode when it eventually does not work is a
+silent wrong number rather than an exception.

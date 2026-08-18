@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 
+import { currentScene, serverScene, setTheme, subscribeScene } from "@/lib/theme";
 import { City } from "./city-scene.loader";
 import type { CityData } from "./city-scene";
 import { boundsOf, centroidOf, projectLine } from "@/lib/geo";
@@ -66,8 +67,11 @@ export function CityView({
   initialPalette?: PaletteId;
 }) {
   const palette = initialPalette;
-  /** Night is the control-room native mode; day is the public-facing one. */
-  const [scene, setScene] = useState<"night" | "day">("night");
+  // Night is the control-room native mode; day is the public-facing one. The
+  // value is read from the document rather than held here — this component
+  // previously owned a second copy, and its effect re-asserted night over
+  // whatever the header toggle had just set.
+  const scene = useSyncExternalStore(subscribeScene, currentScene, serverScene);
   /** Hour of the seeded day the whole city is rendered at. */
   const [hour, setHour] = useState<number | null>(null);
   const [liveLinks, setLiveLinks] = useState<SceneLink[] | null>(null);
@@ -102,8 +106,7 @@ export function CityView({
   // needs it — and sets no React state.
   useEffect(() => {
     document.documentElement.setAttribute("data-palette", palette);
-    document.documentElement.setAttribute("data-scene", scene);
-  }, [palette, scene]);
+  }, [palette]);
 
 
   const links = liveLinks ?? initialLinks;
@@ -166,7 +169,7 @@ export function CityView({
           <div className="pointer-events-auto glass flex items-center gap-1 rounded-2xl p-1.5">
             <button
               type="button"
-              onClick={() => setScene(scene === "night" ? "day" : "night")}
+              onClick={() => setTheme(scene === "night" ? "day" : "night")}
               aria-label={scene === "night" ? "Switch to day" : "Switch to night"}
               className="rounded-xl px-3.5 py-2 text-sm text-[var(--ink-muted)]
                          transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--ink)]"

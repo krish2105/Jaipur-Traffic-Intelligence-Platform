@@ -84,7 +84,7 @@ async def source_readiness(settings: SettingsDep) -> dict[str, Any]:
         """A credential is present, so this source can run live."""
         return bool(os.environ.get(name, "").strip())
 
-    sources = [
+    sources: list[dict[str, str | None]] = [
         {
             "id": "osm",
             "name": "Road network",

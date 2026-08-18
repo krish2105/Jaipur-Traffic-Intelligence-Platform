@@ -173,7 +173,7 @@ async def day_profile(
         text("""
             SELECT extract(hour FROM lc.bucket_start AT TIME ZONE 'Asia/Kolkata')::int   AS hour,
                    extract(minute FROM lc.bucket_start AT TIME ZONE 'Asia/Kolkata')::int AS minute,
-                   avg(lc.congestion_index) AS index,
+                   avg(lc.congestion_index) AS congestion_index,
                    avg(lc.confidence)       AS confidence,
                    bool_or(lc.is_synthetic) AS is_synthetic
             FROM link_congestion lc
@@ -192,7 +192,7 @@ async def day_profile(
         {
             "hour": r.hour,
             "minute": r.minute,
-            "index": round(float(r.index), 1),
+            "index": round(float(r.congestion_index), 1),
             "confidence": round(float(r.confidence), 2),
         }
         for r in rows
@@ -609,7 +609,7 @@ async def weekly_matrix(
         text("""
             SELECT extract(dow  FROM lc.bucket_start AT TIME ZONE 'Asia/Kolkata')::int AS dow,
                    extract(hour FROM lc.bucket_start AT TIME ZONE 'Asia/Kolkata')::int AS hour,
-                   avg(lc.congestion_index) AS index
+                   avg(lc.congestion_index) AS congestion_index
             FROM link_congestion lc
             JOIN road_links l ON l.link_id = lc.link_id
             WHERE lc.bucket_start >= now() - INTERVAL '28 days'
@@ -622,10 +622,101 @@ async def weekly_matrix(
     matrix = [[0.0] * 24 for _ in range(7)]
     for r in rows:
         day = (int(r.dow) + 6) % 7  # Postgres dow: 0=Sunday
-        matrix[day][int(r.hour)] = round(float(r.index), 1)
+        matrix[day][int(r.hour)] = round(float(r.congestion_index), 1)
     return {
         "matrix": matrix,
         "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
         "window": "last 28 days, measured",
+        "is_synthetic": True,
+    }
+
+
+@router.get("/incidents/timeline")
+async def incident_timeline(session: SessionDep) -> dict[str, Any]:
+    """Crashes by hour of day, banded by injury outcome, with the congestion
+    curve behind them.
+
+    The two series are the argument. Crash volume peaks at exactly the hours
+    congestion peaks, which is the claim the whole platform rests on: the
+    evening jam is not merely an inconvenience to be measured, it is when
+    people are hurt. An hour-of-day view over five years is the right frame —
+    a 24-hour window would show a handful of points and invite a reading of
+    noise as trend.
+
+    Severity is derived from outcome, not asserted: a crash with a fatality is
+    fatal, otherwise a grievous injury makes it grievous, otherwise minor.
+    """
+    rows = await session.execute(
+        text("""
+            SELECT extract(hour FROM occurred_at AT TIME ZONE 'Asia/Kolkata')::int AS hour,
+                   count(*) FILTER (WHERE fatalities > 0)                     AS fatal,
+                   count(*) FILTER (WHERE fatalities = 0 AND grievous > 0)    AS grievous,
+                   count(*) FILTER (WHERE fatalities = 0 AND grievous = 0)    AS minor
+            FROM crashes
+            GROUP BY hour
+        """)
+    )
+    hours: list[dict[str, float]] = [
+        {"hour": h, "fatal": 0, "grievous": 0, "minor": 0} for h in range(24)
+    ]
+    for r in rows:
+        hours[int(r.hour)] |= {
+            "fatal": int(r.fatal),
+            "grievous": int(r.grievous),
+            "minor": int(r.minor),
+        }
+
+    congestion = await session.execute(
+        text("""
+            SELECT extract(hour FROM bucket_start AT TIME ZONE 'Asia/Kolkata')::int AS hour,
+                   avg(congestion_index) AS congestion_index
+            FROM link_congestion
+            WHERE bucket_start >= now() - INTERVAL '28 days'
+            GROUP BY hour
+        """)
+    )
+    for r in congestion:
+        hours[int(r.hour)]["congestion"] = round(float(r.congestion_index), 1)
+
+    span = await session.execute(
+        text("""
+            SELECT count(*) AS crashes,
+                   sum(fatalities) AS deaths,
+                   min(occurred_at) AS since,
+                   max(occurred_at) AS until
+            FROM crashes
+        """)
+    )
+    s = span.one()
+
+    # The detector's own queue, kept separate. Congestion anomalies and crashes
+    # are different objects and stacking them would invent a total that means
+    # nothing.
+    detected = await session.execute(
+        text("""
+            SELECT count(*) FILTER (WHERE resolved_at IS NULL) AS active,
+                   count(*)                                    AS detected_24h
+            FROM incidents
+            WHERE detection_source = 'model'
+              AND detected_at > now() - INTERVAL '24 hours'
+        """)
+    )
+    d = detected.one()
+
+    peak = max(hours, key=lambda h: h["fatal"] + h["grievous"] + h["minor"])
+    return {
+        "hours": hours,
+        "totals": {
+            "crashes": int(s.crashes),
+            "deaths": int(s.deaths or 0),
+            "since": s.since.year,
+            "until": s.until.year,
+        },
+        "peak_hour": peak["hour"],
+        "detector": {
+            "active": int(d.active),
+            "detected_24h": int(d.detected_24h),
+            "method": "robust residual vs the link's own weekday-hour median",
+        },
         "is_synthetic": True,
     }

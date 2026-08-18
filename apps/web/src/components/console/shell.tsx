@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { useLocale } from "next-intl";
 
 import type {
@@ -14,12 +14,14 @@ import type {
   SourceReadiness,
   WeatherNow,
   WeeklyMatrix,
+  IncidentTimeline,
 } from "@/lib/api";
 import type { SceneLink } from "@/components/city/city-view";
 import type { BuildingBox } from "@/components/city/buildings";
 import { City } from "@/components/city/city-scene.loader";
 import { boundsOf, centroidOf, projectLine } from "@/lib/geo";
 import { RAMP_NIGHT } from "@/components/city/ramp";
+import { currentScene, serverScene, subscribeScene } from "@/lib/theme";
 import type { Locale } from "@/i18n/routing";
 import { ModeDot } from "./primitives";
 import { ThemeToggle } from "./theme-toggle";
@@ -80,6 +82,7 @@ export function ConsoleShell({
   weather,
   profile,
   weekly,
+  incidents,
 }: {
   corridors: Corridor[];
   summary: CountsSummary;
@@ -93,8 +96,13 @@ export function ConsoleShell({
   weather: WeatherNow;
   profile: DayProfile;
   weekly: WeeklyMatrix;
+  incidents: IncidentTimeline;
 }) {
   const locale = useLocale() as Locale;
+  // The 3D pane follows the interface theme. Hardcoding night here left a
+  // glowing night city sitting inside a white UI whenever an officer
+  // switched to daylight — the single worst thing in light mode.
+  const sceneMode = useSyncExternalStore(subscribeScene, currentScene, serverScene);
   const [active, setActive] = useState<string>("dashboard");
   const [threeD, setThreeD] = useState(true);
   const corridor = corridors[0];
@@ -194,7 +202,7 @@ export function ConsoleShell({
               data={scene.data}
               radius={scene.radius}
               origin={scene.origin}
-              scene="night"
+              scene={sceneMode}
               fallback={<MapFallback links={links} />}
             />
           ) : (
@@ -223,7 +231,7 @@ export function ConsoleShell({
           <CompositionPanel summary={summary} />
           <ForecastPanel forecast={forecast} />
           <QualityPanel summary={summary} cameras={cameras} />
-          <IncidentPanel />
+          <IncidentPanel data={incidents} />
           <BlackSpotPanel data={blackspots} />
           <HeatmapPanel data={weekly} />
           <SignalPanel data={signals} />

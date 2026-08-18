@@ -198,7 +198,7 @@ def speed_kmh(index: float, free_flow_kmh: float) -> float:
     the peak minute, which is what that figure is often misread as.
     """
     ratio = 1.0 - _SPEED_DECAY_COEFFICIENT * (max(0.0, index) / 100.0) ** _SPEED_DECAY_EXPONENT
-    return round(free_flow_kmh * max(_MIN_SPEED_RATIO, ratio), 1)
+    return float(round(free_flow_kmh * max(_MIN_SPEED_RATIO, ratio), 1))
 
 
 def rush_hour_mean_speed(free_flow_kmh: float = CALIBRATION_FREE_FLOW_KMH) -> float:

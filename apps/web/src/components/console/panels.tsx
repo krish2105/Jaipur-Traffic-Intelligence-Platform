@@ -12,6 +12,7 @@ import type {
   SourceReadiness,
   WeatherNow,
   WeeklyMatrix,
+  IncidentTimeline,
 } from "@/lib/api";
 import { congestionBandKey, congestionVar } from "@/lib/api";
 import { formatCompact, formatCount, formatPercent } from "@/lib/format";
@@ -20,6 +21,7 @@ import { Bar, Metric, ModeDot, Panel, SyntheticTag } from "./primitives";
 import { DayProfileChart } from "@/components/charts/day-profile";
 import { CompositionChart } from "@/components/charts/composition";
 import { CongestionHeatmap } from "@/components/charts/heatmap";
+import { IncidentTimelineChart } from "@/components/charts/incident-timeline";
 
 
 /** Live counts and PCU. The headline the whole product exists to produce. */
@@ -271,20 +273,62 @@ export function SignalPanel({ data }: { data: SignalAdvisory }) {
 }
 
 /**
- * Incidents. Honest about being empty: the detector has not run, and an empty
- * list is a true statement about this instance rather than a claim of calm.
+ * Incidents and road safety.
+ *
+ * Two facts, deliberately not merged. The chart is five years of crashes by
+ * hour of day, banded by injury outcome, with the congestion curve drawn over
+ * it — congestion and crash volume peak at the same hours, which is what turns
+ * a traffic-management case into a road-safety one. Below it sits the live
+ * detector queue, which is a different object entirely: a congestion anomaly
+ * is not a crash, and stacking the two would produce a total that means
+ * nothing.
+ *
+ * The queue stays honest when it is empty. An empty queue is a true statement
+ * about this instance, not a claim that the city is calm.
  */
-export function IncidentPanel({ count = 0 }: { count?: number }) {
+export function IncidentPanel({ data }: { data: IncidentTimeline }) {
+  const locale = useLocale() as Locale;
+  const peak = String(data.peak_hour).padStart(2, "0");
+
   return (
-    <Panel title="Incidents · active">
-      {count === 0 ? (
-        <p className="text-[11px] leading-relaxed text-[var(--ink-muted)]">
-          No active incidents. The detector has not been run on this instance —
-          this is an empty queue, not a quiet corridor.
-        </p>
-      ) : (
-        <p className="font-mono text-2xl tabular-nums text-[var(--ink)]">{count}</p>
+    <Panel
+      title="Incidents · safety"
+      aside={data.is_synthetic ? <SyntheticTag label="Simulated" /> : undefined}
+    >
+      {data.hours.length > 0 && (
+        <>
+          <IncidentTimelineChart hours={data.hours} />
+          <p
+            className="mt-2 leading-relaxed text-[var(--ink-muted)]"
+            style={{ fontSize: "var(--d-support)" }}
+          >
+            <span className="font-mono tabular-nums text-[var(--ink)]">
+              {formatCount(data.totals.crashes, locale)}
+            </span>{" "}
+            crashes {data.totals.since}–{data.totals.until},{" "}
+            <span className="font-mono tabular-nums text-[var(--congestion-critical)]">
+              {formatCount(data.totals.deaths, locale)}
+            </span>{" "}
+            deaths. Crashes peak at{" "}
+            <span className="font-mono tabular-nums text-[var(--ink)]">{peak}:00</span> — the
+            same hour as congestion. The evening jam is when people are hurt.
+          </p>
+        </>
       )}
+      <div className="mt-3 flex items-baseline justify-between rounded-[calc(var(--d-radius)-4px)] bg-[var(--surface-1)] px-3 py-2">
+        <span
+          className="uppercase tracking-[0.14em] text-[var(--ink-muted)]"
+          style={{ fontSize: "var(--d-label)" }}
+        >
+          Detector queue
+        </span>
+        <span
+          className="font-mono tabular-nums text-[var(--ink)]"
+          style={{ fontSize: "var(--d-support)" }}
+        >
+          {data.detector.active} open · {data.detector.detected_24h} in 24h
+        </span>
+      </div>
     </Panel>
   );
 }

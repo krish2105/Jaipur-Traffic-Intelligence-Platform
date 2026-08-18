@@ -37,6 +37,22 @@ export interface ClassMixEntry {
   share: number;
 }
 
+export interface IncidentHour {
+  hour: number;
+  fatal: number;
+  grievous: number;
+  minor: number;
+  congestion?: number;
+}
+
+export interface IncidentTimeline {
+  hours: IncidentHour[];
+  totals: { crashes: number; deaths: number; since: number; until: number };
+  peak_hour: number;
+  detector: { active: number; detected_24h: number; method: string };
+  is_synthetic: boolean;
+}
+
 export interface CountsSummary {
   total_vehicles: number;
   total_pcu: number;
@@ -208,6 +224,7 @@ export const api = {
   weather: () => get<WeatherNow>("/meta/weather"),
   weekly: (corridorId?: number) =>
     get<WeeklyMatrix>(`/congestion/weekly${query({ corridor_id: corridorId })}`),
+  incidentTimeline: () => get<IncidentTimeline>("/incidents/timeline"),
 };
 
 /**
