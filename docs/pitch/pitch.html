@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PRAVAAH Pitch Pack</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 16mm 16mm;
+    @bottom-center { content: counter(page) " / " counter(pages);
+      font-family: Helvetica, sans-serif; font-size: 8pt; color: #9A7C87; } }
+  :root { --rose:#B5485D; --mag:#A81E7A; --ink:#2A1119; --mut:#6E4A57;
+          --faint:#9A7C87; --rule:#E4CDD7; --paper:#FDF4F6; }
+  * { box-sizing:border-box; }
+  body { font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+         color:var(--ink); font-size:10pt; line-height:1.5; margin:0; }
+  h1 { font-size:26pt; line-height:1.1; margin:0 0 4pt; letter-spacing:-0.4pt; }
+  h2 { font-size:14pt; color:var(--mag); margin:20pt 0 6pt; letter-spacing:-0.2pt;
+       border-top:1.5pt solid var(--rule); padding-top:8pt; }
+  h3 { font-size:11pt; margin:12pt 0 4pt; color:var(--rose); }
+  p { margin:0 0 7pt; }
+  .lede { font-size:11.5pt; color:var(--mut); }
+  .tag { display:inline-block; background:var(--paper); border:0.7pt solid var(--rule);
+         color:var(--mag); padding:2pt 7pt; border-radius:9pt; font-size:8pt;
+         letter-spacing:0.8pt; text-transform:uppercase; }
+  table { width:100%; border-collapse:collapse; margin:8pt 0 10pt; font-size:9pt; }
+  th { text-align:left; color:var(--faint); font-weight:600; font-size:8pt;
+       text-transform:uppercase; letter-spacing:0.6pt;
+       border-bottom:1pt solid var(--rule); padding:4pt 6pt 4pt 0; }
+  td { padding:4pt 6pt 4pt 0; border-bottom:0.5pt solid var(--rule); vertical-align:top; }
+  .num { font-family:"SF Mono", Menlo, monospace; font-variant-numeric:tabular-nums; }
+  .big { font-size:19pt; color:var(--mag); font-family:"SF Mono",Menlo,monospace; }
+  .box { background:var(--paper); border-left:2.5pt solid var(--mag);
+         padding:9pt 12pt; margin:10pt 0; }
+  .warn { background:#FFF6F2; border-left:2.5pt solid #C2410C; padding:9pt 12pt; margin:10pt 0; }
+  .hin { background:#FBF2F6; border:0.7pt solid var(--rule); border-radius:5pt;
+         padding:9pt 12pt; margin:7pt 0; }
+  .hin b { color:var(--mag); }
+  .foot { color:var(--faint); font-size:8pt; }
+  a { color:var(--mag); text-decoration:none; }
+  .page-break { page-break-before: always; }
+  ul { margin:0 0 8pt; padding-left:14pt; } li { margin-bottom:3pt; }
+</style>
+</head>
+<body>
+
+<span class="tag">Jaipur · Traffic decision intelligence</span>
+<h1>PRAVAAH</h1>
+<p class="lede">Jaipur ki sadkon par kya chal raha hai, wo naapne wala system.<br>
+A system that measures what is actually on Jaipur's roads, not just how slow it is.</p>
+
+<div class="box">
+<p><b>The one thing to remember.</b> In 2025 Jaipur had fewer accidents than 2024,
+but more deaths. Accidents down 5.6 percent. Deaths up 3.1 percent. That is 34.7
+deaths for every 100 accidents, the worst in five years.</p>
+<p style="margin-bottom:0">Meanwhile 87.86 percent of enforcement is against
+over-speeding. Speeding challans reduce the <i>number</i> of accidents, which is
+already improving. Only 6.67 percent is against riding without a helmet, and
+helmets are what decide whether a crash kills.</p>
+</div>
+
+<h2>1. What is going wrong</h2>
+
+<table>
+<tr><th>Jaipur</th><th>2024</th><th>2025</th><th>Change</th></tr>
+<tr><td>Road accidents</td><td class="num">3,881</td><td class="num">3,664</td><td class="num">−5.6%</td></tr>
+<tr><td>Deaths</td><td class="num">1,235</td><td class="num">1,273</td><td class="num">+3.1%</td></tr>
+<tr><td>Deaths per 100 accidents</td><td class="num">31.8</td><td class="num">34.7</td><td>5-year high</td></tr>
+</table>
+
+<p>Roads are getting safer to drive on and more dangerous to crash on. The city is
+solving the wrong half of the problem, and it cannot see that, because nothing in
+the current system measures what kind of vehicle is involved.</p>
+
+<h3>Why nobody has spotted this</h3>
+<p>Google Maps, TomTom and every probe product measure delay. Cameras count
+vehicles. Signals count vehicles. None of them record that 61 out of every 100
+vehicles in Jaipur is a two-wheeler, and that nationally 73 percent of
+two-wheeler deaths happen to riders without a helmet.</p>
+<p>You cannot fix a severity problem with a tool that only measures speed.</p>
+
+<div class="hin">
+<p style="margin-bottom:0"><b>Hinglish:</b> Sahab, 2025 mein accident kam hue,
+lekin maut zyada hui. Matlab hum accident rokne mein sudhaar kar rahe hain,
+par jaan bachane mein nahi. Aur iska karan simple hai. Challan ka 88 percent
+speed par hai, sirf 6.7 percent helmet par. Speed ka challan accident kam karta
+hai. Helmet ka challan jaan bachata hai.</p>
+</div>
+
+<h2>2. What PRAVAAH does differently</h2>
+
+<p>It reads the composition of traffic, not just the count. Twelve vehicle classes,
+converted to PCU using IRC:106, which is the standard your own engineers already
+design to.</p>
+
+<p>That one change produces three things nobody in this market currently sells.</p>
+
+<h3>Where the next thousand challans should go</h3>
+<table>
+<tr><th>Violation</th><th>Today</th><th>Recommended</th><th>Change</th></tr>
+<tr><td>Over-speeding</td><td class="num">88.5%</td><td class="num">73.7%</td><td class="num">−14.8</td></tr>
+<tr><td>No helmet</td><td class="num">6.7%</td><td class="num">23.3%</td><td class="num">+16.6</td></tr>
+<tr><td>Parking / obstruction</td><td class="num">4.8%</td><td class="num">3.0%</td><td class="num">−1.8</td></tr>
+</table>
+<p><span class="big">+18.5</span> <b>lives a year</b>, and it costs nothing. Same
+officers, same number of challans, different mix.</p>
+<p class="foot">This holds when enforcement returns saturate at K ≥ 2. Below that the
+model prefers the current mix. We publish that limit rather than hide it.</p>
+
+<h3>What full helmet compliance is worth</h3>
+<p>If helmet compliance reached 90 percent, deaths per 100 accidents fall from
+34.7 to 30.7. At Jaipur's accident volume that is about <b>147 lives a year</b>.</p>
+<p>This one is not free. It needs sustained enforcement and probably a campaign.
+We keep the two numbers separate on purpose: 18.5 is what re-arranging existing
+effort buys, 147 is what actually changing rider behaviour buys.</p>
+
+<h3>Signal timing that knows a scooter is not a truck</h3>
+<p>Standard ITMS gives green time by counting vehicles. A two-wheeler is 0.5 PCU
+and a truck is 2.2. Two roads can send the same vehicle count and need twice the
+green time.</p>
+<p>We tested this in simulation. The honest result: PCU timing does <b>not</b>
+reduce average delay. It moves about 7 seconds off every bus and truck, and adds
+about 1 second to the average vehicle. It is a trade, not a free gain.</p>
+
+<div class="box">
+<p style="margin-bottom:0">The value is that a count-based signal <b>cannot see
+that a choice exists.</b> It gets the same number from both roads. PCU timing puts
+the trade in front of the officer who is entitled to decide it. Whether Jaipur
+serves vehicles or serves buses and freight is a policy decision. It should not be
+made by accident inside a vendor's software.</p>
+</div>
+
+<div class="hin">
+<p style="margin-bottom:0"><b>Hinglish:</b> Aaj ka signal gaadi ginta hai. Lekin
+ek scooter aur ek truck barabar nahi hote. Do raston par gaadi ki ginti same ho
+sakti hai, par jagah ki zaroorat double. Hum PCU mein naapte hain, jo aapke apne
+IRC:106 standard mein likha hai. Isse faayda ye nahi ki delay kam ho jayega.
+Faayda ye hai ki ab aapke saamne choice aayegi: bus aur truck ko priority dein,
+ya sab gaadiyon ko. Ye faisla aapka hona chahiye, software ka nahi.</p>
+</div>
+
+<div class="page-break"></div>
+
+<h2>3. What we have already proved</h2>
+
+<p>Everything below can be checked. The API is live and open.</p>
+<p class="foot">jaipur-traffic-intelligence-platfor-nine.vercel.app/api/v1</p>
+
+<table>
+<tr><th>Claim</th><th>Evidence</th></tr>
+<tr><td>Jaipur crash and enforcement figures</td>
+    <td>Published government data. Every number returns its source URL in the API response.</td></tr>
+<tr><td>Severity model</td>
+    <td>Calibrated to Jaipur's actual 34.7 per 100. Calibration error 0.0. Every scenario carries a 95 percent confidence interval.</td></tr>
+<tr><td>Enforcement reallocation</td>
+    <td>Optimisation with published assumptions and a stated range where it stops holding.</td></tr>
+<tr><td>PCU signal timing</td>
+    <td>SUMO simulation, demand swept 600 to 1600 vehicles per hour, 5 random seeds per point.</td></tr>
+<tr><td>Works with no internet</td>
+    <td>Tested by killing the server mid-session. The console reloads and renders.</td></tr>
+<tr><td>Vehicle detection</td>
+    <td>Apache-2.0 model run on 15 openly licensed photographs of real Jaipur streets. 49 vehicles found across 4 classes.</td></tr>
+</table>
+
+<div class="warn">
+<p><b>One result we are not comfortable with, and are telling you anyway.</b></p>
+<p style="margin-bottom:0">The off-the-shelf detector found <b>zero two-wheelers</b>
+in a city where 61 percent of vehicles are two-wheelers. Standard models are
+trained on European and American roads, where a motorcycle is rare and clearly
+visible. In Jaipur it is the majority, it is small in frame, and it sits packed
+between other vehicles. Any vendor who shows you a demo on stock software has this
+same problem and will not mention it. Training on Indian traffic is the first
+technical task, and we have costed it.</p>
+</div>
+
+<h2>4. What it costs</h2>
+
+<table>
+<tr><th>Package</th><th>Covers</th><th>Per year</th></tr>
+<tr><td>Corridor</td><td>One corridor, up to 40 road links</td><td class="num">₹18 to 24 lakh</td></tr>
+<tr><td>Zone</td><td>One police zone</td><td class="num">₹90 lakh to ₹1.2 crore</td></tr>
+<tr><td>City</td><td>Jaipur, 423 junctions</td><td class="num">₹3.2 to 4.5 crore</td></tr>
+</table>
+
+<p>Bought through GeM as a yearly licence, so it does not need a fresh tender.
+No new cameras: it runs on the ITMS hardware already being installed.</p>
+<p>For comparison, Jaipur collected ₹32 crore in traffic fines in 2024, and
+Rajasthan recovers 76 percent of what it issues, the best rate in India. The
+enforcement side already works. We are pointing it at the right violations.</p>
+
+<h2>5. What we are asking for</h2>
+
+<p>One corridor. Ninety days. Paid.</p>
+
+<p>Three things from the department:</p>
+<ul>
+<li>A corridor, and access to the camera feeds already installed on it.</li>
+<li><b>FIR-level accident records</b>: date, hour, light condition, vehicles
+involved, outcome. About 3,000 rows a year. This is the single most valuable thing
+you can give us and it costs nothing to provide.</li>
+<li>Current signal timings and turning counts for that corridor.</li>
+</ul>
+
+<p>At ninety days you get a measured before-and-after on that corridor, every
+figure traceable to a source, and an enforcement recommendation your existing
+officers can act on next week.</p>
+
+<div class="hin">
+<p style="margin-bottom:0"><b>Hinglish:</b> Humein sirf ek corridor chahiye,
+90 din ke liye. Naye camera nahi lagane, jo laga hai wahi kaafi hai. Aapse teen
+cheezein chahiye: corridor, uska camera feed, aur FIR-level accident data. Teesri
+cheez sabse important hai aur usme aapka ek rupaya kharch nahi hoga. 90 din baad
+aapke paas ek measured result hoga, har number ka source hoga, aur ek enforcement
+plan hoga jo aapke abhi ke staff se hi chalu ho sakta hai.</p>
+</div>
+
+<h2>6. What is honest to say about the limits</h2>
+
+<p>A pitch that only lists strengths is a pitch you should distrust.</p>
+<ul>
+<li>Per-road hourly counts in the demo are simulated and labelled as such on screen.</li>
+<li>The severity model is built on published national figures. It is not fitted to
+Jaipur crash records, because those records are not public. With FIR data it
+becomes a proper statistical model.</li>
+<li>Detection needs training on Indian traffic before we quote an accuracy number.</li>
+<li>PCU signal timing redistributes delay. It does not remove it.</li>
+<li>We do not control signals directly. The system proposes, an officer approves,
+and the decision is recorded with their name against it. That is deliberate. After
+any serious accident at a junction, somebody has to be able to answer who set that
+timing and why.</li>
+</ul>
+
+<h2>7. What we will never build</h2>
+<p>No face recognition. No person tracking. No number plates in logs. Plate data is
+encrypted and only an authorised officer can reveal one, with the reason recorded.
+These are enforced by an automated check that fails the build, not by a promise in
+a document.</p>
+
+<p class="foot" style="margin-top:14pt">
+Sources: Jaipur police district figures 2024 and 2025; Rajasthan enforcement data
+2025; MoRTH road safety reports; IRC:106-1990 for PCU factors; OpenStreetMap for
+road geometry. Every figure in the product carries its source URL in the API.
+</p>
+
+</body>
+</html>

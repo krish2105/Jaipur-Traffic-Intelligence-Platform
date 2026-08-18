@@ -99,7 +99,7 @@ def _fetch(url: str, tries: int = 3) -> bytes:
     last: Exception | None = None
     for attempt in range(tries):
         try:
-            request = urllib.request.Request(url, headers={"User-Agent": UA})
+            request = urllib.request.Request(url, headers={"User-Agent": UA})  # noqa: S310 — fixed https host, literal URL
             with urllib.request.urlopen(request, timeout=60) as response:  # noqa: S310
                 return response.read()
         except Exception as exc:
@@ -110,7 +110,7 @@ def _fetch(url: str, tries: int = 3) -> bytes:
 
 def _get(url: str, params: dict[str, str]) -> dict:
     full = f"{url}?{urllib.parse.urlencode(params)}"
-    request = urllib.request.Request(full, headers={"User-Agent": UA})
+    request = urllib.request.Request(full, headers={"User-Agent": UA})  # noqa: S310
     with urllib.request.urlopen(request, timeout=45) as response:  # noqa: S310
         return json.loads(response.read())
 
