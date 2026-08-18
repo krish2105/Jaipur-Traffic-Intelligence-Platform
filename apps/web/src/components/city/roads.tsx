@@ -97,10 +97,13 @@ export function Roads({
   // during render, both of which React's compiler correctly rejects.
   const uniforms = useMemo(
     () => ({
-      uAsphalt: { value: new THREE.Color(daylight ? "#565C66" : "#0A0D15") },
+      // Sun-bleached asphalt is a warm mid grey, not the blue-grey of
+      // asphalt photographed under an overcast sky. The old value sat close
+      // enough to the light ground that the carriageway vanished.
+      uAsphalt: { value: new THREE.Color(daylight ? "#6E6A61" : "#0A0D15") },
       uMarking: { value: new THREE.Color("#F2F4F8") },
       uDaylight: { value: daylight ? 1 : 0 },
-      fogColor: { value: new THREE.Color(daylight ? "#C3D0E4" : "#060A16") },
+      fogColor: { value: new THREE.Color(daylight ? "#D6CBB8" : "#060A16") },
       fogDensity: { value: 0.0 },
     }),
     [daylight],
@@ -137,7 +140,14 @@ export function Ground({ radius, daylight = false }: { radius: number; daylight?
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.2, 0]} receiveShadow={false}>
       <circleGeometry args={[radius * 4, 64]} />
-      <meshStandardMaterial color={daylight ? "#B9BFC9" : "#070A12"} roughness={1} metalness={0} />
+      <meshStandardMaterial
+        // Jaipur sand, not a light-grey studio floor. A ground within a few
+        // percent of the interface background makes the 3D pane read as an
+        // empty panel however much geometry is standing on it.
+        color={daylight ? "#C0AC8C" : "#070A12"}
+        roughness={1}
+        metalness={0}
+      />
     </mesh>
   );
 }

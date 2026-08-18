@@ -149,14 +149,25 @@ const PALETTE_BY_MODE: Record<SceneMode, {
     background: "#04060F", fog: "#060A16",
     ambient: 0.35, key: 0.9, windows: 1, bloom: 0.7,
   },
-  // A genuine daylight scene rather than a lightened night one: sky-blue
-  // ground, haze instead of darkness, the window lights out because a lit
-  // window is invisible at noon, and bloom off because nothing is emitting.
-  // The congestion ramp is identical in both — it is the one thing that must
-  // never change meaning.
+  // A genuine daylight scene rather than a lightened night one: window lights
+  // out because a lit window is invisible at noon, and bloom off because
+  // nothing is emitting. The congestion ramp is identical in both — it is the
+  // one thing that must never change meaning.
+  //
+  // The intensities below are far lower than they were. Ambient 1.5 with a 2.2
+  // key, through the ACES tone curve R3F applies by default, clipped every
+  // surface to white: buildings lost their form, the asphalt lost its
+  // congestion colour, and the whole pane read as fog. Daylight is not "more
+  // light everywhere" — it is ONE hard sun plus a little bounce, and it is the
+  // shadow side of a building that tells you the building is there.
+  //
+  // The haze is warm rather than sky-blue. Jaipur's daytime air carries desert
+  // dust, so a cold blue haze reads as a European overcast and, more
+  // practically, sat within a few percent of the light interface's own
+  // background — which is why the scene looked like an empty panel.
   day: {
-    background: "#9FBBDC", fog: "#C7D6E9",
-    ambient: 1.5, key: 2.2, windows: 0, bloom: 0.0,
+    background: "#AFC4DA", fog: "#D6CBB8",
+    ambient: 0.5, key: 1.8, windows: 0, bloom: 0.0,
   },
 };
 
@@ -195,14 +206,18 @@ function Scene({
           docs/03 §5: the demo must render with the network cable pulled, and a
           scene that waits on a CDN cannot. */}
       <ambientLight intensity={mode.ambient} />
+      {/* Sky above, warm bounce from the ground below. The ground colour is
+          doing real work in daylight: it is the light coming back UP off
+          Jaipur's sand that fills the underside of every overpass and keeps
+          the shadow side from going flat grey. */}
       <hemisphereLight
-        intensity={scene === "day" ? 0.9 : 0.35}
+        intensity={scene === "day" ? 0.75 : 0.35}
         color={scene === "day" ? "#CFE0F5" : "#2A3A66"}
-        groundColor={scene === "day" ? "#B4A98F" : "#080B14"}
+        groundColor={scene === "day" ? "#C9AE85" : "#080B14"}
       />
       <directionalLight
         position={[-radius, radius * 1.2, radius * 0.6]}
-        intensity={scene === "day" ? 0.5 : 0.25}
+        intensity={scene === "day" ? 0.3 : 0.25}
         color={scene === "day" ? "#FFE9C4" : "#5B6FA8"}
       />
       <directionalLight

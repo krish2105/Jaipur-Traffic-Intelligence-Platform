@@ -676,13 +676,11 @@ a no-op.
 put a lone "L" on the next line, which reads as a rendering fault rather than a
 number.
 
-### Open
-Day mode at 1920 renders a blank 3D pane. Night at 1920 renders, and both modes
-render at 1440 and at phone width. WebGL context is healthy, no GL error, the
-canvas is correctly sized, and the frame-budget guard floors at 0.25 and gates
-only vehicles — so none of those is the cause and the real one is not yet known.
-Recorded rather than guessed at, because ADR-020's lesson was exactly this:
-investigating a second hypothesis against an undiagnosed first one wastes both.
+### Resolved
+Day mode at 1920 rendered a blank pane. **Closed by ADR-035** — the pane was not
+blank, it was white: the day scene was so over-lit that every surface clipped to
+the fog colour, which sat within a few percent of the light interface's own
+background. Nothing was broken; nothing was visible either.
 
 ---
 
@@ -945,3 +943,49 @@ case explicitly.
 
 Recorded also because the first hypothesis was plausible and would have "worked"
 on the screenshot — the lesson of ADR-020 in a different costume.
+
+---
+
+## ADR-035 — Daylight is one hard sun, not more light everywhere
+**Date:** 2026-08-18 · **Status:** Accepted · **Closes:** the open item in ADR-026
+
+The "blank 3D pane in day mode at 1920" was not blank. It was **white**, and it
+was white everywhere — 1440 included. It only read as a fault at 1920 because
+the wider pane gave the eye more uniform nothing to look at.
+
+The day palette ran `ambientLight` at 1.5 with a 2.2 key, a 0.9 hemisphere and a
+0.5 fill. Through the ACES tone curve R3F applies by default, that clips almost
+every lit surface to white. Ambient light in particular contributes equally to
+every face of every mesh, so raising it does not make a scene brighter — it
+makes it *flatter*, and past a point every building is the same value as the
+sky behind it. **It is the shadow side of a building that tells you the building
+is there.**
+
+Now: ambient 0.5, key 1.8, hemisphere 0.75, fill 0.3. One hard sun and a little
+bounce.
+
+The palette was also cold. Fog and haze were sky-blue (`#C7D6E9`), the ground a
+grey `#B9BFC9`, asphalt a blue-grey `#565C66`, buildings `#C2C7D0`. Two problems
+with that beyond taste:
+
+- Jaipur's daytime air carries desert dust. A cold blue haze reads as a European
+  overcast, not as this city.
+- More practically, `#B9BFC9` ground sat within a few percent of the light
+  interface's `--ground` at `#DDE5F0`. The 3D pane looked like an empty panel
+  *however much geometry was standing in it* — which is precisely the report.
+
+The day palette is now Jaipur sand (`#C0AC8C`), warm dust haze (`#D6CBB8`),
+sun-bleached asphalt (`#6E6A61`) and warm plaster walls (`#CDBBA4`). The
+hemisphere light's ground colour does real work here: it is light bouncing up
+off sand that fills the underside of an overpass and keeps the shadow side from
+going flat grey.
+
+The congestion ramp is untouched, in both modes. It is the one thing that must
+never change meaning — and with the lighting fixed it is now legible on the
+carriageway in daylight, which it had not been.
+
+**The lesson worth keeping:** "renders blank" and "renders invisible" are
+different faults with different causes, and I spent a round checking WebGL
+context state, GPU limits and canvas sizing on the first reading when the
+evidence — a pane the same colour as the panel beside it — pointed at the
+second.

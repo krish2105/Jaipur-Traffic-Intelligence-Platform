@@ -150,7 +150,10 @@ export function Buildings({
 
   const uniforms = useMemo(
     () => ({
-      uBase: { value: new THREE.Color(windowStrength > 0 ? "#1E2536" : "#C2C7D0") },
+      // Daylight base is warm plaster. Jaipur's walls are washed in
+      // sandstone pink and ochre; a cool grey reads as concrete and, against
+      // warm ground, as an absence rather than a building.
+      uBase: { value: new THREE.Color(windowStrength > 0 ? "#1E2536" : "#CDBBA4") },
       uWarm: { value: new THREE.Color("#FFCE8A") },
       uCool: { value: new THREE.Color("#A9C8FF") },
       uFogColor: { value: new THREE.Color(fogColor) },
