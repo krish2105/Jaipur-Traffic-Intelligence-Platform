@@ -1547,3 +1547,58 @@ diurnal profile, so a model that learns that profile beats persistence easily.
 On real Jaipur data the margin would be smaller. What is demonstrated is the
 gate — that a model is measured against a baseline and refused if it loses —
 not that +75% is achievable on the street.
+
+---
+
+## ADR-051 — GANANA, and proving the person prohibition against a real model
+**Date:** 2026-08-18 · **Status:** Accepted
+
+The counting engine. RT-DETRv2 (Apache-2.0) for detection, ByteTrack via
+`supervision` (MIT) for tracking, and a counting core that is pure functions
+over track positions — no model, no video, no clock — so the logic that produces
+every published number is testable without a GPU.
+
+**Counting is an event, not a state.** A vehicle is counted once, at the frame
+its track crosses a line, in the direction it crossed. Counting detections per
+frame instead is the classic fault that reports a jam as enormous flow: a
+stationary queue re-counted sixty times a second produces a number that *rises
+as the road gets worse*. Tests pin both halves — a vehicle stopped for forty
+frames contributes nothing, and one wobbling across the line contributes once.
+
+**The person prohibition is structural, and now demonstrated.** CLAUDE.md and
+docs/07 bar person detection and tracking outright. A COCO detector can detect
+people and there is no way to ask it not to look, so what is controlled is what
+happens next: `detect()` discards person boxes in the same function that
+produces them, `class_for` returns None, and `assert_no_person_classes` **raises
+rather than filtering** — a person reaching the counter means detection stopped
+discarding them, which is a breach to fix, not a row to skip.
+
+A unit test with fabricated class ids shows the filter is wired. It does not
+show the filter holds against what a model actually emits. So
+`scripts/verify_no_person_detection.py` runs RT-DETRv2 over public COCO images
+and gates on the result:
+
+> the model found **60 people**; GANANA returned **0** of them
+> (1 vehicle counted from the same frames)
+
+That is the claim a privacy reviewer can re-run.
+
+Three smaller decisions the tests hold:
+
+- **Crossings use the box's foot point, not its centroid.** A truck's centroid
+  sits two metres above the carriageway and crosses a line painted on the road
+  noticeably before the truck does — enough, on a low-mounted camera, to assign
+  a vehicle to the wrong signal phase.
+- **Intersection is tested against the line's extent as well as the track's.**
+  Checking only the track's side counts vehicles passing the line's *extension*
+  on a parallel carriageway.
+- **`flow_per_hour` raises on a zero window** rather than returning infinity.
+  The 408,000 veh/hr figure earlier in this project's history was a flow divided
+  by the wrong window; that belongs in a stack trace, not on a screen.
+
+**What GANANA cannot yet do, stated in the code:** COCO has no auto-rickshaw
+class, and autos are 6.2% of measured traffic on this corridor. Rather than fake
+them from `car` or `motorcycle` depending on the angle, `AUTO` is absent from
+the mapping and listed in `UNAVAILABLE_WITHOUT_FINETUNE`, so a zero reads as
+"cannot detect" rather than "none present". Fine-tuning on IDD is what closes
+that, and it needs the Jaipur video the department has not yet provided.
