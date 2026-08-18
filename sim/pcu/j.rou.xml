@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<additional>
+  <vType id="2W" length="1.8" width="0.6" maxSpeed="16.667" minGap="0.5" sigma="0.7" latAlignment="arbitrary" vClass="motorcycle" />
+  <vType id="AUTO" length="2.6" width="1.4" maxSpeed="12.500" minGap="0.8" sigma="0.6" latAlignment="arbitrary" vClass="passenger" />
+  <vType id="ERIK" length="2.7" width="1.2" maxSpeed="6.944" minGap="0.8" sigma="0.6" latAlignment="arbitrary" vClass="passenger" />
+  <vType id="CAR" length="4.0" width="1.7" maxSpeed="19.444" minGap="1.5" sigma="0.5" latAlignment="arbitrary" vClass="passenger" />
+  <vType id="LCV" length="6.0" width="2.2" maxSpeed="16.667" minGap="2.0" sigma="0.5" latAlignment="arbitrary" vClass="passenger" />
+  <vType id="BUS" length="10.5" width="2.5" maxSpeed="15.278" minGap="2.5" sigma="0.4" latAlignment="arbitrary" vClass="passenger" />
+  <vType id="TRK2" length="9.0" width="2.5" maxSpeed="15.278" minGap="2.5" sigma="0.4" latAlignment="arbitrary" vClass="passenger" />
+  <flow id="f_ns_2W_n" type="2W" begin="0" end="3600" vehsPerHour="600.0" departLane="random" departSpeed="max">
+    <route edges="nc cs"/>
+  </flow>
+  <flow id="f_ns_2W_s" type="2W" begin="0" end="3600" vehsPerHour="600.0" departLane="random" departSpeed="max">
+    <route edges="sc cn"/>
+  </flow>
+  <flow id="f_ns_AUTO_n" type="AUTO" begin="0" end="3600" vehsPerHour="80.0" departLane="random" departSpeed="max">
+    <route edges="nc cs"/>
+  </flow>
+  <flow id="f_ns_AUTO_s" type="AUTO" begin="0" end="3600" vehsPerHour="80.0" departLane="random" departSpeed="max">
+    <route edges="sc cn"/>
+  </flow>
+  <flow id="f_ns_CAR_n" type="CAR" begin="0" end="3600" vehsPerHour="96.0" departLane="random" departSpeed="max">
+    <route edges="nc cs"/>
+  </flow>
+  <flow id="f_ns_CAR_s" type="CAR" begin="0" end="3600" vehsPerHour="96.0" departLane="random" departSpeed="max">
+    <route edges="sc cn"/>
+  </flow>
+  <flow id="f_ns_LCV_n" type="LCV" begin="0" end="3600" vehsPerHour="24.0" departLane="random" departSpeed="max">
+    <route edges="nc cs"/>
+  </flow>
+  <flow id="f_ns_LCV_s" type="LCV" begin="0" end="3600" vehsPerHour="24.0" departLane="random" departSpeed="max">
+    <route edges="sc cn"/>
+  </flow>
+  <flow id="f_ew_2W_e" type="2W" begin="0" end="3600" vehsPerHour="200.0" departLane="random" departSpeed="max">
+    <route edges="ec cw"/>
+  </flow>
+  <flow id="f_ew_2W_w" type="2W" begin="0" end="3600" vehsPerHour="200.0" departLane="random" departSpeed="max">
+    <route edges="wc ce"/>
+  </flow>
+  <flow id="f_ew_AUTO_e" type="AUTO" begin="0" end="3600" vehsPerHour="80.0" departLane="random" departSpeed="max">
+    <route edges="ec cw"/>
+  </flow>
+  <flow id="f_ew_AUTO_w" type="AUTO" begin="0" end="3600" vehsPerHour="80.0" departLane="random" departSpeed="max">
+    <route edges="wc ce"/>
+  </flow>
+  <flow id="f_ew_CAR_e" type="CAR" begin="0" end="3600" vehsPerHour="240.0" departLane="random" departSpeed="max">
+    <route edges="ec cw"/>
+  </flow>
+  <flow id="f_ew_CAR_w" type="CAR" begin="0" end="3600" vehsPerHour="240.0" departLane="random" departSpeed="max">
+    <route edges="wc ce"/>
+  </flow>
+  <flow id="f_ew_LCV_e" type="LCV" begin="0" end="3600" vehsPerHour="120.0" departLane="random" departSpeed="max">
+    <route edges="ec cw"/>
+  </flow>
+  <flow id="f_ew_LCV_w" type="LCV" begin="0" end="3600" vehsPerHour="120.0" departLane="random" departSpeed="max">
+    <route edges="wc ce"/>
+  </flow>
+  <flow id="f_ew_BUS_e" type="BUS" begin="0" end="3600" vehsPerHour="96.0" departLane="random" departSpeed="max">
+    <route edges="ec cw"/>
+  </flow>
+  <flow id="f_ew_BUS_w" type="BUS" begin="0" end="3600" vehsPerHour="96.0" departLane="random" departSpeed="max">
+    <route edges="wc ce"/>
+  </flow>
+  <flow id="f_ew_TRK2_e" type="TRK2" begin="0" end="3600" vehsPerHour="64.0" departLane="random" departSpeed="max">
+    <route edges="ec cw"/>
+  </flow>
+  <flow id="f_ew_TRK2_w" type="TRK2" begin="0" end="3600" vehsPerHour="64.0" departLane="random" departSpeed="max">
+    <route edges="wc ce"/>
+  </flow>
+</additional>

@@ -61,8 +61,46 @@ two-wheeler-heavy approaches and starves freight-heavy ones. It is not a tuning
 error; it is a units error, and it compounds across a synchronised corridor.
 
 PRAVAAH's detection classifies to 12 vehicle classes and converts to PCU before
-optimising. That is the whole argument, and it is measurable: same junction, same
-hour, count-optimised plan vs PCU-optimised plan, compared in SUMO.
+optimising.
+
+### 2.1 What the simulation actually showed — claim corrected
+
+This section previously asserted the PCU plan would simply beat the count plan.
+`scripts/compare_pcu_signal.py` ran it in SUMO across a demand sweep, and that
+assertion is **wrong**. The corrected finding is more useful.
+
+Two arms, identical 900 veh/h, north-south 75% two-wheelers, east-west with
+freight. Same network, seed and cycle; only the split differs.
+
+| veh/h per arm | EW v/c | mean vehicle delay | PCU-weighted delay | freight arm |
+|---|---|---|---|---|
+| 600 | 0.47 | **−0.9 s worse** | +1.0 s better | **+6.1 s better** |
+| 1000 | 0.79 | **−0.8 s worse** | +1.3 s better | **+6.7 s better** |
+| 1400 | 1.10 | **−1.2 s worse** | +1.4 s better | **+7.3 s better** |
+| 1600 | 1.26 | **−1.5 s worse** | +1.1 s better | **+7.5 s better** |
+
+PCU timing **never** wins on mean vehicle delay, at any demand tested including
+oversaturation. It cannot: the two-wheeler arm carries the same vehicle count at
+roughly half the PCU, so giving it less green makes *more* vehicles wait longer
+while *fewer, larger* vehicles clear faster. That is arithmetic, not a tuning
+failure, and no amount of retuning changes its sign.
+
+**So the wedge is not "our timing is better". It is this:**
+
+> A count-based controller receives **identical input from both arms** and
+> cannot see that a choice exists. PCU timing surfaces the trade-off — about
+> 7 seconds off every bus and truck, for about 1 second more on the average
+> vehicle — and puts it in front of the person entitled to make it.
+
+That is a stronger position for this project, not a weaker one. Whether a city
+serves vehicles or serves capacity is a policy decision about freight, buses and
+public transport priority. It belongs to a Commissioner, not to a units
+convention buried in a vendor's firmware. And it is exactly the shape of claim
+that fits §3.3: the system computes the options and a human decides.
+
+**How to demo it:** show the two plans, show that the count-based input is the
+same number on both arms, and ask the room which arm they would rather protect.
+The answer is theirs. The point is that today nothing asks them.
 
 **Second wedge — the enforcement allocator.** Nobody in this market ships a tool
 that answers "given my crash severity profile and my fleet composition, where
@@ -81,7 +119,7 @@ synchronisation, violation detection, enforcement analytics, policy simulation.
 | Capability | Incumbent | PRAVAAH |
 |---|---|---|
 | Vehicle detection | count | **12-class + PCU conversion** |
-| Green-time basis | vehicles | **PCU-weighted demand** |
+| Green-time basis | vehicles | **PCU-weighted, trade-off surfaced (§2.1)** |
 | Corridor sync | phase 2, planned | SUMO-validated, offline-provable |
 | Severity analytics | not offered | **core product** |
 | Enforcement allocation | not offered | **core product** |
@@ -325,7 +363,8 @@ verified in production at
 | §5 D8 · pink UI | **done** | gulaabi default, contrast gate passes on 6 palettes |
 | §5 D9 · atlas maps | **partial** | console 2D done; citizen / officer / city still to wire |
 | §5 D2 · severity model | not started | |
-| §5 D4–5 · PCU vs count, corridor sync | not started | needs SUMO scenario work |
+| §5 D4 · PCU vs count | **done** | `compare_pcu_signal.py`, 6-point demand sweep in SUMO — and it corrected §2, see §2.1 |
+| §5 D5 · corridor sync | not started | |
 | §5 D10–14 | not started | |
 
 **Free tier throughout.** No API host, no keyed tiles, no model provider, no

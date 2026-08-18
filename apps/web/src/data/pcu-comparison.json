@@ -1,0 +1,200 @@
+{
+  "junction": "synthetic 4-arm, 2 lanes per approach, through movements only",
+  "mix": {
+    "ns": {
+      "2W": 0.75,
+      "AUTO": 0.1,
+      "CAR": 0.12,
+      "LCV": 0.03
+    },
+    "ew": {
+      "2W": 0.25,
+      "AUTO": 0.1,
+      "CAR": 0.3,
+      "LCV": 0.15,
+      "BUS": 0.12,
+      "TRK2": 0.08
+    }
+  },
+  "pcu_ratio": 1.82,
+  "sweep": [
+    {
+      "veh_per_hour_each_arm": 600,
+      "ns_pcu_per_hour": 394,
+      "ew_pcu_per_hour": 717,
+      "ew_vc_under_count_plan": 0.47,
+      "green_count_ns_s": 38,
+      "green_pcu_ns_s": 27,
+      "count": {
+        "delay_ns_s": 22.2,
+        "delay_ew_s": 19.9,
+        "delay_mean_s": 21.0,
+        "delay_pcu_weighted_s": 19.7,
+        "vehicles_ns": 592,
+        "vehicles_ew": 589
+      },
+      "pcu": {
+        "delay_ns_s": 30.0,
+        "delay_ew_s": 13.8,
+        "delay_mean_s": 21.9,
+        "delay_pcu_weighted_s": 18.7,
+        "vehicles_ns": 592,
+        "vehicles_ew": 592
+      },
+      "mean_delay_saved_s": -0.9,
+      "pcu_weighted_saved_s": 1.0,
+      "freight_arm_saved_s": 6.1
+    },
+    {
+      "veh_per_hour_each_arm": 800,
+      "ns_pcu_per_hour": 526,
+      "ew_pcu_per_hour": 956,
+      "ew_vc_under_count_plan": 0.63,
+      "green_count_ns_s": 38,
+      "green_pcu_ns_s": 27,
+      "count": {
+        "delay_ns_s": 23.4,
+        "delay_ew_s": 20.3,
+        "delay_mean_s": 21.8,
+        "delay_pcu_weighted_s": 20.4,
+        "vehicles_ns": 790,
+        "vehicles_ew": 782
+      },
+      "pcu": {
+        "delay_ns_s": 31.9,
+        "delay_ew_s": 14.1,
+        "delay_mean_s": 23.0,
+        "delay_pcu_weighted_s": 19.4,
+        "vehicles_ns": 786,
+        "vehicles_ew": 793
+      },
+      "mean_delay_saved_s": -1.2,
+      "pcu_weighted_saved_s": 1.0,
+      "freight_arm_saved_s": 6.2
+    },
+    {
+      "veh_per_hour_each_arm": 1000,
+      "ns_pcu_per_hour": 657,
+      "ew_pcu_per_hour": 1195,
+      "ew_vc_under_count_plan": 0.79,
+      "green_count_ns_s": 38,
+      "green_pcu_ns_s": 27,
+      "count": {
+        "delay_ns_s": 23.5,
+        "delay_ew_s": 21.2,
+        "delay_mean_s": 22.3,
+        "delay_pcu_weighted_s": 21.1,
+        "vehicles_ns": 981,
+        "vehicles_ew": 979
+      },
+      "pcu": {
+        "delay_ns_s": 31.9,
+        "delay_ew_s": 14.5,
+        "delay_mean_s": 23.1,
+        "delay_pcu_weighted_s": 19.8,
+        "vehicles_ns": 978,
+        "vehicles_ew": 985
+      },
+      "mean_delay_saved_s": -0.8,
+      "pcu_weighted_saved_s": 1.3,
+      "freight_arm_saved_s": 6.7
+    },
+    {
+      "veh_per_hour_each_arm": 1200,
+      "ns_pcu_per_hour": 788,
+      "ew_pcu_per_hour": 1434,
+      "ew_vc_under_count_plan": 0.94,
+      "green_count_ns_s": 38,
+      "green_pcu_ns_s": 27,
+      "count": {
+        "delay_ns_s": 24.5,
+        "delay_ew_s": 21.6,
+        "delay_mean_s": 23.0,
+        "delay_pcu_weighted_s": 21.7,
+        "vehicles_ns": 1179,
+        "vehicles_ew": 1172
+      },
+      "pcu": {
+        "delay_ns_s": 33.4,
+        "delay_ew_s": 14.8,
+        "delay_mean_s": 24.1,
+        "delay_pcu_weighted_s": 20.4,
+        "vehicles_ns": 1178,
+        "vehicles_ew": 1182
+      },
+      "mean_delay_saved_s": -1.1,
+      "pcu_weighted_saved_s": 1.3,
+      "freight_arm_saved_s": 6.8
+    },
+    {
+      "veh_per_hour_each_arm": 1400,
+      "ns_pcu_per_hour": 920,
+      "ew_pcu_per_hour": 1673,
+      "ew_vc_under_count_plan": 1.1,
+      "green_count_ns_s": 38,
+      "green_pcu_ns_s": 27,
+      "count": {
+        "delay_ns_s": 25.8,
+        "delay_ew_s": 23.4,
+        "delay_mean_s": 24.6,
+        "delay_pcu_weighted_s": 23.3,
+        "vehicles_ns": 1376,
+        "vehicles_ew": 1363
+      },
+      "pcu": {
+        "delay_ns_s": 35.4,
+        "delay_ew_s": 16.1,
+        "delay_mean_s": 25.8,
+        "delay_pcu_weighted_s": 21.9,
+        "vehicles_ns": 1374,
+        "vehicles_ew": 1379
+      },
+      "mean_delay_saved_s": -1.2,
+      "pcu_weighted_saved_s": 1.4,
+      "freight_arm_saved_s": 7.3
+    },
+    {
+      "veh_per_hour_each_arm": 1600,
+      "ns_pcu_per_hour": 1051,
+      "ew_pcu_per_hour": 1912,
+      "ew_vc_under_count_plan": 1.26,
+      "green_count_ns_s": 38,
+      "green_pcu_ns_s": 27,
+      "count": {
+        "delay_ns_s": 26.7,
+        "delay_ew_s": 23.6,
+        "delay_mean_s": 25.1,
+        "delay_pcu_weighted_s": 23.7,
+        "vehicles_ns": 1570,
+        "vehicles_ew": 1558
+      },
+      "pcu": {
+        "delay_ns_s": 37.0,
+        "delay_ew_s": 16.1,
+        "delay_mean_s": 26.6,
+        "delay_pcu_weighted_s": 22.6,
+        "vehicles_ns": 1567,
+        "vehicles_ew": 1565
+      },
+      "mean_delay_saved_s": -1.5,
+      "pcu_weighted_saved_s": 1.1,
+      "freight_arm_saved_s": 7.5
+    }
+  ],
+  "finding": {
+    "wins_on_mean_delay_above_veh_per_hour": null,
+    "wins_on_pcu_weighted_delay_at_all_levels": true,
+    "wins_on_freight_arm_at_all_levels": true
+  },
+  "method": {
+    "pcu_source": "IRC:106-1990, urban roads",
+    "cycle_s": 90,
+    "effective_green_s": 76,
+    "seed": 42,
+    "sumo": "1.27.1",
+    "identical": "demand, seed, network and cycle. Only the split differs."
+  },
+  "caveat": "One isolated junction, through movements only, one hour per point. This demonstrates a mechanism \u2014 a count-based controller receives identical input from two arms with very different demand \u2014 not a forecast of city-wide benefit. Below the threshold above, the junction is under-saturated and the split does not bind, so the even split is close to as good on mean vehicle delay.",
+  "advisory_only": true,
+  "is_synthetic": true
+}

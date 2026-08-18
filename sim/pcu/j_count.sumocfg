@@ -1,0 +1,12 @@
+<configuration>
+  <input>
+    <net-file value="j.net.xml"/>
+    <route-files value="j.rou.xml"/>
+    <additional-files value="tls_count.add.xml"/>
+  </input>
+  <time><begin value="0"/><end value="3600"/></time>
+  <processing><time-to-teleport value="-1"/></processing>
+  <report><no-step-log value="true"/><no-warnings value="true"/></report>
+  <output><tripinfo-output value="trip_count.xml"/></output>
+  <random_number><seed value="42"/></random_number>
+</configuration>

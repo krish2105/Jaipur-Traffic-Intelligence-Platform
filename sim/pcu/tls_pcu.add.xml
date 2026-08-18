@@ -1,0 +1,8 @@
+<additional>
+  <tlLogic id="c" type="static" programID="pcu" offset="0">
+    <phase duration="27" state="GGGGrrrrGGGGrrrr"/>
+    <phase duration="3" state="yyyyrrrryyyyrrrr"/>
+    <phase duration="49" state="rrrrGGGGrrrrGGGG"/>
+    <phase duration="3" state="rrrryyyyrrrryyyy"/>
+  </tlLogic>
+</additional>
