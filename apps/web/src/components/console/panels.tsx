@@ -2,9 +2,9 @@
 
 import { useLocale } from "next-intl";
 
-import type { Camera, CountsSummary, Forecast } from "@/lib/api";
+import type { BlackSpots, Camera, CountsSummary, Forecast, SignalAdvisory } from "@/lib/api";
 import { congestionBandKey, congestionVar } from "@/lib/api";
-import { formatCount, formatPcu, formatPercent } from "@/lib/format";
+import { formatCompact, formatCount, formatPercent } from "@/lib/format";
 import type { Locale } from "@/i18n/routing";
 import { Bar, Metric, Panel, SyntheticTag } from "./primitives";
 
@@ -31,12 +31,12 @@ export function CountsPanel({ summary }: { summary: CountsSummary }) {
       <div className="grid grid-cols-2 gap-4">
         <Metric
           label="Vehicles"
-          value={formatCount(summary.total_vehicles, locale)}
+          value={formatCompact(summary.total_vehicles, locale)}
           quality={`quality ${q.mean_score.toFixed(2)}`}
         />
         <Metric
           label="PCU"
-          value={formatPcu(summary.total_pcu, locale)}
+          value={formatCompact(summary.total_pcu, locale)}
           quality={
             q.suppressed_bins > 0
               ? `${formatCount(q.suppressed_bins, locale)} bins suppressed`
@@ -48,7 +48,7 @@ export function CountsPanel({ summary }: { summary: CountsSummary }) {
         <p className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] text-[var(--ink-muted)]">
           Peak hour {String(summary.peak_hour.hour).padStart(2, "0")}:00 ·{" "}
           <span className="font-mono tabular-nums">
-            {formatPcu(summary.peak_hour.pcu, locale)}
+            {formatCompact(summary.peak_hour.pcu, locale)}
           </span>{" "}
           PCU
         </p>
@@ -155,11 +155,15 @@ export function QualityPanel({
   const cert = cameras[0]?.accuracy_cert;
   const q = summary.data_quality;
   return (
-    <Panel title="Data quality">
+    <Panel title="Data quality · today">
       <div className="grid grid-cols-3 gap-3">
         <Metric label="Cameras" value={`${active.length}/${cameras.length}`} />
-        <Metric label="Mean" value={q.mean_score.toFixed(2)} />
-        <Metric label="Suppressed" value={formatPercent(q.suppressed_pct, locale)} />
+        <Metric label="Mean" value={q.mean_score.toFixed(2)} quality="incl. night bins" />
+        <Metric
+          label="Suppressed"
+          value={formatPercent(q.suppressed_pct, locale)}
+          quality="over the full day"
+        />
       </div>
       {cert && (
         <p className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] leading-relaxed text-[var(--ink-muted)]">
@@ -168,6 +172,109 @@ export function QualityPanel({
           <br />
           <span className="text-[var(--accent)]">{cert.status}</span> — {cert.basis}
         </p>
+      )}
+    </Panel>
+  );
+}
+
+/**
+ * Black spots, ranked by SEVERITY rather than frequency.
+ *
+ * docs/01 §2 is the whole reason this panel exists: Jaipur crashes fell 5.6% in
+ * 2025 while deaths rose 3.1%. A frequency ranking would miss precisely that.
+ */
+export function BlackSpotPanel({ data }: { data: BlackSpots }) {
+  const locale = useLocale() as Locale;
+  return (
+    <Panel
+      title="Black spots · severity"
+      aside={data.segments[0]?.is_synthetic ? <SyntheticTag label="Simulated" /> : undefined}
+    >
+      {data.segments.length === 0 ? (
+        <p className="text-[11px] text-[var(--ink-muted)]">No segment has enough crashes to rank.</p>
+      ) : (
+        <ul className="space-y-2">
+          {data.segments.slice(0, 5).map((s) => (
+            <li key={s.link_id} className="flex items-baseline justify-between gap-2 text-[12px]">
+              <span className="min-w-0 flex-1 truncate text-[var(--ink)]">
+                {locale === "hi" ? s.name.hi : s.name.en}
+                {s.top_cause && (
+                  <span className="ml-1.5 text-[10px] text-[var(--ink-faint)]">
+                    {s.top_cause.replace(/_/g, " ")}
+                  </span>
+                )}
+              </span>
+              <span className="shrink-0 font-mono tabular-nums text-[var(--ink-muted)]">
+                {formatCount(s.deaths, locale)}
+                <span className="ml-1 text-[10px]">deaths</span>
+              </span>
+              <span
+                className="shrink-0 font-mono tabular-nums"
+                style={{ color: congestionVar(Math.min(100, s.severity_rate * 70)) }}
+              >
+                {s.severity_rate.toFixed(2)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] leading-relaxed text-[var(--ink-muted)]">
+        {data.basis}. Crashes fell 5.6% in 2025 while deaths rose 3.1% — severity,
+        not frequency, is what is concentrating.
+      </p>
+    </Panel>
+  );
+}
+
+/** docs/04 §7 — the system recommends, a person decides. Every time. */
+export function SignalPanel({ data }: { data: SignalAdvisory }) {
+  const locale = useLocale() as Locale;
+  const measured = data.advisories.filter((a) => a.has_measurement);
+  return (
+    <Panel title="Signal advisory" aside={<SyntheticTag label="Advisory" />}>
+      <ul className="space-y-2">
+        {data.advisories.slice(0, 5).map((a) => (
+          <li key={a.junction_id} className="text-[12px]">
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="min-w-0 flex-1 truncate text-[var(--ink)]">
+                {locale === "hi" ? a.name.hi : a.name.en}
+              </span>
+              <span className="shrink-0 font-mono tabular-nums text-[var(--ink-muted)]">
+                {a.has_measurement ? `${a.recommended_cycle_s}s` : "—"}
+              </span>
+            </div>
+            <div className="mt-1">
+              <Bar
+                fraction={a.degree_of_saturation}
+                colour={congestionVar(a.degree_of_saturation * 100)}
+              />
+            </div>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] leading-relaxed text-[var(--ink-muted)]">
+        {data.method} · {measured.length} of {data.advisories.length} junctions instrumented.
+        <br />
+        <span className="text-[var(--accent)]">{data.governance}</span>
+      </p>
+    </Panel>
+  );
+}
+
+/**
+ * Incidents. Honest about being empty: the detector has not run, and an empty
+ * list is a true statement about this instance rather than a claim of calm.
+ */
+export function IncidentPanel({ count = 0 }: { count?: number }) {
+  return (
+    <Panel title="Incidents · active">
+      {count === 0 ? (
+        <p className="text-[11px] leading-relaxed text-[var(--ink-muted)]">
+          No active incidents. The detector has not been run on this instance —
+          this is an empty queue, not a quiet corridor.
+        </p>
+      ) : (
+        <p className="font-mono text-2xl tabular-nums text-[var(--ink)]">{count}</p>
       )}
     </Panel>
   );

@@ -69,8 +69,18 @@ function IntroFlight({
     // and the camera sat in the road. `fit` is the distance at which a sphere
     // of `radius` exactly fills the frame, so the fractions below mean
     // something: 1.0 is the whole corridor, 0.34 is a readable stretch.
-    const fov = (camera as THREE.PerspectiveCamera).fov ?? 40;
-    const fit = radius / Math.sin(((fov / 2) * Math.PI) / 180);
+    // three's `fov` is the VERTICAL field of view. In a portrait pane — which
+    // the console's map column is — the horizontal frustum is far narrower, so
+    // framing on the vertical alone puts a wide corridor outside the shot. Fit
+    // to whichever axis is tighter.
+    const perspective = camera as THREE.PerspectiveCamera;
+    const fovRad = ((perspective.fov ?? 40) * Math.PI) / 180;
+    const aspect = perspective.aspect || 1;
+    const hFovRad = 2 * Math.atan(Math.tan(fovRad / 2) * aspect);
+    const fit = Math.max(
+      radius / Math.sin(fovRad / 2),
+      radius / Math.sin(hFovRad / 2),
+    );
     const far = fit * 0.85;
     // 0.12 frames a readable stretch. There is no single distance that shows a
     // 17 km corridor AND a 4 m car — they are four orders of magnitude apart —

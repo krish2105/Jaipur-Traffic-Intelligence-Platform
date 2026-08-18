@@ -100,6 +100,41 @@ export interface Forecast {
   generated_at: string;
 }
 
+export interface BlackSpot {
+  link_id: number;
+  name: Bilingual;
+  crashes: number;
+  deaths: number;
+  grievous: number;
+  severity_rate: number;
+  top_cause: string | null;
+  top_light: string | null;
+  is_synthetic: boolean;
+}
+
+export interface BlackSpots {
+  segments: BlackSpot[];
+  basis: string;
+  note: string;
+}
+
+export interface Advisory {
+  junction_id: number;
+  name: Bilingual;
+  signal_type: string;
+  measured_pcu_per_hour: number;
+  degree_of_saturation: number;
+  recommended_cycle_s: number;
+  quality: number;
+  has_measurement: boolean;
+}
+
+export interface SignalAdvisory {
+  advisories: Advisory[];
+  method: string;
+  governance: string;
+}
+
 async function get<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE}/api/v1${path}`, {
     // Measurements move every five minutes; a stale dashboard is a wrong one.
@@ -129,6 +164,9 @@ export const api = {
     get<DayProfile>(`/congestion/day-profile${query({ corridor_id: corridorId, date })}`),
   cameras: () => get<Camera[]>("/cameras"),
   forecast: (linkId?: number) => get<Forecast>(`/forecast${query({ link_id: linkId })}`),
+  blackspots: (corridorId?: number) =>
+    get<BlackSpots>(`/safety/blackspots${query({ corridor_id: corridorId })}`),
+  signals: () => get<SignalAdvisory>("/signals/advisory"),
 };
 
 /**

@@ -54,3 +54,21 @@ export function congestionBandKey(index: number): string {
   if (index <= 85) return "congestion.severe";
   return "congestion.critical";
 }
+
+
+/**
+ * Indian short-scale for figures too wide for a panel column.
+ * 1,61,545.8 becomes 1.62 L, 3,50,00,000 becomes 3.5 Cr — the units a
+ * Rajasthan official reads without translating.
+ */
+export function formatCompact(value: number, locale: Locale): string {
+  const nf = (v: number, digits: number) =>
+    new Intl.NumberFormat(localeTag(locale), {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    }).format(v);
+  if (Math.abs(value) >= 1e7) return `${nf(value / 1e7, 2)} Cr`;
+  if (Math.abs(value) >= 1e5) return `${nf(value / 1e5, 2)} L`;
+  if (Math.abs(value) >= 1e3) return nf(value, 0);
+  return nf(value, 1);
+}

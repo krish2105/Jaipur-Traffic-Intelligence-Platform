@@ -477,3 +477,117 @@ async def scene_buildings() -> dict[str, Any]:
         return {"buildings": [], "count": 0, "note": "no cached building extract"}
     data = json.loads(path.read_text(encoding="utf-8"))
     return {"buildings": data.get("buildings", []), "count": data.get("count", 0)}
+
+
+@router.get("/safety/blackspots")
+async def blackspots(
+    session: SessionDep,
+    corridor_id: Annotated[int | None, Query()] = None,
+    limit: Annotated[int, Query(le=50)] = 8,
+) -> dict[str, Any]:
+    """Segments ranked by crash SEVERITY, not frequency.
+
+    docs/01 §2 is the reason: Jaipur crashes fell 5.6% in 2025 while deaths rose
+    3.1%, pushing the fatality rate to a five-year high. Ranking by how often a
+    crash happens would miss exactly that — so the ranking is the share of
+    crashes here that killed or seriously injured someone, which is what
+    docs/04 §6 defines as the target.
+    """
+    rows = await session.execute(
+        text("""
+            SELECT l.link_id, l.name_en, l.name_hi,
+                   count(c.crash_id)                          AS crashes,
+                   sum(c.fatalities)                          AS deaths,
+                   sum(c.grievous)                            AS grievous,
+                   round(
+                     (sum(c.fatalities) + sum(c.grievous))::numeric
+                     / NULLIF(count(c.crash_id), 0), 3)       AS severity_rate,
+                   mode() WITHIN GROUP (ORDER BY c.primary_cause)   AS top_cause,
+                   mode() WITHIN GROUP (ORDER BY c.light_condition) AS top_light,
+                   bool_or(c.is_synthetic)                    AS is_synthetic
+            FROM road_links l
+            JOIN crashes c ON c.link_id = l.link_id
+            WHERE (CAST(:corridor_id AS bigint) IS NULL OR l.corridor_id = :corridor_id)
+            GROUP BY l.link_id, l.name_en, l.name_hi
+            HAVING count(c.crash_id) >= 5
+            ORDER BY severity_rate DESC NULLS LAST, deaths DESC
+            LIMIT :limit
+        """),
+        {"corridor_id": corridor_id, "limit": limit},
+    )
+    segments = [
+        {
+            "link_id": r.link_id,
+            "name": {"en": r.name_en, "hi": r.name_hi},
+            "crashes": int(r.crashes),
+            "deaths": int(r.deaths or 0),
+            "grievous": int(r.grievous or 0),
+            "severity_rate": float(r.severity_rate or 0),
+            "top_cause": r.top_cause,
+            "top_light": r.top_light,
+            "is_synthetic": bool(r.is_synthetic),
+        }
+        for r in rows
+    ]
+    return {
+        "segments": segments,
+        "basis": "share of crashes here that were fatal or grievous, 2021-2025",
+        "note": "Ranked by severity, not frequency — docs/01 §2.",
+    }
+
+
+@router.get("/signals/advisory")
+async def signal_advisory(session: SessionDep) -> dict[str, Any]:
+    """Webster cycle recommendation per junction, from measured approach flow.
+
+    docs/DECISIONS.md ADR-005: Webster and max-pressure rather than MARL,
+    because a traffic engineer can audit the arithmetic and cite it in a file.
+
+    docs/04 §7, and this is the line to repeat verbatim in the room: the model
+    produces a RECOMMENDED plan, an engineer reviews it, a human applies it.
+    There is no path from this endpoint to a signal controller.
+    """
+    rows = await session.execute(
+        text("""
+            SELECT j.junction_id, j.name_en, j.name_hi, j.signal_type,
+                   j.approach_count,
+                   COALESCE(sum(tc.pcu), 0) AS pcu_30min,
+                   COALESCE(avg(tc.quality_score), 0) AS quality
+            FROM junctions j
+            LEFT JOIN cameras c  ON c.junction_id = j.junction_id
+            LEFT JOIN traffic_counts_scoped tc
+                   ON tc.camera_id = c.camera_id
+                  AND tc.bucket_start >  now() - INTERVAL '30 minutes'
+                  AND tc.bucket_start <= now()
+            GROUP BY j.junction_id, j.name_en, j.name_hi, j.signal_type, j.approach_count
+            ORDER BY j.junction_id
+        """)
+    )
+
+    advisories = []
+    for r in rows:
+        approaches = int(r.approach_count or 4)
+        flow_pcu_hr = float(r.pcu_30min) * 2
+        # Webster: C = (1.5L + 5) / (1 - Y). L is lost time, ~4 s per phase.
+        lost = 4.0 * approaches
+        saturation = 1800.0 * approaches
+        y = min(0.85, flow_pcu_hr / saturation) if saturation else 0.0
+        cycle = (1.5 * lost + 5) / max(0.15, 1 - y)
+        advisories.append(
+            {
+                "junction_id": r.junction_id,
+                "name": {"en": r.name_en, "hi": r.name_hi},
+                "signal_type": r.signal_type,
+                "measured_pcu_per_hour": round(flow_pcu_hr, 1),
+                "degree_of_saturation": round(y, 3),
+                "recommended_cycle_s": round(min(150.0, max(45.0, cycle))),
+                "quality": round(float(r.quality), 2),
+                "has_measurement": float(r.pcu_30min) > 0,
+            }
+        )
+    return {
+        "advisories": advisories,
+        "method": "Webster (IRC:93 basis)",
+        "governance": "Advisory only. An engineer reviews; a human applies. "
+        "No code path reaches a signal controller.",
+    }

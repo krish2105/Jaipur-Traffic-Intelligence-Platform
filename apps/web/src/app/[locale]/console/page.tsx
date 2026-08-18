@@ -16,7 +16,8 @@ export default async function ConsolePage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [corridors, summary, cameras, forecast, scene, buildings] = await Promise.all([
+  const [corridors, summary, cameras, forecast, scene, buildings, blackspots, signals] =
+    await Promise.all([
     api.corridors().catch(() => []),
     api.summary(1),
     api.cameras().catch(() => []),
@@ -27,7 +28,9 @@ export default async function ConsolePage({
     fetch(`${BASE}/api/v1/scene/buildings`, { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : { buildings: [] }))
       .catch(() => ({ buildings: [] })),
-  ]);
+      api.blackspots(1).catch(() => ({ segments: [], basis: "", note: "" })),
+      api.signals().catch(() => ({ advisories: [], method: "", governance: "" })),
+    ]);
 
   return (
     <ConsoleShell
@@ -37,6 +40,8 @@ export default async function ConsolePage({
       forecast={forecast}
       links={(scene.links ?? []) as SceneLink[]}
       buildings={buildings.buildings ?? []}
+      blackspots={blackspots}
+      signals={signals}
     />
   );
 }

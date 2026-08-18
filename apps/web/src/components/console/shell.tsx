@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useLocale } from "next-intl";
 
-import type { Camera, CountsSummary, Corridor, Forecast } from "@/lib/api";
+import type { BlackSpots, Camera, CountsSummary, Corridor, Forecast, SignalAdvisory } from "@/lib/api";
 import type { SceneLink } from "@/components/city/city-view";
 import type { BuildingBox } from "@/components/city/buildings";
 import { City } from "@/components/city/city-scene.loader";
@@ -11,7 +11,15 @@ import { boundsOf, centroidOf, projectLine } from "@/lib/geo";
 import { RAMP_NIGHT } from "@/components/city/ramp";
 import type { Locale } from "@/i18n/routing";
 import { ModeDot } from "./primitives";
-import { CompositionPanel, CountsPanel, ForecastPanel, QualityPanel } from "./panels";
+import {
+  BlackSpotPanel,
+  CompositionPanel,
+  CountsPanel,
+  ForecastPanel,
+  IncidentPanel,
+  QualityPanel,
+  SignalPanel,
+} from "./panels";
 
 const NAV = [
   { id: "dashboard", en: "Dashboard", hi: "डैशबोर्ड" },
@@ -40,6 +48,8 @@ export function ConsoleShell({
   forecast,
   links,
   buildings,
+  blackspots,
+  signals,
 }: {
   corridors: Corridor[];
   summary: CountsSummary;
@@ -47,6 +57,8 @@ export function ConsoleShell({
   forecast: Forecast;
   links: SceneLink[];
   buildings: BuildingBox[];
+  blackspots: BlackSpots;
+  signals: SignalAdvisory;
 }) {
   const locale = useLocale() as Locale;
   const [active, setActive] = useState<string>("dashboard");
@@ -169,6 +181,9 @@ export function ConsoleShell({
           <CompositionPanel summary={summary} />
           <ForecastPanel forecast={forecast} />
           <QualityPanel summary={summary} cameras={cameras} />
+          <IncidentPanel />
+          <BlackSpotPanel data={blackspots} />
+          <SignalPanel data={signals} />
         </aside>
       </div>
 
