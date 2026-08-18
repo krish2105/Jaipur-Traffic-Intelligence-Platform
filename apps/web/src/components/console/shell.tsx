@@ -19,6 +19,7 @@ import type {
 } from "@/lib/api";
 import type { SceneLink } from "@/components/city/city-view";
 import type { BuildingBox } from "@/components/city/buildings";
+import { useBuildings } from "@/components/city/use-buildings";
 import { City } from "@/components/city/city-scene.loader";
 import { boundsOf, centroidOf, projectLine } from "@/lib/geo";
 import { RAMP_NIGHT } from "@/components/city/ramp";
@@ -94,13 +95,15 @@ const RAIL = { key: "pravaah-rail", initial: 340, min: 260, max: 640 };
  * from every ICCC dashboard in the country is what the panels contain: not
  * "total vehicles", but what those vehicles ARE.
  */
+const NO_BUILDINGS: BuildingBox[] = [];
+
 export function ConsoleShell({
   corridors,
   summary,
   cameras,
   forecast,
   links,
-  buildings,
+  buildings: servedBuildings,
   blackspots,
   signals,
   readiness,
@@ -226,6 +229,11 @@ export function ConsoleShell({
     );
     return list;
   }, [nav, go, sceneMode, threeD, router, hi, locale, session, railReset]);
+
+  // Resolved before the scene is built, never swapped in afterwards — see
+  // useBuildings for why the timing is what matters here.
+  const resolvedBuildings = useBuildings(servedBuildings);
+  const buildings = resolvedBuildings ?? NO_BUILDINGS;
 
   // useMemo, not an IIFE. Rebuilt every render, `data` is a new object each
   // time, so the road geometry rebuilds every frame; that trips the
@@ -378,7 +386,7 @@ export function ConsoleShell({
         >
           {showMap ? (
             <>
-              {threeD ? (
+              {threeD && resolvedBuildings !== null ? (
                 <City
                   data={scene.data}
                   radius={scene.radius}

@@ -16,6 +16,7 @@ import type {
 } from "@/lib/api";
 import type { SceneLink } from "@/components/city/city-view";
 import type { BuildingBox } from "@/components/city/buildings";
+import { useBuildings } from "@/components/city/use-buildings";
 import { City } from "@/components/city/city-scene.loader";
 import { RAMP_NIGHT } from "@/components/city/ramp";
 import { currentScene, serverScene, subscribeScene } from "@/lib/theme";
@@ -54,13 +55,15 @@ interface Tile {
   label: string;
 }
 
+const NO_BUILDINGS: BuildingBox[] = [];
+
 export function BentoShell({
   corridors,
   summary,
   cameras,
   forecast,
   links,
-  buildings,
+  buildings: servedBuildings,
   blackspots,
   signals,
   readiness,
@@ -86,6 +89,11 @@ export function BentoShell({
   const sceneMode = useSyncExternalStore(subscribeScene, currentScene, serverScene);
   const [expanded, setExpanded] = useState<string | null>(null);
   const corridor = corridors[0];
+
+  // Resolved before the scene is built, never swapped in afterwards — see
+  // useBuildings for why the timing is what matters here.
+  const resolvedBuildings = useBuildings(servedBuildings);
+  const buildings = resolvedBuildings ?? NO_BUILDINGS;
 
   // Memoised for the same reason the console's is: an unmemoised scene object
   // rebuilds the road geometry every frame and never settles.
@@ -129,20 +137,22 @@ export function BentoShell({
   const mapTile = useCallback(
     () => (
       <div className="relative h-full min-h-[280px] overflow-hidden rounded-xl border border-[var(--rule)]">
-        <City
-          data={scene.data}
-          radius={scene.radius}
-          origin={scene.origin}
-          scene={sceneMode}
-          fallback={
-            <div className="grid h-full place-items-center text-[12px] text-[var(--ink-muted)]">
-              2D view
-            </div>
-          }
-        />
+        {resolvedBuildings === null ? null : (
+          <City
+            data={scene.data}
+            radius={scene.radius}
+            origin={scene.origin}
+            scene={sceneMode}
+            fallback={
+              <div className="grid h-full place-items-center text-[12px] text-[var(--ink-muted)]">
+                2D view
+              </div>
+            }
+          />
+        )}
       </div>
     ),
-    [scene, sceneMode],
+    [scene, sceneMode, resolvedBuildings],
   );
 
   const tiles: Tile[] = useMemo(
