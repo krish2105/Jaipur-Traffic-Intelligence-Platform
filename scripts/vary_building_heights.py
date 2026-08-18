@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
 from pathlib import Path
 
 SEEDS = Path(__file__).resolve().parents[1] / "data" / "seeds"

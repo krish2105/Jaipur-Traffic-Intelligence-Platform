@@ -71,7 +71,6 @@ def main() -> int:
         for f in failures:
             print(f"  {f}", file=sys.stderr)
         return 1
-    total = sum(len(v) for v in palettes.values())
     print(f"PASS  {len(palettes)} palettes, all tokens meet their contrast target")
     return 0
 

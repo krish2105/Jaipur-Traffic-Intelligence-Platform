@@ -16,7 +16,6 @@ import math
 from pathlib import Path
 
 import httpx
-
 from pravaah.adapters.osm import OVERPASS_ENDPOINTS, USER_AGENT
 
 ROOT = Path(__file__).resolve().parents[1]

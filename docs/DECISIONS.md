@@ -343,3 +343,40 @@ it is why Anek was kept rather than replaced.
 pure black and exactly one saturated accent. `scripts/check_contrast.py` runs in
 CI and fails the build if any token drops below its WCAG target, because a
 palette is easy to nudge during design and impossible to re-audit by eye.
+
+---
+
+## ADR-016 — Jaipur Night is the product palette
+**Date:** 2026-08-18 · **Status:** Accepted · **Settles:** ADR-015's open palette question
+
+Four dark-first palettes were built and compared on the live city at the 19:00
+peak, where the congestion ramp actually separates them. **Jaipur Night** —
+`#070B18` indigo ground, `#FFC53D` molten brass accent — is the product palette.
+
+**Why it, and not the others.**
+
+*Signal* (charcoal + electric cyan) is the cleanest instrument of the four and
+the highest contrast, but it has no connection to the city it measures. For a
+product whose entire pitch is "we understand Jaipur specifically", a palette
+that would suit any operations console anywhere gives that away.
+
+*Pink City After Dark* is the most memorable and the riskiest. Warm coral on
+plum reads as consumer product in a room where the audience is deciding whether
+to trust a fatality statistic.
+
+*Araish Reversed* keeps the original doc 06 thesis, and its brass accent
+collides with the amber band of the congestion ramp — the accent and a safety
+signal competing for the same hue is exactly the failure doc 06 §1 warns about.
+
+Jaipur Night keeps the indigo/brass identity without that collision: brass sits
+at 12.4:1 on the ground and never appears in the congestion scale.
+
+**What this changes in the code.** The palette switcher is removed from the
+interface. It was an evaluation control, the evaluation is over, and shipping it
+to a government audience invites "which one is the real one?". The other three
+palettes remain defined in `palettes.css` and are still measured by
+`scripts/check_contrast.py`, so reverting is a one-line change.
+
+**What is kept.** The day/night scene toggle stays — that is a genuine product
+feature, not an evaluation aid. The congestion ramp is byte-identical in both
+modes, because it is the one thing that must never change meaning.

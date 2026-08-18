@@ -7,11 +7,17 @@ import type { CityData } from "./city-scene";
 import { boundsOf, centroidOf, projectLine } from "@/lib/geo";
 import type { Ramp } from "@/lib/ribbon";
 
+/**
+ * Jaipur Night is the product palette (ADR-016).
+ *
+ * The other three stay defined in palettes.css and are still measured by
+ * scripts/check_contrast.py, so reverting is a one-line change — but the
+ * switcher itself is gone. It was a decision aid, the decision has been taken,
+ * and shipping an evaluation control to a government audience invites the
+ * question "which one is the real one?"
+ */
 export const PALETTES = [
   { id: "night", label: "Jaipur Night", note: "indigo + molten brass" },
-  { id: "signal", label: "Signal", note: "charcoal + electric cyan" },
-  { id: "pinkcity", label: "Pink City After Dark", note: "plum + hot coral" },
-  { id: "araish", label: "Araish Reversed", note: "the original thesis, taken dark" },
 ] as const;
 
 export type PaletteId = (typeof PALETTES)[number]["id"];
@@ -29,20 +35,12 @@ export type PaletteId = (typeof PALETTES)[number]["id"];
  */
 const RAMPS: Record<PaletteId, Ramp> = {
   night: {
-    free: "#2DD4A7", light: "#8CD65B", moderate: "#FFB020",
-    severe: "#FF6B4A", critical: "#FF2D55", suppressed: "#6B7280",
-  },
-  signal: {
-    free: "#00E5A0", light: "#A3E635", moderate: "#FFC531",
-    severe: "#FF7849", critical: "#FF3366", suppressed: "#6B7280",
-  },
-  pinkcity: {
-    free: "#3DDC97", light: "#9BE564", moderate: "#FFB627",
-    severe: "#FF6B35", critical: "#E5383B", suppressed: "#6B7280",
-  },
-  araish: {
-    free: "#2DD4A7", light: "#8CD65B", moderate: "#FFB020",
-    severe: "#FF6B4A", critical: "#FF2D55", suppressed: "#6B7280",
+    free: "#2DD4A7",
+    light: "#8CD65B",
+    moderate: "#FFB020",
+    severe: "#FF6B4A",
+    critical: "#FF2D55",
+    suppressed: "#6B7280",
   },
 };
 
@@ -66,7 +64,7 @@ export function CityView({
   buildings: CityData["buildings"];
   initialPalette?: PaletteId;
 }) {
-  const [palette, setPalette] = useState<PaletteId>(initialPalette);
+  const palette = initialPalette;
   /** Night is the control-room native mode; day is the public-facing one. */
   const [scene, setScene] = useState<"night" | "day">("night");
   /** Hour of the seeded day the whole city is rendered at. */
@@ -106,13 +104,6 @@ export function CityView({
     document.documentElement.setAttribute("data-scene", scene);
   }, [palette, scene]);
 
-  // Committed in the click handler as well as the effect. With only the effect,
-  // the DOM lagged one click behind the button state and the two disagreed on
-  // screen — visibly wrong in a demo.
-  const choosePalette = (next: PaletteId) => {
-    document.documentElement.setAttribute("data-palette", next);
-    setPalette(next);
-  };
 
   const links = liveLinks ?? initialLinks;
 
@@ -169,29 +160,16 @@ export function CityView({
             </p>
           </div>
 
-          <div className="pointer-events-auto glass flex flex-wrap gap-1 rounded-2xl p-1.5">
+          <div className="pointer-events-auto glass flex items-center gap-1 rounded-2xl p-1.5">
             <button
               type="button"
               onClick={() => setScene(scene === "night" ? "day" : "night")}
               aria-label={scene === "night" ? "Switch to day" : "Switch to night"}
-              className="mr-1 rounded-xl px-3 py-2 text-xs text-[var(--ink-muted)]
-                         transition-colors hover:text-[var(--ink)]"
+              className="rounded-xl px-3.5 py-2 text-sm text-[var(--ink-muted)]
+                         transition-colors hover:bg-[var(--surface-2)] hover:text-[var(--ink)]"
             >
-              {scene === "night" ? "☾" : "☀"}
+              <span aria-hidden="true">{scene === "night" ? "☾" : "☀"}</span>
             </button>
-            {PALETTES.map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => choosePalette(p.id)}
-                aria-pressed={palette === p.id}
-                className="rounded-xl px-3 py-2 text-xs transition-colors
-                           text-[var(--ink-muted)] hover:text-[var(--ink)]
-                           aria-pressed:bg-[var(--accent)] aria-pressed:text-[var(--accent-ink)]"
-              >
-                {p.label}
-              </button>
-            ))}
           </div>
         </header>
 
