@@ -1,0 +1,133 @@
+/* ===========================================================================
+   PRAVAAH palettes — dark-first, four candidates.
+
+   <html data-palette="night | signal | pinkcity | araish">
+
+   Every palette follows the same discipline, which is what separates a premium
+   dark interface from a muddy one: true layered surfaces rather than pure
+   black, ONE saturated accent, and semantic congestion colours that are never
+   reused for anything else. Spreading accent colour is what makes dark UIs
+   look cheap.
+
+   Contrast ratios below are against that palette's own --ground and are
+   computed by scripts/check_contrast.py, which fails if any drifts below its
+   target. Body text >= 4.5:1; --ink-faint is decorative only and holds the
+   3:1 large-text floor.
+   =========================================================================== */
+
+:root {
+  /* Elevation is expressed as light, not just as a lighter fill — a dark
+     surface reads as raised when it catches a rim of light along its top edge. */
+  --rim: inset 0 1px 0 0 rgb(255 255 255 / 0.06);
+  --rim-strong: inset 0 1px 0 0 rgb(255 255 255 / 0.10);
+  --shadow-panel: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -8px rgb(0 0 0 / 0.5);
+  --shadow-float: 0 2px 4px rgb(0 0 0 / 0.4), 0 24px 48px -12px rgb(0 0 0 / 0.6);
+  --glass-blur: 20px;
+}
+
+/* ── NIGHT · indigo + molten brass ──────────────────────────────────────── */
+[data-palette="night"] {
+  --ground:        #070B18;
+  --ground-deep:   #04060F;
+  --surface:       #0F1524;
+  --surface-2:     #182034;
+  --surface-3:     #232C44;
+  --ink:           #EEF2FF;   /* 17.6:1 */
+  --ink-muted:     #8E9BBF;   /*  7.1:1 */
+  --ink-faint:     #5A6488;   /*  3.4:1 — decorative only */
+  --rule:          #1E2740;
+  --rule-strong:   #2E3A5C;
+  --accent:        #FFC53D;   /* 12.4:1 — molten brass */
+  --accent-2:      #FF9E2C;
+  --accent-ink:    #070B18;
+  --accent-glow:   #FFC53D;
+  --selection:     #3A5BD9;
+}
+
+/* ── SIGNAL · charcoal + electric cyan ──────────────────────────────────── */
+[data-palette="signal"] {
+  --ground:        #0A0A0C;
+  --ground-deep:   #050506;
+  --surface:       #131417;
+  --surface-2:     #1D1F24;
+  --surface-3:     #292C33;
+  --ink:           #F4F5F7;   /* 18.1:1 */
+  --ink-muted:     #9298A5;   /*  6.8:1 */
+  --ink-faint:     #5F6672;   /*  3.4:1 */
+  --rule:          #22242A;
+  --rule-strong:   #343841;
+  --accent:        #22E3FF;   /* 12.7:1 — electric cyan */
+  --accent-2:      #00A8CC;
+  --accent-ink:    #05161B;
+  --accent-glow:   #22E3FF;
+  --selection:     #1F6FEB;
+}
+
+/* ── PINK CITY AFTER DARK · plum + hot coral ────────────────────────────── */
+[data-palette="pinkcity"] {
+  --ground:        #140A11;
+  --ground-deep:   #0C060A;
+  --surface:       #1F1019;
+  --surface-2:     #2C1724;
+  --surface-3:     #3A1F30;
+  --ink:           #FFF0F4;   /* 17.6:1 */
+  --ink-muted:     #BC94A6;   /*  7.3:1 */
+  --ink-faint:     #7E5D6C;   /*  3.4:1 */
+  --rule:          #301826;
+  --rule-strong:   #47263A;
+  --accent:        #FF5C7A;   /*  6.5:1 — hot coral */
+  --accent-2:      #FF8FA3;
+  --accent-ink:    #1A0510;
+  --accent-glow:   #FF5C7A;
+  --selection:     #C2410C;
+}
+
+/* ── ARAISH REVERSED · the original thesis, taken dark and turned up ────── */
+[data-palette="araish"] {
+  --ground:        #0D0B08;
+  --ground-deep:   #060504;
+  --surface:       #17130D;
+  --surface-2:     #221C13;
+  --surface-3:     #2F271A;
+  --ink:           #F7F1E4;   /* 17.5:1 */
+  --ink-muted:     #ADA08A;   /*  7.6:1 */
+  --ink-faint:     #6F6555;   /*  3.4:1 */
+  --rule:          #241E14;
+  --rule-strong:   #3A3122;
+  --accent:        #E8B33C;   /* 10.2:1 — brass, finally bright enough to read */
+  --accent-2:      #C9862A;
+  --accent-ink:    #14100A;
+  --accent-glow:   #FFD470;
+  --selection:     #4C639E;
+}
+
+/* ── the congestion ramp ────────────────────────────────────────────────
+   Tuned per palette so it stays legible against that ground, but always the
+   same five semantic steps and never used for anything but congestion and
+   severity. A success green that works on white looks radioactive on dark, so
+   these are desaturated and shifted rather than reused from the light theme.
+   ------------------------------------------------------------------------ */
+[data-palette] {
+  --congestion-free:     #2DD4A7;
+  --congestion-light:    #8CD65B;
+  --congestion-moderate: #FFB020;
+  --congestion-severe:   #FF6B4A;
+  --congestion-critical: #FF2D55;
+  --quality-good:        #2DD4A7;
+  --quality-degraded:    #FFB020;
+  --quality-suppressed:  #6B7280;
+}
+[data-palette="signal"] {
+  --congestion-free:     #00E5A0;
+  --congestion-light:    #A3E635;
+  --congestion-moderate: #FFC531;
+  --congestion-severe:   #FF7849;
+  --congestion-critical: #FF3366;
+}
+[data-palette="pinkcity"] {
+  --congestion-free:     #3DDC97;
+  --congestion-light:    #9BE564;
+  --congestion-moderate: #FFB627;
+  --congestion-severe:   #FF6B35;
+  --congestion-critical: #E5383B;
+}

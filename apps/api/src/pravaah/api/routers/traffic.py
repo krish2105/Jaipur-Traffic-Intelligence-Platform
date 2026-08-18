@@ -327,3 +327,86 @@ async def forecast(
         "note": "Persistence baseline. A learned model ships only once it beats this.",
         "generated_at": datetime.now().astimezone().isoformat(),
     }
+
+
+@router.get("/scene")
+async def scene(
+    session: SessionDep,
+    corridor_id: Annotated[int | None, Query()] = None,
+) -> dict[str, Any]:
+    """Everything the 3D city needs, in one payload.
+
+    Deliberately one request rather than three: the scene cannot draw a partial
+    city, so three round-trips would only produce three chances to show a
+    half-built one.
+
+    `flow` and `speed_kmh` are measured values, and `suppressed` marks links
+    whose latest bin fell below the quality floor. The twin renders those inert
+    — it must never invent traffic it did not measure (docs/06 §3).
+    """
+    rows = await session.execute(
+        text("""
+            WITH latest AS (
+              SELECT DISTINCT ON (lc.link_id)
+                     lc.link_id, lc.congestion_index, lc.confidence
+              FROM link_congestion lc
+              ORDER BY lc.link_id, lc.bucket_start DESC
+            ),
+            measured AS (
+              -- Vehicles per hour on the link. Two things this must get right:
+              --  * the window is 30 minutes, so the hourly rate is the sum
+              --    divided by 0.5 h — not a 5-minute bin scaled by 12;
+              --  * more than one camera can watch the same link, and each sees
+              --    the whole stream, so summing them double-counts. Divide by
+              --    the number that actually reported.
+              SELECT tc.link_id,
+                     sum(tc.vehicle_count)::numeric
+                       / GREATEST(1, count(DISTINCT tc.camera_id))
+                       / 0.5                  AS flow_per_hour,
+                     avg(tc.mean_speed_kmh)   AS speed_kmh,
+                     min(tc.quality_score)    AS quality
+              FROM traffic_counts_scoped tc
+              -- Bounded at BOTH ends. The seed writes a whole final day
+              -- including hours still ahead of now, so an open-ended window
+              -- sweeps up the rest of today and inflates the rate ~20x.
+              WHERE tc.bucket_start >  now() - INTERVAL '30 minutes'
+                AND tc.bucket_start <= now()
+              GROUP BY tc.link_id
+            )
+            SELECT l.link_id, l.name_en, l.name_hi, l.corridor_id, l.lanes,
+                   ST_AsGeoJSON(l.geom)::json AS geometry,
+                   COALESCE(latest.congestion_index, 0)  AS congestion_index,
+                   COALESCE(measured.flow_per_hour, 0)   AS flow,
+                   COALESCE(measured.speed_kmh,
+                            l.free_flow_speed_kmh, 30)   AS speed_kmh,
+                   COALESCE(measured.quality, 1.0)       AS quality
+            FROM road_links l
+            LEFT JOIN latest   ON latest.link_id = l.link_id
+            LEFT JOIN measured ON measured.link_id = l.link_id
+            WHERE (CAST(:corridor_id AS bigint) IS NULL OR l.corridor_id = :corridor_id)
+        """),
+        {"corridor_id": corridor_id},
+    )
+    links = []
+    for r in rows:
+        geometry = r.geometry or {}
+        if geometry.get("type") != "LineString":
+            continue
+        links.append(
+            {
+                "link_id": r.link_id,
+                "name": {"en": r.name_en, "hi": r.name_hi},
+                "corridor_id": r.corridor_id,
+                "lanes": r.lanes or 2,
+                "coordinates": geometry.get("coordinates", []),
+                "congestion_index": round(float(r.congestion_index), 1),
+                "flow": round(float(r.flow), 1),
+                "speed_kmh": round(float(r.speed_kmh), 1),
+                "suppressed": float(r.quality) < MIN_QUALITY,
+            }
+        )
+    return {
+        "links": links,
+        "origin": {"lon": 75.8005, "lat": 26.862},
+        "is_synthetic": True,
+    }

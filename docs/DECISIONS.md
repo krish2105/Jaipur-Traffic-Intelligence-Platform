@@ -298,3 +298,48 @@ one env var apart. Embeddings stay on `multilingual-e5-large` regardless, since
 
 **Not yet actioned** — flagged for the owner, because ADR-008 was an explicit
 choice and this reverses part of it.
+
+---
+
+## ADR-015 — Interface rebuilt around a 3D city; officer PWA is 2D-first
+**Date:** 2026-08-18 · **Status:** Accepted · **Supersedes:** doc 06 §1, §3, §6
+
+The first interface was rejected outright by the owner, and the criticism was
+correct. It defaulted to light when doc 06 §6 itself says dark is the
+control-room native mode; every panel was a 1px-border rectangle with no
+elevation or layering; it shipped no WebGL at all despite 3D being in the
+original brief; and the brass accent was so restrained it read as beige.
+
+**The new concept: the city is the interface.** Real OpenStreetMap geometry
+becomes a stylised night city — roads as emissive ribbons coloured by measured
+congestion, dark massed buildings for urban context, volumetric fog, bloom.
+Traffic is instanced light particles whose density and speed are actual measured
+counts. Data panels are glass over the scene rather than boxes beside it.
+
+**Four signature moments**, all driven by real data: a camera flight down the
+corridor on load; counts rendered as light you can watch; a gnomon shadow that
+sweeps the day across the scene; and a time-scrub that re-renders the whole city
+to any moment in the seeded 90 days, including TomTom's worst Jaipur day.
+
+**Two real front doors, not one and a stub.** doc 03 §7 sets WCAG 2.2 AA and
+doc 06 §8 requires reduced motion to have a genuine static fallback. So the 2D
+mode is designed to the same standard as the 3D one, and serves no-WebGL,
+reduced-motion and low-power devices.
+
+**The officer PWA defaults to 2D, with 3D as an opt-in.** Maximum 3D cannot hold
+60fps on the mid-range Android that half the officers will actually carry
+(doc 06 §4 makes the same point about `backdrop-filter`). The field surface is
+for reading an assigned corridor and filing an incident in poor light on a
+cheap handset; a city flythrough is not what that job needs. Command centre and
+public site get the full scene.
+
+**Typography.** Clash Display for display, self-hosted under the ITF Free Font
+Licence; Anek retained for UI and Hindi; JetBrains Mono replaces IBM Plex Mono
+for data. Clash and Anek are both Indian Type Foundry faces — for a Government
+of Rajasthan product that is a better story than a pairing of convenience, and
+it is why Anek was kept rather than replaced.
+
+**Palette.** Four dark-first candidates, each with layered surfaces rather than
+pure black and exactly one saturated accent. `scripts/check_contrast.py` runs in
+CI and fails the build if any token drops below its WCAG target, because a
+palette is easy to nudge during design and impossible to re-audit by eye.
