@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useLocale } from "next-intl";
 
 import type { BlackSpots, Camera, CountsSummary, Corridor, Forecast, SignalAdvisory } from "@/lib/api";
@@ -65,7 +65,12 @@ export function ConsoleShell({
   const [threeD, setThreeD] = useState(true);
   const corridor = corridors[0];
 
-  const scene = (() => {
+  // useMemo, not an IIFE. Rebuilt every render, `data` is a new object each
+  // time, so the road geometry rebuilds every frame; that trips the
+  // frame-budget guard, which calls setQuality, which re-renders — a loop that
+  // never settles and leaves the pane blank. /city always memoised this; the
+  // console did not, and that was the whole difference.
+  const scene = useMemo(() => {
     const centre = centroidOf(links.map((l) => l.coordinates));
     const projected = links.map((l) => ({ link: l, points: projectLine(l.coordinates, centre) }));
     const bounds = boundsOf(projected.flatMap((p) => p.points));
@@ -90,7 +95,7 @@ export function ConsoleShell({
         buildings,
       },
     };
-  })();
+  }, [links, buildings]);
 
   const measured = links.filter((l) => l.flow > 0).length;
 

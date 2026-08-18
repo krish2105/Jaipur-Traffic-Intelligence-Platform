@@ -456,3 +456,39 @@ needs, so the two should be built together rather than separately.
 
 Until then the default framing is capped at `fit * 0.028`, which is the closest
 range that reliably keeps the corridor in shot.
+
+---
+
+## ADR-020 — The console's map pane renders nothing. Open.
+**Date:** 2026-08-18 · **Status:** Open defect · **Owner: next session**
+
+`/en/console` mounts a WebGL canvas at full size (measured 369 × 952, live GL
+context, not lost) and draws nothing. The identical `<City>` component renders
+correctly at `/en/city`. Three hypotheses were tested and none was the cause.
+
+**Ruled out — but each was a real defect and the fix was kept:**
+
+1. *Portrait framing.* three's `fov` is vertical, so fitting on it alone put a
+   wide corridor outside the horizontal frustum of a tall, narrow pane. Now fits
+   to whichever axis is tighter. Correct, insufficient.
+2. *Unmemoised scene data.* The console built its scene object in an IIFE on
+   every render, so geometry rebuilt every frame, which trips the frame-budget
+   guard, which calls setState, which re-renders. A genuine feedback loop.
+   Fixed. Not the cause.
+3. *`<Environment preset>` suspending.* drei fetches an HDR from a CDN and
+   suspends until it arrives; nothing inside `<Suspense>` mounts meanwhile. This
+   ALSO breaks docs/03 §5 — a scene that waits on a CDN cannot render with the
+   cable pulled — so it was replaced with explicit lights regardless. Not the
+   cause either.
+
+**Established by instrumentation:** a probe calling `useFrame` inside `<Scene>`
+never executes on the console route. The render loop does not start. So the
+failure is above the scene graph, not in the geometry, the camera or the
+materials — which is where all three hypotheses were aimed.
+
+**Where to look next, in order:** whether `<Canvas>` receives a zero-sized
+parent at first measure and never re-measures inside a CSS grid track; whether
+the dynamic import resolves at all on this route; and whether `City`'s
+capability gate returns a third state that renders neither branch. Add a probe
+OUTSIDE `<Suspense>` first — the existing one was inside it, which is why it
+proved only that the boundary never resolved, not why.

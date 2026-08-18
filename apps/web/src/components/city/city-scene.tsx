@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { AdaptiveDpr, Environment, OrbitControls, Stats } from "@react-three/drei";
+import { AdaptiveDpr, OrbitControls, Stats } from "@react-three/drei";
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 
@@ -181,13 +181,29 @@ function Scene({
           the same value — a raw ShaderMaterial gets no fog for free. */}
       <fogExp2 attach="fog" args={[mode.fog, fogDensity]} />
 
+      {/* Explicit lights, no <Environment>.
+          drei's Environment fetches an HDR from a CDN and SUSPENDS until it
+          arrives. Where that request is slow or blocked, nothing inside
+          <Suspense> ever mounts — no meshes, no useFrame, a blank canvas at
+          full size, which is exactly how this presented. It also broke
+          docs/03 §5: the demo must render with the network cable pulled, and a
+          scene that waits on a CDN cannot. */}
       <ambientLight intensity={mode.ambient} />
+      <hemisphereLight
+        intensity={scene === "day" ? 0.9 : 0.35}
+        color={scene === "day" ? "#CFE0F5" : "#2A3A66"}
+        groundColor={scene === "day" ? "#B4A98F" : "#080B14"}
+      />
+      <directionalLight
+        position={[-radius, radius * 1.2, radius * 0.6]}
+        intensity={scene === "day" ? 0.5 : 0.25}
+        color={scene === "day" ? "#FFE9C4" : "#5B6FA8"}
+      />
       <directionalLight
         position={[radius, radius * 2, -radius]}
         intensity={mode.key}
         color={scene === "day" ? "#FFF6E2" : "#8FA6FF"}
       />
-      <Environment preset={scene === "day" ? "city" : "night"} />
 
       <Ground radius={radius} daylight={scene === "day"} />
       <Roads roads={data.roads} ramp={data.ramp} daylight={scene === "day"} />
