@@ -1502,3 +1502,48 @@ Vercel carries the security headers the API already sets, plus a
 `Permissions-Policy` denying camera, microphone and geolocation. The citizen
 view asks for no location by design (ADR-037); denying it at the header level
 means a future dependency cannot quietly start asking.
+
+---
+
+## ADR-050 — DRISHTI, held to the promise already on the screen
+**Date:** 2026-08-18 · **Status:** Accepted
+
+The forecast panel has said, since it was built: *"persistence-baseline-0.1.0 —
+a learned model ships only once it beats this."* That sentence is a contract,
+and DRISHTI is what tests it.
+
+**Persistence is a hard baseline, not a straw man.** At a 15-minute horizon "as
+congested as it is now" is right most of the time, and a great many published
+traffic-forecasting results quietly fail to beat it. `scripts/train_forecast.py`
+trains on an earlier period, scores model and baseline on a 21-day holdout, and
+**refuses to write forecasts unless the model wins by more than 2%**. Without
+`--write` it only reports.
+
+Held-out results, 181,530 samples per horizon:
+
+| horizon | model MAE | persistence MAE | improvement |
+|---|---|---|---|
+| +15 min | 2.431 | 3.954 | **+38.5%** |
+| +30 min | 2.425 | 5.684 | **+57.3%** |
+| +60 min | 2.416 | 9.813 | **+75.4%** |
+
+**A test caught the comparison being unfair.** The first version fed the model a
+window ending at `t-1` while handing persistence the value at `t` — so the
+baseline saw one observation the model did not. It happened to make persistence
+*stronger*, so the result was conservative rather than flattering, but a
+benchmark where the two sides stand on different information is not a benchmark.
+Both now end at the same observation.
+
+Two shaping choices, each pinned by a test. Time of day enters as sine and
+cosine, so 23:45 and 00:15 are 0.13 apart rather than 23.5 — an integer hour
+makes the trees spend splits rediscovering that midnight wraps. And the 80%
+interval comes from empirical residual quantiles rather than a normal
+assumption, because congestion residuals are skewed: a link can be far worse
+than predicted much more easily than it can be far better than free-flowing, and
+a symmetric interval understates exactly the side an operations room cares about.
+
+**The honest caveat:** this warehouse's congestion follows a deterministic
+diurnal profile, so a model that learns that profile beats persistence easily.
+On real Jaipur data the margin would be smaller. What is demonstrated is the
+gate — that a model is measured against a baseline and refused if it loses —
+not that +75% is achievable on the street.
