@@ -12,10 +12,14 @@ Two files, split on size:
 
 * `apps/web/src/data/snapshot.json` — everything except the 3D buildings, ~48 KB.
   Imported directly, so it is available to a Server Component with no fetch.
-* `apps/web/public/data/buildings.json` — the 3D building footprints, ~300 KB.
-  Served as a static asset and fetched only by the 3D scene, which is already
-  lazy-loaded. Bundling it would put 300 KB into the payload of every page,
-  including the ones with no map on them.
+* `apps/web/src/data/buildings.json` — the 3D building footprints, ~300 KB.
+  Kept separate because only the two pages with a map import it, and only on
+  the failure path. It was briefly a static asset fetched by the client
+  instead, to keep it out of the payload — but that made the scene mount
+  before its geometry existed, and on the deployment the canvas came back
+  unmeasured and the map pane stayed empty. Serving it from the server means
+  the offline path renders through exactly the same code as the live one,
+  which is worth more than the bytes it saves.
 
 **`/audit/recent` is deliberately not captured.** It is role-gated, and a
 public JSON bundle containing an audit trail would contradict the access-control
@@ -122,9 +126,7 @@ def main() -> None:
     print(f"\n{small}  {small.stat().st_size / 1024:.0f} KB  ({len(snapshot)} endpoints)")
 
     if buildings is not None:
-        public_dir = WEB / "public" / "data"
-        public_dir.mkdir(parents=True, exist_ok=True)
-        big = public_dir / "buildings.json"
+        big = data_dir / "buildings.json"
         big.write_text(json.dumps(buildings, separators=(",", ":")))
         print(f"{big}  {big.stat().st_size / 1024:.0f} KB")
 

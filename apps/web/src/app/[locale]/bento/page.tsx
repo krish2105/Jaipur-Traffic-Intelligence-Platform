@@ -39,9 +39,16 @@ export default async function BentoPage({ params }: { params: Promise<{ locale: 
       generated_at: "",
     })),
     api.scene(1).catch(() => ({ links: [] })),
+    // Falls back to the captured footprints (ADR-062) rather than to nothing,
+    // so an unreachable API costs the map its freshness and not its city.
+    // Imported on the failure path only: it is ~300 KB, and the pages without
+    // a map on them should not carry it. Resolved here rather than fetched by
+    // the client, so the scene mounts once with its geometry already in hand —
+    // handed them late, the canvas came back unmeasured and the pane stayed
+    // blank on the deployment, which is the bug this whole change exists for.
     fetch(`${BASE}/api/v1/scene/buildings`, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : { buildings: [] }))
-      .catch(() => ({ buildings: [] })),
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("buildings unavailable"))))
+      .catch(async () => (await import("@/data/buildings.json")).default),
     api.blackspots(1).catch(() => ({ segments: [], basis: "", note: "" })),
     api.signals().catch(() => ({ advisories: [], method: "", governance: "" })),
     api.readiness().catch(() => ({ sources: [], live_count: 0, total: 0, source_mode: "", note: "" })),

@@ -2007,13 +2007,24 @@ service, free tier included, until a payment card is on file. That card is the
 owner's to add; it is not something this work can route around.
 
 **Decision.** Capture the API's responses and ship them with the frontend.
-`scripts/export_snapshot.py` writes two files, split on size: everything except
-the 3D building footprints into `apps/web/src/data/snapshot.json` (72 KB,
-imported, so a Server Component has it with no fetch), and the footprints into
-`apps/web/public/data/buildings.json` (295 KB, a static asset that only the 3D
-scene fetches — bundling it would tax the pages with no map on them).
-`get()` consults the snapshot only after a request fails, so a reachable API
-always wins and the snapshot can never mask a backend that is up but wrong.
+`scripts/export_snapshot.py` writes two files: everything except the 3D
+building footprints into `apps/web/src/data/snapshot.json` (72 KB), and the
+footprints into `apps/web/src/data/buildings.json` (295 KB, imported only on
+the failure path by the two pages that have a map). `get()` consults the
+snapshot only after a request fails, so a reachable API always wins and the
+snapshot can never mask a backend that is up but wrong.
+
+The footprints were first shipped as a static asset the client fetched, to
+keep 295 KB out of the payload of pages with no map. That was wrong, and the
+way it was wrong is worth recording: the 3D scene is a `dynamic(ssr:false)`
+import that builds all its geometry from one `data` object, so buildings
+arriving after mount rebuilt that geometry mid-life. On the deployment — where
+the fetch is slower than on localhost — the canvas came back unmeasured at
+300×150 and the map pane stayed blank, with the road data sitting right there
+in the payload. Gating the mount until the fetch resolved only moved the
+mount later and made it worse. Resolving them on the server costs the bytes
+and buys the property that matters: the offline path renders through exactly
+the same code as the live one, with no second timing regime to get right.
 
 Three things make this honest rather than a lie of omission:
 

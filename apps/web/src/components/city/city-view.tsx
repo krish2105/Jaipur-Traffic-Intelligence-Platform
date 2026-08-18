@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 
 import { currentScene, serverScene, setTheme, subscribeScene } from "@/lib/theme";
 import { City } from "./city-scene.loader";
-import { useBuildings } from "./use-buildings";
 import type { CityData } from "./city-scene";
 import { boundsOf, centroidOf, projectLine } from "@/lib/geo";
 import type { Ramp } from "@/lib/ribbon";
@@ -61,11 +60,9 @@ export interface SceneLink {
   class_mix?: Record<string, number>;
 }
 
-const NO_BUILDINGS: CityData["buildings"] = [];
-
 export function CityView({
   links: initialLinks,
-  buildings: servedBuildings,
+  buildings,
   initialPalette = "night",
 }: {
   links: SceneLink[];
@@ -73,13 +70,6 @@ export function CityView({
   initialPalette?: PaletteId;
 }) {
   const palette = initialPalette;
-  // The building footprints are ~300 KB, so they are the one part of the
-  // snapshot served as a static file rather than bundled — putting them in the
-  // payload of every page would cost the pages with no map on them too.
-  // Fetched here, on the client, because that is the only place the 3D scene
-  // ever mounts, and only when the API returned nothing.
-  const resolved = useBuildings(servedBuildings);
-  const buildings = resolved ?? NO_BUILDINGS;
   // Night is the control-room native mode; day is the public-facing one. The
   // value is read from the document rather than held here — this component
   // previously owned a second copy, and its effect re-asserted night over
@@ -165,11 +155,7 @@ export function CityView({
     <div className="relative h-dvh w-full overflow-hidden bg-[var(--ground)]">
       {/* key forces a full remount on palette change so the merged road
           geometry re-resolves its vertex colours from the new ramp */}
-      {resolved === null ? (
-        <Fallback links={links} />
-      ) : (
-        <City data={data} scene={scene} radius={radius} origin={origin} fallback={<Fallback links={links} />} />
-      )}
+      <City data={data} scene={scene} radius={radius} origin={origin} fallback={<Fallback links={links} />} />
 
       {/* ── glass overlay ───────────────────────────────────────────────── */}
       <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-5 md:p-8">
