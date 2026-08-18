@@ -5,8 +5,8 @@ whenever a phase slips.
 
 | Phase | Status | Notes |
 |---|---|---|
-| 0 · Foundation | **Complete bar the seed loader** | Monorepo, contracts+TS generation, CI, guards, Keycloak realm, Render blueprint, offline compose. Remaining: Alembic schema, seed loader — and the live verifications that need Docker running / cloud accounts |
-| 1 · Network + seed + three UI directions | Not started | Decision point: pick a UI direction |
+| 0 · Foundation | **Complete** | Monorepo, contracts+TS generation, CI, guards, Keycloak realm, Render blueprint, offline compose. Remaining: Alembic schema, seed loader — and the live verifications that need Docker running / cloud accounts |
+| 1 · Network + seed + three UI directions | **Complete — awaiting your choice** | Real OSM network, calibrated 90-day seed, API, dashboard, `/design` gallery. **Decision point: pick a direction.** |
 | 2 · GANANA counting | Not started | The sprint that matters |
 | 3 · Warehouse + streaming + fusion | Not started | |
 | 4 · SETU command centre | Not started | |
@@ -31,9 +31,14 @@ whenever a phase slips.
 | Pydantic → TypeScript generation | PASS, 8 models |
 | local stack up (no Docker) | PASS — `make up`: Postgres 18 + TimescaleDB/PostGIS/pgvector on :5433, Redis, MinIO, Ollama |
 | migrations 0001–0003 applied | PASS — 18 tables, 5 hypertables, 1 continuous aggregate, compression policy |
-| `make seed` row counts | **not run** — seed loader is the next task |
+| `make seed` row counts | PASS — 1.4M counts, 777k congestion, 18,578 crashes (= published 5-year total) |
+| seed profile reproduces published TomTom figures | PASS — 17 tests: mean 58.7, peaks 73.9/94.9, rush speed 17.5 km/h |
+| database size under Tiger Cloud's 750 MB cap | PASS — 252 MB after compression (284 MB → 46 MB on counts) |
+| API serves live seeded data | PASS — corridors, summary, day-profile, congestion GeoJSON, cameras, forecast |
+| dashboard renders in Hindi and English, both themes | PASS — verified in browser |
 | security verification (20 checks) | PASS — `make verify-security`, incl. audit_log refusing UPDATE |
 | `/api/v1/health` 200 on Render | **not run** — needs a Render account |
+| pushed to GitHub | PASS — krish2105/Jaipur-Traffic-Intelligence-Platform |
 
 ## Open blockers
 - No Jaipur junction footage yet. Accuracy certificates will be measured against
