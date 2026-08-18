@@ -58,7 +58,8 @@ car units), not vehicles. IRC:106 puts a two-wheeler at ~0.5 PCU and a truck at
 an arm carrying 200 mixed vehicles have the **same vehicle count and roughly half
 the demand difference** — so a count-driven controller systematically over-serves
 two-wheeler-heavy approaches and starves freight-heavy ones. It is not a tuning
-error; it is a units error, and it compounds across a synchronised corridor.
+error; it is a units error. §2.2 tested whether it *compounds* along a corridor
+and it does not — it accumulates, which is a weaker and more accurate word.
 
 PRAVAAH's detection classifies to 12 vehicle classes and converts to PCU before
 optimising.
@@ -102,6 +103,44 @@ that fits §3.3: the system computes the options and a human decides.
 same number on both arms, and ask the room which arm they would rather protect.
 The answer is theirs. The point is that today nothing asks them.
 
+### 2.2 Corridor synchronisation — "compounds" was also wrong
+
+`scripts/compare_pcu_corridor.py`: one arterial through 1–5 signalised
+junctions at 600 m spacing, a cross street at each, **five seeds per point**
+because the first single-seed run showed 5 junctions scoring worse than 4, which
+was noise rather than a mechanism.
+
+Both plans differ in the two things a green wave is made of — the split, and the
+offset. The count plan times offsets to the posted 13.9 m/s. The PCU plan times
+them to 13.71 m/s, the speed the platoon can actually hold given a fifth of it
+is buses and trucks.
+
+| junctions | arterial saved | [min, max] | per junction | cross-street cost |
+|---|---|---|---|---|
+| 1 | 3.8 s | 3.6 – 4.2 | 3.80 | 5.7 s |
+| 2 | 5.0 s | 4.7 – 5.5 | 2.50 | 5.8 s |
+| 3 | 7.0 s | 5.8 – 7.4 | 2.33 | 5.9 s |
+| 4 | 12.9 s | 11.9 – 13.8 | 3.23 | 5.8 s |
+| 5 | 13.0 s | 10.4 – 14.3 | 2.60 | 5.8 s |
+
+**The total arterial benefit grows with corridor length — 3.8 s to 13.0 s — but
+the per-junction benefit does not.** It sits flat at 2.3–3.8 s with no trend. So
+the effect is *additive*, not compounding: every junction you get right is worth
+about the same, and a longer corridor simply has more of them. §2 previously
+said "compounds". That was wrong and is corrected here.
+
+And in whole vehicle-seconds the net oscillates around zero — +1,176, −888,
+−2,304, +1,632, −1,632 across 1 to 5 junctions — because the arterial carries
+one flow while the cross streets carry *n* of them. Exactly as at the single
+junction in §2.1, **PCU timing redistributes delay rather than removing it**: it
+moves time from the arterial and its freight onto the cross streets.
+
+That is the honest shape of the product, and it is the same conclusion twice
+from two independent experiments. The value is not a free saving. It is that the
+redistribution becomes **visible and controllable** — a count-based controller
+performs one of these allocations by accident, having never measured the
+quantity that distinguishes them.
+
 **Second wedge — the enforcement allocator.** Nobody in this market ships a tool
 that answers "given my crash severity profile and my fleet composition, where
 should my next 1,000 challans go?" That is a composition question, and §1.3 says
@@ -120,7 +159,7 @@ synchronisation, violation detection, enforcement analytics, policy simulation.
 |---|---|---|
 | Vehicle detection | count | **12-class + PCU conversion** |
 | Green-time basis | vehicles | **PCU-weighted, trade-off surfaced (§2.1)** |
-| Corridor sync | phase 2, planned | SUMO-validated, offline-provable |
+| Corridor sync | phase 2, planned | SUMO-measured, 5 seeds, §2.2 |
 | Severity analytics | not offered | **core product** |
 | Enforcement allocation | not offered | **core product** |
 | Model licence risk | unknown | Apache-2.0 detection, audited |
@@ -364,7 +403,7 @@ verified in production at
 | §5 D9 · atlas maps | **partial** | console 2D done; citizen / officer / city still to wire |
 | §5 D2 · severity model | not started | |
 | §5 D4 · PCU vs count | **done** | `compare_pcu_signal.py`, 6-point demand sweep in SUMO — and it corrected §2, see §2.1 |
-| §5 D5 · corridor sync | not started | |
+| §5 D5 · corridor sync | **done** | `compare_pcu_corridor.py`, 1–5 junctions x 5 seeds — corrected §2 again, see §2.2 |
 | §5 D10–14 | not started | |
 
 **Free tier throughout.** No API host, no keyed tiles, no model provider, no

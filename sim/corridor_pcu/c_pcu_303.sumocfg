@@ -1,0 +1,11 @@
+<configuration>
+  <input>
+    <net-file value="c_pcu.net.xml"/>
+    <route-files value="c.rou.xml"/>
+  </input>
+  <time><begin value="0"/><end value="3600"/></time>
+  <processing><time-to-teleport value="-1"/></processing>
+  <report><no-step-log value="true"/><no-warnings value="true"/></report>
+  <output><tripinfo-output value="trip_pcu_303.xml"/></output>
+  <random_number><seed value="303"/></random_number>
+</configuration>

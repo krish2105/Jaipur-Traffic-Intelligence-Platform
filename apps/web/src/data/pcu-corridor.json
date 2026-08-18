@@ -1,0 +1,131 @@
+{
+  "corridor": "600 m spacing, 2 lanes, no turns, cross street at each junction",
+  "arterial": {
+    "veh_per_hour": 1200,
+    "pcu_per_hour": 1189,
+    "mix": {
+      "2W": 0.45,
+      "AUTO": 0.1,
+      "CAR": 0.22,
+      "LCV": 0.1,
+      "BUS": 0.08,
+      "TRK2": 0.05
+    }
+  },
+  "cross": {
+    "veh_per_hour": 600,
+    "pcu_per_hour": 394,
+    "mix": {
+      "2W": 0.75,
+      "AUTO": 0.1,
+      "CAR": 0.12,
+      "LCV": 0.03
+    }
+  },
+  "plans": {
+    "count": {
+      "green_arterial_s": 51,
+      "progression_speed_ms": 13.9
+    },
+    "pcu": {
+      "green_arterial_s": 57,
+      "progression_speed_ms": 13.71
+    }
+  },
+  "sweep": [
+    {
+      "junctions": 1,
+      "seeds": 5,
+      "arterial_delay_saved_s": 3.8,
+      "arterial_delay_saved_min_s": 3.6,
+      "arterial_delay_saved_max_s": 4.2,
+      "arterial_stops_saved": 0.11,
+      "cross_delay_cost_s": 5.7,
+      "arterial_veh_seconds_saved": 4608,
+      "cross_veh_seconds_cost": 3432,
+      "net_veh_seconds": 1176
+    },
+    {
+      "junctions": 2,
+      "seeds": 5,
+      "arterial_delay_saved_s": 5.0,
+      "arterial_delay_saved_min_s": 4.7,
+      "arterial_delay_saved_max_s": 5.5,
+      "arterial_stops_saved": 0.11,
+      "cross_delay_cost_s": 5.8,
+      "arterial_veh_seconds_saved": 6024,
+      "cross_veh_seconds_cost": 6912,
+      "net_veh_seconds": -888
+    },
+    {
+      "junctions": 3,
+      "seeds": 5,
+      "arterial_delay_saved_s": 7.0,
+      "arterial_delay_saved_min_s": 5.8,
+      "arterial_delay_saved_max_s": 7.4,
+      "arterial_stops_saved": 0.17,
+      "cross_delay_cost_s": 5.9,
+      "arterial_veh_seconds_saved": 8352,
+      "cross_veh_seconds_cost": 10656,
+      "net_veh_seconds": -2304
+    },
+    {
+      "junctions": 4,
+      "seeds": 5,
+      "arterial_delay_saved_s": 12.9,
+      "arterial_delay_saved_min_s": 11.9,
+      "arterial_delay_saved_max_s": 13.8,
+      "arterial_stops_saved": 0.28,
+      "cross_delay_cost_s": 5.8,
+      "arterial_veh_seconds_saved": 15504,
+      "cross_veh_seconds_cost": 13872,
+      "net_veh_seconds": 1632
+    },
+    {
+      "junctions": 5,
+      "seeds": 5,
+      "arterial_delay_saved_s": 13.0,
+      "arterial_delay_saved_min_s": 10.4,
+      "arterial_delay_saved_max_s": 14.3,
+      "arterial_stops_saved": 0.26,
+      "cross_delay_cost_s": 5.8,
+      "arterial_veh_seconds_saved": 15648,
+      "cross_veh_seconds_cost": 17280,
+      "net_veh_seconds": -1632
+    }
+  ],
+  "finding": {
+    "per_junction_saving_s": [
+      3.8,
+      2.5,
+      2.33,
+      3.23,
+      2.6
+    ],
+    "compounds_with_corridor_length": false,
+    "additive_with_corridor_length": true,
+    "net_positive_in_vehicle_seconds": [
+      1,
+      4
+    ],
+    "seeds_per_point": 5,
+    "arterial_improves_at_all_lengths": true
+  },
+  "method": {
+    "pcu_source": "IRC:106-1990",
+    "offset_rule": "i * spacing / progression speed, mod cycle",
+    "cycle_s": 90,
+    "seeds": [
+      42,
+      101,
+      202,
+      303,
+      404
+    ],
+    "sumo": "1.27.1",
+    "identical": "demand, seed, network, cycle. Split and offset differ."
+  },
+  "caveat": "Synthetic corridor: uniform spacing, no turning traffic, no pedestrians, one demand level. It isolates one mechanism and is not a model of Tonk Road.",
+  "advisory_only": true,
+  "is_synthetic": true
+}
