@@ -4,7 +4,7 @@ import Script from "next/script";
  * Runs before first paint. Sets both theme axes on <html> so there is no FOUC
  * and no flash of the wrong direction (docs/06 §6).
  *
- * Jaipur Night is the product palette (ADR-016) and dark is the control-room
+ * Gulaabi is the product palette (ADR-063) and dark is the control-room
  * native mode (docs/06 §6), so that is the default rather than the OS
  * preference — an officer opening this on a bright laptop should still get the
  * interface the product was designed in. Their explicit choice wins after that.
@@ -18,11 +18,11 @@ var d=document.documentElement;
 var t=localStorage.getItem('pravaah-theme');
 if(t!=='light'&&t!=='dark'){t='dark';}
 d.setAttribute('data-theme',t);
-d.setAttribute('data-palette','night');
+d.setAttribute('data-palette','gulaabi');
 d.setAttribute('data-scene',t==='light'?'day':'night');
 }catch(e){
 document.documentElement.setAttribute('data-theme','dark');
-document.documentElement.setAttribute('data-palette','night');
+document.documentElement.setAttribute('data-palette','gulaabi');
 document.documentElement.setAttribute('data-scene','night');
 }})();`;
 
@@ -38,7 +38,7 @@ document.documentElement.setAttribute('data-scene','night');
  * and must live in the root layout, which `[locale]/layout.tsx` is (it renders
  * <html>). An `id` is required for Next to track an inline script.
  *
- * The palette itself no longer depends on this at all (ADR-036) — Jaipur Night
+ * The palette itself no longer depends on this at all (ADR-036) — Gulaabi
  * is the CSS default at :root. This only applies a stored light/dark
  * preference, so the worst case if it never runs is that someone who chose
  * light mode gets dark until they toggle, rather than a page with no colours.

@@ -18,7 +18,7 @@ import type { Ramp } from "@/lib/ribbon";
  * question "which one is the real one?"
  */
 export const PALETTES = [
-  { id: "night", label: "Jaipur Night", note: "indigo + molten brass" },
+  { id: "gulaabi", label: "Gulaabi", note: "rose-black + gulaabi magenta" },
 ] as const;
 
 export type PaletteId = (typeof PALETTES)[number]["id"];
@@ -35,7 +35,7 @@ export type PaletteId = (typeof PALETTES)[number]["id"];
  * wrong.
  */
 const RAMPS: Record<PaletteId, Ramp> = {
-  night: {
+  gulaabi: {
     free: "#2DD4A7",
     light: "#8CD65B",
     moderate: "#FFB020",
@@ -63,7 +63,7 @@ export interface SceneLink {
 export function CityView({
   links: initialLinks,
   buildings,
-  initialPalette = "night",
+  initialPalette = "gulaabi",
 }: {
   links: SceneLink[];
   buildings: CityData["buildings"];

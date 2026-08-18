@@ -372,8 +372,16 @@ export function ConsoleShell({
           // must be told one. A section view has real content: giving it 45vh
           // clips it, and the overflow then paints over the rail stacked below
           // — which is what it did on a phone.
+          //
+          // `flex-none` is load-bearing and was the bug. Below lg this column is
+          // a FLEX COLUMN, so the main axis is vertical and `flex-1`'s
+          // `flex-basis: 0%` outranks `height` for sizing. Paired with
+          // `shrink-0`, the pane sat at exactly 0 whenever the panel rail below
+          // it overflowed — an invisible map on every screen under 1024px,
+          // which is most of the ones this was demoed on. `flex-none` drops
+          // back to `0 0 auto` so the height is finally the thing that decides.
           className={`relative min-w-0 flex-1 lg:overflow-y-auto ${
-            showMap ? "max-lg:h-[45vh] max-lg:shrink-0" : ""
+            showMap ? "max-lg:h-[45vh] max-lg:flex-none" : ""
           }`}
         >
           {showMap ? (
@@ -384,10 +392,20 @@ export function ConsoleShell({
                   radius={scene.radius}
                   origin={scene.origin}
                   scene={sceneMode}
-                  fallback={<CorridorMap links={links} locale={locale} />}
+                  fallback={<CorridorMap
+                  links={links}
+                  locale={locale}
+                  cameras={cameras}
+                  blackspots={blackspots.segments}
+                />}
                 />
               ) : (
-                <CorridorMap links={links} locale={locale} />
+                <CorridorMap
+                  links={links}
+                  locale={locale}
+                  cameras={cameras}
+                  blackspots={blackspots.segments}
+                />
               )}
               {/* docs/06 §3 specifies this toggle on the map. */}
               <div className="absolute left-3 top-3 flex gap-1 rounded-lg border border-[var(--rule-strong)] bg-[var(--surface)]/85 p-1 backdrop-blur">

@@ -41,7 +41,48 @@
    The attribute selector is kept so the /design comparison page can still
    switch palettes, but nothing needs it to be legible.
    ------------------------------------------------------------------------- */
+/* ── GULAABI · rose-black + gulaabi magenta ─────────────────────────────────
+   THE product palette (ADR-063). Jaipur is the Pink City, so the interface is
+   pink — but pink is also where the congestion ramp lives, and that collision
+   is the whole design problem here.
+
+   The live ramp runs #FF6B4A (severe, hue 11 deg) to #FF2D55 (critical, hue
+   349 deg). Authentic Jaipur wall-rose sits at hue 14 deg: three degrees from
+   the severe band. A rose *mark* would therefore be indistinguishable from a
+   severity mark, which is precisely the failure the ramp comment at the foot of
+   this file exists to prevent.
+
+   So the two are separated by ROLE, not by taste:
+
+     rose   -> grounds and surfaces only. Large, desaturated, structural. A
+               tinted ground cannot be read as a measurement.
+     magenta -> the mark. Pushed to hue 320 deg, clearing every ramp hue by at
+               least 28 deg, so a primary button can never be mistaken for a
+               critical link.
+
+   Both hold WCAG AA against their own ground; scripts/check_contrast.py fails
+   the build if either drifts. Defined on bare `:root` for the same reason night
+   was: a palette must never depend on an attribute a component happens to set.
+   ------------------------------------------------------------------------- */
 :root,
+[data-palette="gulaabi"] {
+  --ground:        #150C11;   /* rose-black — Jaipur wall at night */
+  --ground-deep:   #0D0709;
+  --surface:       #1F1119;
+  --surface-2:     #2B1824;
+  --surface-3:     #3A2130;
+  --ink:           #FFF1F6;   /* 17.0:1 */
+  --ink-muted:     #C9A3B4;   /*  8.3:1 */
+  --ink-faint:     #8A6675;   /*  3.8:1 — decorative only */
+  --rule:          #2E1A26;
+  --rule-strong:   #45283A;
+  --accent:        #E24FB0;   /*  5.3:1 — gulaabi, 28 deg clear of the ramp */
+  --accent-2:      #F06BC0;
+  --accent-ink:    #150C11;
+  --accent-glow:   #F06BC0;
+  --selection:     #7C3AED;   /* violet — never confusable with the ramp */
+}
+
 [data-palette="night"] {
   --ground:        #070B18;
   --ground-deep:   #04060F;
@@ -152,13 +193,40 @@
   --congestion-critical: #E5383B;
 }
 
+/* ── gulaabi in daylight ─────────────────────────────────────────────────
+   Rose-tinted paper rather than the blue-grey the night palette uses, and the
+   magenta darkened to #A81E7A so it still clears 4.5:1 on a near-white ground.
+   The ramp is untouched: it must mean the same thing in every light.
+   ------------------------------------------------------------------------ */
+:root[data-scene="day"],
+[data-palette="gulaabi"][data-scene="day"] {
+  --ground:      #F6E8EE;
+  --ground-deep: #E9D5DE;
+  --surface:     #FFFFFF;
+  --surface-2:   #FDF4F6;
+  --surface-3:   #F3E1E8;
+  --ink:         #2A1119;   /* 16.3:1 on --surface-2 */
+  --ink-muted:   #6E4A57;   /*  7.0:1 */
+  --ink-faint:   #9A7C87;   /*  3.5:1 — decorative only */
+  --rule:        #E4CDD7;
+  --rule-strong: #CBA9B8;
+  --accent:      #A81E7A;   /*  6.2:1 on rose paper */
+  --accent-2:    #8E1866;
+  --accent-ink:  #FFFFFF;
+  --accent-glow: #C74FA0;
+  --overlay:     rgb(42 17 25 / 0.35);
+  --scrim:       rgb(42 17 25 / 0.32);
+  --rim:         inset 0 1px 0 0 rgb(255 255 255 / 0.9);
+  --shadow-float: 0 2px 4px rgb(42 17 25 / 0.08), 0 20px 40px -12px rgb(42 17 25 / 0.18);
+}
+
 /* ── daylight chrome ──────────────────────────────────────────────────────
    The scene toggle changes the world, so the interface has to follow it. Dark
    glass floating over a blue sky reads as muddy rather than deliberate. These
    override only the surface and ink tokens; the accent and the congestion ramp
    are untouched, because the ramp must mean the same thing in every light.
    ------------------------------------------------------------------------ */
-[data-scene="day"] {
+[data-palette="night"][data-scene="day"] {
   --ground:      #DDE5F0;
   --ground-deep: #C7D3E4;
   --surface:     #FFFFFF;
