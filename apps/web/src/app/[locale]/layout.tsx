@@ -6,6 +6,7 @@ import { Anek_Devanagari, Anek_Latin, IBM_Plex_Mono } from "next/font/google";
 
 import { routing } from "@/i18n/routing";
 import { ThemeScript } from "@/components/theme/theme-script";
+import { RegisterServiceWorker } from "@/components/pwa/register-sw";
 import "@/styles/globals.css";
 
 /**
@@ -82,6 +83,7 @@ export default async function LocaleLayout({
             an effect) lost its theme entirely. Running here is still ahead of
             any body content painting, which is all a no-FOUC script needs. */}
         <ThemeScript />
+        <RegisterServiceWorker />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>

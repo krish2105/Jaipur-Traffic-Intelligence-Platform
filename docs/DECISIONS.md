@@ -1168,3 +1168,39 @@ confidence gate. Each returns its own reading, so a number never lands without
 what it means. The crash-severity question excludes hours with fewer than 50
 crashes — a percentage over a small base is noise, and shipping it as a finding
 would be the platform doing the thing it criticises probe products for.
+
+---
+
+## ADR-041 — Offline: two caches, two policies, and things that are never cached
+**Date:** 2026-08-18 · **Status:** Accepted
+
+docs/03 §5 requires the demo to render with the network cable pulled. That is
+not hypothetical: a government building's guest wifi is precisely what fails
+during a pitch, and an officer's phone on a flyover has no signal at all.
+
+Two caches, because the shell and the data answer different questions:
+
+- **Shell — cache-first.** The app's own JS and CSS cannot change without a
+  deploy, so disk is both correct and instant.
+- **Data — network-first.** A measurement must be fresh when the network is
+  there; when it is not, the last good response beats a broken page — *provided
+  the interface says it is stale*, which is what the `X-PRAVAAH-Stale` header
+  exists for. A stale figure presented as live is worse than no figure at all,
+  and that is the same rule the polling layer already follows (ADR-031).
+
+Three things are never cached, and each is a decision rather than an oversight:
+
+- **Anything that is not a GET.** A decision recorded while offline must fail
+  loudly rather than be replayed later into an append-only audit log, where it
+  would carry a timestamp that never happened. An audit trail that can be
+  written from a queue is not an audit trail.
+- **`/api/v1/audit` and `/api/v1/enforcement`.** A shared phone holding a cached
+  violation queue or audit trail is a data-at-rest exposure nobody signed off.
+  docs/07 keeps P2 data off the device.
+- **Cross-origin assets.** Caching them here would hide a supply-chain change
+  behind our own storage.
+
+The worker registers in production only. In development it caches the very files
+that are meant to be hot-reloading, and `next dev` serves a different asset
+graph than a build, so a worker trained on it would cache paths production does
+not have.
