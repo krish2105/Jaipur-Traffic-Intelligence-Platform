@@ -23,6 +23,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..deps import SessionDep
+from ..real_data import severity_finding
 
 router = APIRouter(tags=["traffic"])
 
@@ -686,6 +687,27 @@ async def weekly_matrix(
         "window": "last 28 days, measured",
         "is_synthetic": True,
     }
+
+
+@router.get("/safety/severity")
+async def safety_severity() -> dict[str, Any]:
+    """Jaipur's severity gap, from published figures rather than the seed.
+
+    The only endpoint in this service that returns no synthetic data at all, and
+    the only one that needs none: every number here is published by MoRTH, the
+    Rajasthan Transport Department or the Jaipur Commissionerate, and each
+    arrives with the URL it came from.
+
+    It is also the argument the product exists to make. Crash frequency in
+    Jaipur is falling and crash severity is rising, and the enforcement mix is
+    aimed almost entirely at frequency. Seeing that requires knowing what is in
+    the traffic, which is the one thing a probe feed, a vehicle counter and an
+    adaptive signal all cannot tell you.
+
+    No database read: these are constants, so the panel renders with the
+    warehouse down and with the network cable pulled.
+    """
+    return severity_finding()
 
 
 @router.get("/incidents/timeline")
