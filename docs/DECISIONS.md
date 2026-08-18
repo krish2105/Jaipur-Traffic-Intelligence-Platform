@@ -1413,3 +1413,60 @@ Three things done deliberately:
 
 The panel is badged `part real` rather than `real` or `simulated`, because it is
 genuinely both: one axis published by the state, the other seeded and calibrated.
+
+---
+
+## ADR-048 — KAVACH, and a model that honestly reported itself useless
+**Date:** 2026-08-18 · **Status:** Accepted
+
+The four ML packages were empty stubs and `segment_risk` had zero rows, while
+the product referenced it. KAVACH is now real: gradient-boosted trees over
+twelve interpretable features, SHAP attribution on every score, 594 segments
+written with banded risk and actionable countermeasures.
+
+Three decisions carried the work.
+
+**It predicts severity, not frequency, and exposure is not a feature.** docs/01
+§2 is the reason: Jaipur crashes fell 5.6% while deaths rose 3.1%. A department
+ranking black spots by crash count spends its budget on the busiest junctions; a
+department ranking by how likely a crash is to kill spends it where people die.
+Including traffic volume would smuggle frequency back in and rebuild the ranking
+we are trying to avoid.
+
+**The first run scored ROC-AUC 0.491 — pure chance — and the script said so.**
+That was not a modelling failure but the pipeline working: the seed had assigned
+fatal and grievous outcomes independently of light, cause, road-user type and
+geometry, so no relationship existed to learn. The script prints holdout metrics
+**against base rate** precisely to catch this. On a dataset where 78% of crashes
+were severe, "78% accuracy" would have shipped a do-nothing model.
+
+`scripts/apply_severity_relationships.py` then re-drew which crashes are fatal
+using relative odds derived from **MoRTH's published national shares** — two-
+wheelers 44.5% of deaths, pedestrians 19.5%, over-speeding 72.3% of accidents
+but 71.2% of deaths. That last pair is the interesting one and shaped the
+weights: speeding causes an enormous *number* of crashes without making an
+individual crash much more likely to kill, so its multiplier is ~1.0. A model
+that gave speeding a large severity effect would be reading volume as risk.
+
+Retrained: **ROC-AUC 0.673, PR-AUC 0.537 against a 0.337 base rate**, and the
+SHAP factors name pedestrian, heavy-vehicle and two-wheeler involvement — the
+relationships MoRTH publishes.
+
+**The circularity is real and is stated wherever the model appears.** KAVACH is
+now recovering a relationship a script put in. That demonstrates the pipeline
+finds a signal when one exists; it is *not* evidence about Jaipur. Only
+per-crash data from the department can be that, and `is_synthetic` stays true.
+
+**Bands are multiples of the base rate, not absolute probabilities.** Fixed
+floors of 0.85/0.70/0.50 put all 594 segments in "low" under a fatality target
+(base 0.34) and would have put all 594 in "critical" under the injury target
+(base 0.86) — the same numbers giving opposite, equally useless answers. A
+multiple says what an engineer needs: this segment kills more often than a
+Jaipur crash normally does, by this much. `band_for` requires the base rate
+rather than defaulting it, so the bug cannot recur silently.
+
+Two smaller things the tests pin: a protective factor survives into the
+explanation rather than being filtered for being negative ("dangerous despite a
+median" is a finding), and countermeasures are proposed only for factors that
+*raise* risk — suggesting median treatment where the median is holding the
+score down wastes a budget line.

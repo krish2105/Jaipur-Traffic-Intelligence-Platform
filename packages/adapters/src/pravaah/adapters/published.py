@@ -158,6 +158,44 @@ FLEET_TWO_WHEELER_PCT: Final = 72.92
 FLEET_CAR_PCT: Final = 12.41
 
 
+MORTH: Final = Source(
+    name="MoRTH, Road Accidents in India 2022",
+    detail="National accident and fatality statistics by cause and road-user type.",
+    url="https://morth.nic.in/road-accident-in-india",
+)
+
+#: MoRTH 2022, national. 4,61,312 accidents and 1,68,491 deaths.
+MORTH_ACCIDENTS_2022: Final = 461_312
+MORTH_DEATHS_2022: Final = 168_491
+
+#: Share of all road deaths, by the road user who died or the cause assigned.
+#: These are what make a severity model possible: they say that WHO is involved
+#: changes the odds of dying far more than how many crashes occur.
+MORTH_TWO_WHEELER_DEATH_SHARE_PCT: Final = 44.5
+MORTH_PEDESTRIAN_DEATH_SHARE_PCT: Final = 19.5
+MORTH_OVERSPEED_ACCIDENT_SHARE_PCT: Final = 72.3
+MORTH_OVERSPEED_DEATH_SHARE_PCT: Final = 71.2
+
+#: Relative odds that a crash is fatal or grievous, given who was involved.
+#:
+#: Derived from the shares above rather than invented. A pedestrian is present
+#: in a small minority of crashes and accounts for roughly one death in five,
+#: so pedestrian involvement raises severity odds sharply. A two-wheeler rider
+#: is involved in a large share of crashes and 44.5% of deaths, so the lift is
+#: real but smaller. Over-speeding is 72.3% of accidents and 71.2% of deaths —
+#: almost identical, which is the interesting part: speeding causes an enormous
+#: NUMBER of crashes without making an individual crash much more likely to
+#: kill. Its multiplier is therefore ~1.0, and a model that assigned it a large
+#: severity effect would be reading volume as risk.
+SEVERITY_ODDS: Final[dict[str, float]] = {
+    "pedestrian_involved": 3.1,
+    "two_wheeler_involved": 1.7,
+    "heavy_vehicle_involved": 2.2,
+    "night": 1.45,
+    "over_speeding": 1.02,
+}
+
+
 #: TomTom Traffic Index 2025, Jaipur. These four drive the seed calibration in
 #: `profiles.py`, which reproduces each one exactly.
 CONGESTION_AVERAGE_PCT: Final = 58.7
