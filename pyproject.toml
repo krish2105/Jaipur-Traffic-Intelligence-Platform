@@ -12,6 +12,7 @@ dependencies = [
   "pravaah-neeti",
   "pravaah-api",
   "pravaah-worker",
+    "pravaah-setu",
 ]
 
 [dependency-groups]
@@ -40,6 +41,7 @@ pravaah-ganana    = { workspace = true }
 pravaah-drishti   = { workspace = true }
 pravaah-kavach    = { workspace = true }
 pravaah-neeti     = { workspace = true }
+pravaah-setu      = { workspace = true }
 pravaah-api       = { workspace = true }
 pravaah-worker    = { workspace = true }
 

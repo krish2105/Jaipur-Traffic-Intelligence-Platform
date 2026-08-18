@@ -1,0 +1,13 @@
+[project]
+name = "pravaah-setu"
+version = "0.1.0"
+description = "SETU — SUMO microsimulation of the Tonk Road corridor"
+requires-python = ">=3.12"
+dependencies = ["pravaah-contracts", "eclipse-sumo>=1.27", "traci>=1.27", "sumolib>=1.27"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pravaah"]

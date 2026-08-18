@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <input>
+    <net-file value="corridor.net.xml"/>
+    <route-files value="corridor.rou.xml"/>
+  </input>
+  <time><begin value="0"/><end value="3600"/></time>
+  <processing>
+    <!-- Sublane model: this is what lets two-wheelers filter rather than
+         queue one per lane. On a 61%-two-wheeler arterial, without it the
+         queues come out roughly double and every scenario result is wrong. -->
+    <lateral-resolution value="0.8"/>
+    <ignore-route-errors value="true"/>
+  </processing>
+  <report><no-step-log value="true"/><duration-log.statistics value="true"/></report>
+</configuration>

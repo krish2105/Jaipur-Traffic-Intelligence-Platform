@@ -1671,3 +1671,76 @@ enforcement bunched at one gantry is a policing pattern rather than a driving
 one. And OCR confidence is broken out per violation type: if plates on one class
 read less reliably, that class is either under-enforced or over-referred to
 human review, and both are unfair in different directions.
+
+---
+
+## ADR-054 — Stock footage is not a source we can use
+**Date:** 2026-08-18 · **Status:** Accepted
+
+Shutterstock was suggested as a source of Jaipur bridge footage for Sprint 1.
+Declined. Those clips are licensed stock, and downloading previews to validate a
+model would be a licensing violation — the same category of procurement risk as
+the AGPL YOLO problem that ADR-006 already avoided, on a project whose entire
+pitch rests on being defensible.
+
+Legitimate routes to the same footage, in order of value:
+
+1. **Film it.** Two hours from a Tonk Road pedestrian overbridge, phone on a
+   tripod, peak and off-peak. This is what docs/08 asks for in bold, it is the
+   only source that produces *Jaipur* validation, and it costs an afternoon.
+2. **Request archive footage** from Traffic Police, which also starts the
+   conversation that a live RTSP feed will need.
+3. **Public research datasets** — IDD and UA-DETRAC, already named in docs/04,
+   freely licensed for research and already what the accuracy certificate cites.
+
+Sprint 1's verify condition — *counts within 8% of a manual count* — needs a
+human counting a real clip. That cannot be outsourced to a licence violation.
+
+---
+
+## ADR-055 — SETU: the simulation, and a calibration gate that refused
+**Date:** 2026-08-18 · **Status:** Accepted
+
+SUMO 1.27 via `eclipse-sumo` on PyPI, so the simulator installs with the project
+rather than being a machine prerequisite.
+
+The network is generated from `road_links` — real OpenStreetMap geometry, real
+lane counts, real speed limits — not hand-drawn. A simulation calibrated against
+measured counts is only meaningful if it runs on the road those counts came
+from; drawing a "representative arterial" and calibrating it to Tonk Road's
+numbers would produce confident results about a road that does not exist.
+
+Two construction decisions, both tested:
+
+- **Nodes are shared by rounded coordinate.** PostGIS endpoints agree to about a
+  centimetre, not exactly, so exact float equality would leave the corridor as
+  disconnected stubs where vehicles vanish at every boundary.
+- **Two-wheelers are `vClass="motorcycle"` with sublane lateral alignment.** A
+  61%-two-wheeler fleet simulated as cars queues one per lane, and the queue
+  lengths come out roughly double. The mix is this platform's whole argument; it
+  has to survive into the simulation.
+
+**The gate refused, and that is the result.** Sprint 6 requires calibration
+within 10% volume and 15% travel time before any scenario output may be shown:
+
+| | simulated | measured | error | |
+|---|---|---|---|---|
+| volume | 24,219 veh/h | 24,465 | **1.0%** | within 10% |
+| mean speed | 40.5 km/h | 15.5 | **161%** | **outside 15%** |
+
+Volume reproduces almost exactly. Speed does not, and the reason is diagnosable:
+the network free-flows because it has no signal timings, no side friction, no
+cross-traffic and no parking — the things that actually produce 15.5 km/h on
+Tonk Road at 19:00. `netconvert --junctions.join` also collapsed 35 measured
+links into 17 edges, so the demand is spread more thinly than the corridor
+carries it.
+
+So `run_sumo_scenario.py` **exits non-zero and prints "NOT CALIBRATED — no
+scenario result from this network should be presented"**. The LEZ scenario runs
+and produces numbers; those numbers are refused. A simulation that yields
+confident policy output from an uncalibrated model is worse than no simulation,
+because it is wrong in a form that looks like evidence.
+
+Closing the gap needs signal timings from the department for the eight
+instrumented junctions. That is the same conversation as the RTSP feed, and it
+is now a specific ask rather than a vague one.
