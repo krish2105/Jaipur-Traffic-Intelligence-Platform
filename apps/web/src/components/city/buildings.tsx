@@ -112,7 +112,11 @@ const fragmentShader = /* glsl */ `
     // Cheap directional shading so the faces separate without a light rig.
     float facing = 0.55 + 0.45 * (1.0 - vUpness);
     vec3 colour = uBase * facing;
-    colour += tint * lit * pane * wall * above * uWindowStrength;
+    float window = lit * pane * wall * above;
+    // Night: the window emits. Day: it is dark glazing against pale stone,
+    // which is what a window actually looks like from outside at noon.
+    colour += tint * window * uWindowStrength;
+    colour = mix(colour, colour * 0.42, window * (1.0 - uWindowStrength));
 
     // Exponential-squared fog, matching the scene's.
     float fogFactor = 1.0 - exp(-uFogDensity * uFogDensity * vFogDepth * vFogDepth);
@@ -146,7 +150,7 @@ export function Buildings({
 
   const uniforms = useMemo(
     () => ({
-      uBase: { value: new THREE.Color(windowStrength > 0 ? "#1E2536" : "#8A93A6") },
+      uBase: { value: new THREE.Color(windowStrength > 0 ? "#1E2536" : "#C2C7D0") },
       uWarm: { value: new THREE.Color("#FFCE8A") },
       uCool: { value: new THREE.Color("#A9C8FF") },
       uFogColor: { value: new THREE.Color(fogColor) },

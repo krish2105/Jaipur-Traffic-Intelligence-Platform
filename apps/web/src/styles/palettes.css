@@ -131,3 +131,28 @@
   --congestion-severe:   #FF6B35;
   --congestion-critical: #E5383B;
 }
+
+/* ── daylight chrome ──────────────────────────────────────────────────────
+   The scene toggle changes the world, so the interface has to follow it. Dark
+   glass floating over a blue sky reads as muddy rather than deliberate. These
+   override only the surface and ink tokens; the accent and the congestion ramp
+   are untouched, because the ramp must mean the same thing in every light.
+   ------------------------------------------------------------------------ */
+[data-scene="day"] {
+  --ground:      #DDE5F0;
+  --ground-deep: #C7D3E4;
+  --surface:     #FFFFFF;
+  --surface-2:   #EEF2F8;
+  --surface-3:   #DFE6F1;
+  --ink:         #0B1220;   /* 17.9:1 on --surface */
+  --ink-muted:   #4A566B;   /*  7.4:1 */
+  --ink-faint:   #7A8598;   /*  3.6:1 — decorative only */
+  --rule:        #C9D3E2;
+  --rule-strong: #A9B6CA;
+  --accent:      #9A6B00;   /* brass, darkened to clear 4.5:1 on white */
+  --accent-2:    #C08A10;
+  --accent-ink:  #FFFFFF;
+  --overlay:     rgb(11 18 32 / 0.35);
+  --rim:         inset 0 1px 0 0 rgb(255 255 255 / 0.9);
+  --shadow-float: 0 2px 4px rgb(11 18 32 / 0.08), 0 20px 40px -12px rgb(11 18 32 / 0.18);
+}

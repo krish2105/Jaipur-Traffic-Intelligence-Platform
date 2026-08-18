@@ -28,7 +28,9 @@ export interface TrafficRoad {
  * advanced on the GPU-friendly path: a single matrix write per frame per
  * particle and no allocation inside useFrame.
  */
-const MAX_PARTICLES = 2400;
+// Enough to read as traffic, few enough that individual vehicles resolve.
+// At 2,400 on a visible stretch they merged into a continuous bar.
+const MAX_PARTICLES = 900;
 
 interface Particle {
   road: number;
@@ -40,10 +42,12 @@ interface Particle {
 export function Traffic({
   roads,
   quality = 1,
+  daylight = false,
 }: {
   roads: TrafficRoad[];
   /** 0..1 — the frame-budget guard halves this when FPS drops. */
   quality?: number;
+  daylight?: boolean;
 }) {
   const ref = useRef<THREE.InstancedMesh>(null);
 
@@ -73,6 +77,7 @@ export function Traffic({
   }, [roads, quality]);
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
+  const scratch = useMemo(() => new THREE.Color(), []);
 
   // The frame loop advances each particle's offset, which is a mutation. It has
   // to target a ref rather than the memo's own array: mutating render output
@@ -82,8 +87,33 @@ export function Traffic({
   useLayoutEffect(() => {
     live.current = particles.map((p) => ({ ...p }));
     const mesh = ref.current;
-    if (mesh) mesh.count = live.current.length;
-  }, [particles]);
+    if (!mesh) return;
+    mesh.count = live.current.length;
+
+    // Headlights coming toward you, tail lights going away — the single thing
+    // that makes a night road photograph read as traffic rather than as dots.
+    // Direction of travel decides which, so the two carriageways separate.
+    live.current.forEach((p, i) => {
+      const road = roads[p.road];
+      const pts = road?.points;
+      let heading = 0;
+      if (pts && pts.length > 1) {
+        heading = Math.atan2(pts[1]![0] - pts[0]![0], pts[1]![1] - pts[0]![1]);
+      }
+      const towardCamera = Math.cos(heading) < 0;
+      if (daylight) {
+        // In daylight a car is a painted body, not a lamp.
+        const shade = 0.45 + 0.5 * ((i * 2654435761) % 100) / 100;
+        scratch.setRGB(shade * 0.9, shade * 0.92, shade);
+      } else if (towardCamera) {
+        scratch.set("#FFF1CE");
+      } else {
+        scratch.set("#FF3B30");
+      }
+      mesh.setColorAt(i, scratch);
+    });
+    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+  }, [particles, roads, daylight, scratch]);
 
   useFrame((_state, delta) => {
     const mesh = ref.current;
@@ -122,7 +152,7 @@ export function Traffic({
         travelled += seg;
       }
 
-      dummy.position.set(x - dz * p.lane * 0.35, 0.14, z + dx * p.lane * 0.35);
+      dummy.position.set(x - dz * p.lane * 0.22, 0.13, z + dx * p.lane * 0.22);
       dummy.rotation.set(0, Math.atan2(dx, dz), 0);
       dummy.updateMatrix();
       mesh.setMatrixAt(i, dummy.matrix);
@@ -134,10 +164,13 @@ export function Traffic({
 
   return (
     <instancedMesh ref={ref} args={[undefined, undefined, MAX_PARTICLES]} frustumCulled={false}>
-      {/* A short capsule reads as a vehicle's light trail at city scale far
-          better than a sphere, and costs the same. */}
-      <capsuleGeometry args={[0.055, 0.34, 3, 6]} />
-      <meshBasicMaterial color="#FFF3D0" toneMapped={false} />
+      {/* A car-shaped box, not a capsule. Three's capsule is Y-axis aligned, so
+          rotating only around Y left every vehicle standing upright — the
+          picket-fence look. This is 1.8 m wide, 1.5 m tall, 4.2 m long in
+          scene units, with its length on Z so a Y rotation aims it down the
+          road. */}
+      <boxGeometry args={[0.18, 0.15, 0.42]} />
+      <meshBasicMaterial toneMapped={false} vertexColors={false} />
     </instancedMesh>
   );
 }

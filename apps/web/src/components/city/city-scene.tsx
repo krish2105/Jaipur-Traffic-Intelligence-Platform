@@ -64,14 +64,15 @@ function IntroFlight({
     // Framed off the scene's own bounding radius, so the flight always ends
     // with the whole corridor in shot whatever its extent.
     const far = radius * 2.4;
-    // Close enough that a 21 m carriageway and a 12 m building are legible.
-    // Framing the entire 17 km corridor makes both sub-pixel — the overview is
-    // a different zoom level, not the default one.
-    const near = radius * 0.16;
+    // The framing this scene lives or dies on. Too far and a 21 m carriageway
+    // is sub-pixel; too close and the camera sits in the road and the vehicles
+    // merge into one bar. This is an aerial oblique — high enough to read the
+    // corridor's shape, low enough to resolve individual cars.
+    const near = radius * 0.55;
     camera.position.set(
-      THREE.MathUtils.lerp(far * 0.35, near * 0.32, e),
-      THREE.MathUtils.lerp(far * 1.1, near * 0.62, e),
-      THREE.MathUtils.lerp(far * 0.95, near * 0.95, e),
+      THREE.MathUtils.lerp(far * 0.40, near * 0.55, e),
+      THREE.MathUtils.lerp(far * 1.05, near * 0.95, e),
+      THREE.MathUtils.lerp(far * 0.95, near * 0.85, e),
     );
     camera.lookAt(0, 0, 0);
     if (t >= 1) onDone();
@@ -105,13 +106,22 @@ function useFrameBudget() {
 export type SceneMode = "night" | "day";
 
 const PALETTE_BY_MODE: Record<SceneMode, {
-  background: string; fog: string; ambient: number; key: number; windows: number;
+  background: string; fog: string;
+  ambient: number; key: number; windows: number; bloom: number;
 }> = {
-  night: { background: "#04060F", fog: "#060A16", ambient: 0.35, key: 0.9, windows: 1 },
-  // Daylight: the window lights go out (they would be invisible anyway), the
-  // ground lifts, and the key light does the work. The congestion ramp stays
-  // identical — it is the one thing that must never change meaning.
-  day:   { background: "#AFC0DA", fog: "#C3D0E4", ambient: 1.25, key: 1.6, windows: 0 },
+  night: {
+    background: "#04060F", fog: "#060A16",
+    ambient: 0.35, key: 0.9, windows: 1, bloom: 0.7,
+  },
+  // A genuine daylight scene rather than a lightened night one: sky-blue
+  // ground, haze instead of darkness, the window lights out because a lit
+  // window is invisible at noon, and bloom off because nothing is emitting.
+  // The congestion ramp is identical in both — it is the one thing that must
+  // never change meaning.
+  day: {
+    background: "#9FBBDC", fog: "#C7D6E9",
+    ambient: 1.5, key: 2.2, windows: 0, bloom: 0.0,
+  },
 };
 
 function Scene({
@@ -145,12 +155,12 @@ function Scene({
       <directionalLight
         position={[radius, radius * 2, -radius]}
         intensity={mode.key}
-        color="#8FA6FF"
+        color={scene === "day" ? "#FFF6E2" : "#8FA6FF"}
       />
       <Environment preset={scene === "day" ? "city" : "night"} />
 
-      <Ground radius={radius} />
-      <Roads roads={data.roads} ramp={data.ramp} />
+      <Ground radius={radius} daylight={scene === "day"} />
+      <Roads roads={data.roads} ramp={data.ramp} daylight={scene === "day"} />
       <Buildings
         boxes={data.buildings}
         origin={origin}
@@ -158,7 +168,7 @@ function Scene({
         fogColor={mode.fog}
         windowStrength={mode.windows}
       />
-      <Traffic roads={data.traffic} quality={quality} />
+      <Traffic roads={data.traffic} quality={quality} daylight={scene === "day"} />
 
       <IntroFlight skip={false} radius={radius} onDone={() => setFlying(false)} />
       <OrbitControls
@@ -171,10 +181,15 @@ function Scene({
         target={[0, 0, 0]}
       />
 
-      <EffectComposer>
-        {/* Bloom is what turns emissive ribbons into light. Kept tight so the
-            whole screen does not wash out. */}
-        <Bloom intensity={0.7} luminanceThreshold={0.45} luminanceSmoothing={0.5} mipmapBlur />
+      <EffectComposer enabled={scene === "night"}>
+        {/* Bloom is what turns emissive ribbons into light at night. In daylight
+            nothing is emitting, so blooming would only smear the image. */}
+        <Bloom
+          intensity={mode.bloom}
+          luminanceThreshold={0.45}
+          luminanceSmoothing={0.5}
+          mipmapBlur
+        />
         <Vignette offset={0.28} darkness={0.68} />
       </EffectComposer>
 
@@ -202,7 +217,7 @@ export default function CityScene({
     <Canvas
       dpr={dpr}
       gl={{ antialias: false, powerPreference: "high-performance" }}
-      camera={{ position: [radius * 0.8, radius * 2.4, radius * 2.2], fov: 42, near: 0.5, far: radius * 40 }}
+      camera={{ position: [radius * 0.7, radius * 1.9, radius * 1.8], fov: 40, near: 0.5, far: radius * 40 }}
       className="absolute inset-0"
     >
       <Suspense fallback={null}>

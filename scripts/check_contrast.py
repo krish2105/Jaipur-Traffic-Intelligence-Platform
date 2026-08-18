@@ -43,7 +43,7 @@ def ratio(a: str, b: str) -> float:
 
 def main() -> int:
     css = PALETTES.read_text(encoding="utf-8")
-    blocks = re.findall(r'\[data-palette="(\w+)"\]\s*\{(.*?)\n\}', css, re.S)
+    blocks = re.findall(r'\[data-(?:palette|scene)="(\w+)"\]\s*\{(.*?)\n\}', css, re.S)
     palettes: dict[str, dict[str, str]] = {}
     for name, body in blocks:
         values = dict(re.findall(r"--([\w-]+):\s*(#[0-9A-Fa-f]{6})", body))
@@ -54,6 +54,10 @@ def main() -> int:
         ground = values.get("ground")
         if not ground:
             continue
+        # Daylight chrome sits on --surface (white panels), not on the page
+        # ground, so measure it against what the text is actually printed on.
+        if name == "day":
+            ground = values.get("surface", ground)
         for token, target in TARGETS.items():
             if token not in values:
                 continue

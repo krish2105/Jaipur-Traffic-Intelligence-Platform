@@ -34,6 +34,8 @@ const fragmentShader = /* glsl */ `
   varying vec2 vUv;
   varying vec3 vColor;
   uniform vec3 uAsphalt;
+  uniform vec3 uMarking;
+  uniform float uDaylight;
   #include <fog_pars_fragment>
 
   void main() {
@@ -54,16 +56,34 @@ const fragmentShader = /* glsl */ `
     float sheen = 0.05 + 0.05 * sin(vUv.x * 12.0);
 
     vec3 colour = uAsphalt;
-    colour = mix(colour, vColor * 0.30, sheen * 4.0);
-    colour += vColor * edge * 1.35;
-    colour += vColor * centre * 0.55;
+    // At night the surface carries a faint wash of its own congestion band; by
+    // day the tarmac is just tarmac and the data lives on the lines, exactly as
+    // it does on a real road.
+    colour = mix(colour, vColor * 0.30, sheen * 4.0 * (1.0 - uDaylight));
+
+    // The kerb line always carries the measurement — it is the data, and it
+    // must mean the same thing in both lighting modes.
+    colour += vColor * edge * mix(1.35, 0.9, uDaylight);
+
+    // The centre line is a road marking: white in daylight, tinted at night
+    // where a white line would read as another light source.
+    vec3 centreColour = mix(vColor * 0.55, uMarking, uDaylight);
+    colour += centreColour * centre;
 
     gl_FragColor = vec4(colour, 1.0);
     #include <fog_fragment>
   }
 `;
 
-export function Roads({ roads, ramp }: { roads: RoadInput[]; ramp: Ramp }) {
+export function Roads({
+  roads,
+  ramp,
+  daylight = false,
+}: {
+  roads: RoadInput[];
+  ramp: Ramp;
+  daylight?: boolean;
+}) {
   const surface = useMemo(() => buildRoadGeometry(roads, ramp), [roads, ramp]);
   // A tight halo, not a floodlight. The previous 4.5x spill was ~200 m wide at
   // this scale and turned the whole corridor into a green smear.
@@ -77,16 +97,18 @@ export function Roads({ roads, ramp }: { roads: RoadInput[]; ramp: Ramp }) {
   // during render, both of which React's compiler correctly rejects.
   const uniforms = useMemo(
     () => ({
-      uAsphalt: { value: new THREE.Color("#0A0D15") },
-      fogColor: { value: new THREE.Color("#060A16") },
+      uAsphalt: { value: new THREE.Color(daylight ? "#565C66" : "#0A0D15") },
+      uMarking: { value: new THREE.Color("#F2F4F8") },
+      uDaylight: { value: daylight ? 1 : 0 },
+      fogColor: { value: new THREE.Color(daylight ? "#C3D0E4" : "#060A16") },
       fogDensity: { value: 0.0 },
     }),
-    [],
+    [daylight],
   );
 
   return (
     <group>
-      <mesh geometry={halo} position={[0, 0.015, 0]} renderOrder={0}>
+      <mesh geometry={halo} position={[0, 0.015, 0]} renderOrder={0} visible={!daylight}>
         <meshBasicMaterial
           vertexColors
           transparent
@@ -111,11 +133,11 @@ export function Roads({ roads, ramp }: { roads: RoadInput[]; ramp: Ramp }) {
 }
 
 /** The ground the city stands on. Without it everything floats in void. */
-export function Ground({ radius }: { radius: number }) {
+export function Ground({ radius, daylight = false }: { radius: number; daylight?: boolean }) {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.2, 0]} receiveShadow={false}>
       <circleGeometry args={[radius * 4, 64]} />
-      <meshStandardMaterial color="#070A12" roughness={1} metalness={0} />
+      <meshStandardMaterial color={daylight ? "#B9BFC9" : "#070A12"} roughness={1} metalness={0} />
     </mesh>
   );
 }
