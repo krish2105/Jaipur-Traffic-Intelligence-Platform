@@ -435,3 +435,24 @@ product gets explicit zoom levels rather than one compromise:
 | Junction | flown to on click | turning movements, queues, that camera's accuracy |
 
 The junction level is the click-to-fly interaction still to be built.
+
+---
+
+## ADR-019 — The orbit target must sit on the corridor, not at its centroid
+**Date:** 2026-08-18 · **Status:** Open — known defect
+
+The camera orbits `[0, 0, 0]`, which is the centroid of every link in the
+corridor. Tonk Road is a curve, so that centroid is not on the carriageway — it
+sits in the empty space the curve bends around.
+
+At overview range this is invisible. Closer than about `fit * 0.028` it is not:
+the camera flies past *beside* the road instead of along it, and the frame goes
+empty. That is why the close-up inspection failed rather than showing the
+vehicle silhouettes.
+
+The fix is to snap the orbit target to the nearest point on a link — the same
+"which link am I looking at" machinery the junction click-to-fly interaction
+needs, so the two should be built together rather than separately.
+
+Until then the default framing is capped at `fit * 0.028`, which is the closest
+range that reliably keeps the corridor in shot.

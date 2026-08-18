@@ -76,7 +76,13 @@ function IntroFlight({
     // 17 km corridor AND a 4 m car — they are four orders of magnitude apart —
     // so the default is the stretch, and the overview is a zoom level reached
     // by scrolling out. See ADR-018.
-    const near = fit * 0.12;
+    // 0.028 is the closest range that still frames the corridor. Closer than this
+    // the camera passes BESIDE the road rather than along it, because
+    // OrbitControls targets the centroid of every link and the corridor is a
+    // curve — its centroid is not on the carriageway. Fixing that needs the
+    // target snapped to the nearest point ON a link, which is the same
+    // machinery the junction click-to-fly needs. See ADR-018.
+    const near = fit * 0.028;
     // A fixed aerial-oblique bearing: 38 degrees elevation, 35 degrees round.
     // Only the distance changes during the flight, so the corridor stays framed
     // the whole way down instead of swinging out of shot.
