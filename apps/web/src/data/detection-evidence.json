@@ -1,0 +1,234 @@
+{
+  "model": {
+    "id": "PekingU/rtdetr_v2_r18vd",
+    "licence": "Apache-2.0",
+    "threshold": 0.45
+  },
+  "source": {
+    "name": "Wikimedia Commons",
+    "what": "openly licensed photographs of Jaipur streets",
+    "why": "no police footage exists yet, and ADR-054 rules out stock video"
+  },
+  "images": [
+    {
+      "title": "File:Jaipur, India, Downtown Jaipur.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AJaipur%2C%20India%2C%20Downtown%20Jaipur.jpg",
+      "licence": "CC BY 4.0",
+      "author": "<table cellspacing=\"10px\" cellpadding=\"0\" style=\"width:100%; clear:both; margin:0.5em auto; background-color:#f8f8f8; bo",
+      "detections": {
+        "NMV": 6
+      },
+      "mean_confidence": {
+        "NMV": 0.558
+      },
+      "total_vehicles": 6
+    },
+    {
+      "title": "File:Jaipur - Verkehr 1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AJaipur%20-%20Verkehr%201.jpg",
+      "licence": "CC BY-SA 4.0",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Xenophon\" title=\"User:Xenophon\">Wolfgang Sauber</a>",
+      "detections": {
+        "CAR": 2,
+        "TRK2": 2
+      },
+      "mean_confidence": {
+        "CAR": 0.518,
+        "TRK2": 0.471
+      },
+      "total_vehicles": 4
+    },
+    {
+      "title": "File:Jaipur - Verkehr 2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AJaipur%20-%20Verkehr%202.jpg",
+      "licence": "CC BY-SA 4.0",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Xenophon\" title=\"User:Xenophon\">Wolfgang Sauber</a>",
+      "detections": {
+        "CAR": 1
+      },
+      "mean_confidence": {
+        "CAR": 0.578
+      },
+      "total_vehicles": 1
+    },
+    {
+      "title": "File:Jaipur - Verkehr 3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AJaipur%20-%20Verkehr%203.jpg",
+      "licence": "CC BY-SA 4.0",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Xenophon\" title=\"User:Xenophon\">Wolfgang Sauber</a>",
+      "detections": {},
+      "mean_confidence": {},
+      "total_vehicles": 0
+    },
+    {
+      "title": "File:Jaipur - Verkehr 4.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AJaipur%20-%20Verkehr%204.jpg",
+      "licence": "CC BY-SA 4.0",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Xenophon\" title=\"User:Xenophon\">Wolfgang Sauber</a>",
+      "detections": {
+        "TRK2": 2
+      },
+      "mean_confidence": {
+        "TRK2": 0.59
+      },
+      "total_vehicles": 2
+    },
+    {
+      "title": "File:Jaipur - Verkehr 5.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AJaipur%20-%20Verkehr%205.jpg",
+      "licence": "CC BY-SA 4.0",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Xenophon\" title=\"User:Xenophon\">Wolfgang Sauber</a>",
+      "detections": {
+        "CAR": 1,
+        "TRK2": 1
+      },
+      "mean_confidence": {
+        "CAR": 0.608,
+        "TRK2": 0.547
+      },
+      "total_vehicles": 2
+    },
+    {
+      "title": "File:Jaipur - Verkehr 7.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AJaipur%20-%20Verkehr%207.jpg",
+      "licence": "CC BY-SA 4.0",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Xenophon\" title=\"User:Xenophon\">Wolfgang Sauber</a>",
+      "detections": {
+        "CAR": 1,
+        "NMV": 3,
+        "TRK2": 1
+      },
+      "mean_confidence": {
+        "CAR": 0.841,
+        "NMV": 0.731,
+        "TRK2": 0.89
+      },
+      "total_vehicles": 5
+    },
+    {
+      "title": "File:Jaipur - Verkehr 8.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AJaipur%20-%20Verkehr%208.jpg",
+      "licence": "CC BY-SA 4.0",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Xenophon\" title=\"User:Xenophon\">Wolfgang Sauber</a>",
+      "detections": {
+        "BUS": 2,
+        "TRK2": 1
+      },
+      "mean_confidence": {
+        "BUS": 0.565,
+        "TRK2": 0.821
+      },
+      "total_vehicles": 3
+    },
+    {
+      "title": "File:Jaipur Road (1580689081).jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AJaipur%20Road%20%281580689081%29.jpg",
+      "licence": "CC BY 2.0",
+      "author": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/10345599@N03\">Francisco Anzola</a>",
+      "detections": {
+        "BUS": 2,
+        "CAR": 11,
+        "NMV": 4
+      },
+      "mean_confidence": {
+        "BUS": 0.883,
+        "CAR": 0.644,
+        "NMV": 0.605
+      },
+      "total_vehicles": 17
+    },
+    {
+      "title": "File:Oscar Fernandes along with the Chief Minister of Rajasthan, Shri Ashok Gehlot, the Chief Minister of Haryana, Shri Bhupinder Singh Hooda and the Ministers of State for Road Transport & Highways.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AOscar%20Fernandes%20along%20with%20the%20Chief%20Minister%20of%20Rajasthan%2C%20Shri%20Ashok%20Gehlot%2C%20the%20Chief%20Minister%20of%20Haryana%2C%20Shri%20Bhupinder%20Singh%20Hooda%20and%20the%20Ministers%20of%20State%20for%20Road%20Transport%20%26%20Highways.jpg",
+      "licence": "GODL-India",
+      "author": "<bdi><a href=\"https://en.wikipedia.org/wiki/en:Ministry_of_Petroleum_and_Natural_Gas\" class=\"extiw\" title=\"w:en:Ministry",
+      "detections": {},
+      "mean_confidence": {},
+      "total_vehicles": 0
+    },
+    {
+      "title": "File:The Union Minister of Shipping, Road Transport and Highways, Shri T. R. Baalu launching the Vehicle Tracking and Monitoring Project for NH-8 between New Delhi and Jaipur, in New Delhi on July 21, 2005.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AThe%20Union%20Minister%20of%20Shipping%2C%20Road%20Transport%20and%20Highways%2C%20Shri%20T.%20R.%20Baalu%20launching%20the%20Vehicle%20Tracking%20and%20Monitoring%20Project%20for%20NH-8%20between%20New%20Delhi%20and%20Jaipur%2C%20in%20New%20Delhi%20on%20July%2021%2C%202005.jpg",
+      "licence": "GODL-India",
+      "author": "<bdi><a href=\"https://en.wikipedia.org/wiki/en:Ministry_of_Ports,_Shipping_and_Waterways\" class=\"extiw\" title=\"w:en:Mini",
+      "detections": {},
+      "mean_confidence": {},
+      "total_vehicles": 0
+    },
+    {
+      "title": "File:Street Scene, Jaipur.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AStreet%20Scene%2C%20Jaipur.jpg",
+      "licence": "CC BY 4.0",
+      "author": "TuckDB Postcards",
+      "detections": {},
+      "mean_confidence": {},
+      "total_vehicles": 0
+    },
+    {
+      "title": "File:Street Scene with regiment marching, Jaipur.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AStreet%20Scene%20with%20regiment%20marching%2C%20Jaipur.jpg",
+      "licence": "CC BY 4.0",
+      "author": "TuckDB Postcards",
+      "detections": {
+        "NMV": 1
+      },
+      "mean_confidence": {
+        "NMV": 0.46
+      },
+      "total_vehicles": 1
+    },
+    {
+      "title": "File:Street scene (5581456110).jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AStreet%20scene%20%285581456110%29.jpg",
+      "licence": "CC BY 2.0",
+      "author": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/34181233@N06\">Nico Crisafulli</a> from USA",
+      "detections": {
+        "NMV": 1
+      },
+      "mean_confidence": {
+        "NMV": 0.908
+      },
+      "total_vehicles": 1
+    },
+    {
+      "title": "File:India - Jaipur2 - 031 - traffic in Jaipurs pink-clad Old Town (2178575969).jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AIndia%20-%20Jaipur2%20-%20031%20-%20traffic%20in%20Jaipurs%20pink-clad%20Old%20Town%20%282178575969%29.jpg",
+      "licence": "CC BY 2.0",
+      "author": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/56796376@N00\">McKay Savage</a> from London, ",
+      "detections": {
+        "BUS": 1,
+        "CAR": 3,
+        "NMV": 2,
+        "TRK2": 1
+      },
+      "mean_confidence": {
+        "BUS": 0.48,
+        "CAR": 0.634,
+        "NMV": 0.865,
+        "TRK2": 0.548
+      },
+      "total_vehicles": 7
+    }
+  ],
+  "totals": {
+    "NMV": 17,
+    "CAR": 19,
+    "TRK2": 8,
+    "BUS": 5
+  },
+  "class_mix_pct": {
+    "BUS": 10.2,
+    "CAR": 38.8,
+    "NMV": 34.7,
+    "TRK2": 16.3
+  },
+  "images_analysed": 15,
+  "vehicles_detected": 49,
+  "discarded_person_detections": 196,
+  "prohibition": "The COCO person class is discarded before counting. CLAUDE.md prohibits person detection; the count above records that it was enforced rather than assumed.",
+  "proves": "Vehicle classes can be read off real Jaipur streets by the shipped Apache-2.0 detector, with confidences.",
+  "does_not_prove": "Counting accuracy. These photographs carry no ground-truth labels and no motion, so this is classification evidence, not a MAPE.",
+  "finding": "The stock Apache-2.0 detector found no two-wheelers in a city whose fleet is about 61% two-wheelers. Off-the-shelf COCO weights are trained on Western road scenes where a motorcycle is rare, large in frame and unoccluded; in Jaipur it is the majority class, small, and usually in a dense mixed stream. This is the measured case for fine-tuning on Indian traffic before any accuracy claim is made — and it is exactly the gap a vendor shipping stock weights would not report.",
+  "two_wheeler_detected": 0,
+  "is_synthetic": false
+}
