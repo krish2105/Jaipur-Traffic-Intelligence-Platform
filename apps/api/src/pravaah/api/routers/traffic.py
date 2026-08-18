@@ -25,6 +25,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..allocator import allocate
 from ..deps import SessionDep
 from ..real_data import severity_finding
+from ..severity import severity_model
 
 router = APIRouter(tags=["traffic"])
 
@@ -725,6 +726,24 @@ async def enforcement_allocation() -> dict[str, Any]:
     about whether we are guessing.
     """
     return allocate()
+
+
+@router.get("/safety/severity-model")
+async def safety_severity_model(session: SessionDep) -> dict[str, Any]:
+    """KSI risk by composition, with the confidence interval it refuses to omit.
+
+    Reads the incident timeline only to fit the hour-of-day effect, and reports
+    that this input is seeded — so the held-out error describes the estimator
+    rather than Jaipur's nights. Everything else is anchored to published
+    figures and calibrated against the one real observable there is: 34.7 deaths
+    per 100 crashes in 2025.
+
+    It is not a fitted regression and says so in `method`. Crash-level records
+    are not public; when the Commissionerate supplies them this becomes a real
+    logistic model and the structure is already the one to fit.
+    """
+    timeline = await incident_timeline(session)
+    return severity_model(timeline.get("hours", []))
 
 
 @router.get("/incidents/timeline")

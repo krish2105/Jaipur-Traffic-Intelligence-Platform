@@ -164,33 +164,6 @@ def write_routes(n: int) -> None:
     (OUT / "c.rou.xml").write_text(body + "</additional>\n")
 
 
-def junction_links(n: int) -> dict[str, list[int]]:
-    """Which controlled link indices belong to the arterial at each junction.
-
-    Read from the built network rather than assumed. Hand-writing the state
-    string is how this went wrong the first time: the junctions have six
-    controlled links, not the eight I assumed, so every phase string was the
-    wrong length and the plans were nonsense.
-    """
-    import xml.etree.ElementTree as _ET
-
-    net = _ET.parse(OUT / "c.net.xml").getroot()
-    out: dict[str, list[int]] = {f"j{i}": [] for i in range(n)}
-    counts: dict[str, int] = {f"j{i}": 0 for i in range(n)}
-    for conn in net.iter("connection"):
-        tl = conn.get("tl")
-        if tl is None or tl not in out:
-            continue
-        idx = int(conn.get("linkIndex", -1))
-        counts[tl] = max(counts[tl], idx + 1)
-        frm = conn.get("from", "")
-        # Arterial approaches are w_j0 and j(i-1)_j(i); cross approaches are n{i}_j{i}.
-        if not frm.startswith("n"):
-            out[tl].append(idx)
-    out["_counts"] = counts  # type: ignore[assignment]
-    return out
-
-
 def write_tls(name: str, n: int, green_art: int, speed_ms: float) -> None:
     """Write a plan by patching the network's own signal logic.
 
@@ -210,7 +183,8 @@ def write_tls(name: str, n: int, green_art: int, speed_ms: float) -> None:
     effective = CYCLE - 2 * (LOST_PER_PHASE + YELLOW)
     green_cross = effective - green_art
 
-    tree = ET.parse(OUT / "c.net.xml")
+    # Our own network, written by netconvert moments earlier.
+    tree = ET.parse(OUT / "c.net.xml")  # noqa: S314 — not untrusted input
     root = tree.getroot()
 
     # Which controlled links are the arterial, read from the network's own
@@ -226,7 +200,7 @@ def write_tls(name: str, n: int, green_art: int, speed_ms: float) -> None:
         if jid not in arterial:
             continue
         i = int(jid[1:])
-        tl.set("offset", str(int(round(i * SPACING_M / speed_ms)) % CYCLE))
+        tl.set("offset", str(round(i * SPACING_M / speed_ms) % CYCLE))
         art = arterial[jid]
         for phase in tl.findall("phase"):
             state = phase.get("state", "")

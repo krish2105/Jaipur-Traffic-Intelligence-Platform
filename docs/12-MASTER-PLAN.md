@@ -141,6 +141,46 @@ redistribution becomes **visible and controllable** — a count-based controller
 performs one of these allocations by accident, having never measured the
 quantity that distinguishes them.
 
+### 2.3 The severity model, and what it is honestly worth
+
+`/safety/severity-model`. **Not a fitted regression, and it says so in its own
+response.** Fitting needs crash-level records with covariates; those are not
+public. What exists is aggregate. So this is a structured risk model with
+published anchors, calibrated against the one real observable available.
+
+| scenario | deaths per 100 crashes | 95% CI |
+|---|---|---|
+| Jaipur as measured | **34.7** | 34.4 – 34.9 |
+| at night | 48.7 | 43.0 – 53.7 |
+| freight corridor | 38.9 | 37.2 – 40.5 |
+| **helmet compliance at 90%** | **30.7** | 29.1 – 32.5 |
+
+Calibration residual against the observed 34.7 is **0.0** — the intercept is
+solved so the model reproduces Jaipur's own published rate at Jaipur's own
+composition, including its ~5% baseline freight share.
+
+**One finding worth stating carefully.** The aggregate two-wheeler odds ratio
+comes out at **0.929** — a two-wheeler crash is *not* more likely to be fatal
+than any other crash. The disproportion lives entirely in the **unhelmeted**
+subset. That is a better argument than "two-wheelers are dangerous", because it
+names something enforcement can actually change.
+
+At 3,664 crashes a year, moving from 34.7 to 30.7 is about **147 lives**. That
+is far larger than the enforcement allocator's 18.5 in §2.2's sibling module,
+and the two are not in conflict: **18.5 is what reallocating existing effort
+buys; 147 is what achieving 90% helmet compliance buys.** The second needs more
+than a reallocation — sustained enforcement, and probably a campaign. Quoting
+147 as though it were free would be dishonest, and the panel does not.
+
+The hour-of-day effect *is* fitted, by leave-one-out CV, MAE 5.3% relative. But
+it is fitted to the seeded incident timeline, so that number validates the
+estimator and not Jaipur's nights. Both statements ship with it.
+
+**The single highest-value data request in this project** follows directly:
+FIR-level crash records — date, hour, light, vehicle classes, outcome. About
+3,000 rows a year turns this into a real logistic regression with real standard
+errors, and the structure is already the right one to fit.
+
 **Second wedge — the enforcement allocator.** Nobody in this market ships a tool
 that answers "given my crash severity profile and my fleet composition, where
 should my next 1,000 challans go?" That is a composition question, and §1.3 says
@@ -401,7 +441,7 @@ verified in production at
 | §5 D7 · agentic layer | **done** | plans before answering, shows the plan, refuses on a miss |
 | §5 D8 · pink UI | **done** | gulaabi default, contrast gate passes on 6 palettes |
 | §5 D9 · atlas maps | **partial** | console 2D done; citizen / officer / city still to wire |
-| §5 D2 · severity model | not started | |
+| §5 D2 · severity model | **done** | `/safety/severity-model` — calibrates to 34.7 exactly, CI on every scenario, LOO MAE 5.3% |
 | §5 D4 · PCU vs count | **done** | `compare_pcu_signal.py`, 6-point demand sweep in SUMO — and it corrected §2, see §2.1 |
 | §5 D5 · corridor sync | **done** | `compare_pcu_corridor.py`, 1–5 junctions x 5 seeds — corrected §2 again, see §2.2 |
 | §5 D10–14 | not started | |
