@@ -142,7 +142,9 @@ describe("chart colours", () => {
 });
 
 describe("snapshot", () => {
-  const data = snapshot as Record<string, Record<string, unknown>>;
+  // Through unknown: /corridors is an array, so the snapshot's inferred type
+  // does not overlap a Record of Records and tsc rejects the direct cast.
+  const data = snapshot as unknown as Record<string, Record<string, unknown>>;
 
   it("carries the endpoints the pitch rests on", () => {
     for (const key of [
