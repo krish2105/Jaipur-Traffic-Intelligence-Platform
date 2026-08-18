@@ -365,7 +365,13 @@ export function ConsoleShell({
 
         <main
           id="console-main"
-          className="relative min-w-0 flex-1 max-lg:h-[45vh] max-lg:shrink-0 lg:overflow-y-auto"
+          // The fixed 45vh belongs to the MAP, which has no natural height and
+          // must be told one. A section view has real content: giving it 45vh
+          // clips it, and the overflow then paints over the rail stacked below
+          // — which is what it did on a phone.
+          className={`relative min-w-0 flex-1 lg:overflow-y-auto ${
+            showMap ? "max-lg:h-[45vh] max-lg:shrink-0" : ""
+          }`}
         >
           {showMap ? (
             <>

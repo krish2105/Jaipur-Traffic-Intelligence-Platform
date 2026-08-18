@@ -919,3 +919,29 @@ And the status line stays honest: counting runs on IDD and UA-DETRAC, and is
 **not yet validated on Jaipur video** — that needs a read-only RTSP feed. A
 platform that claims local validation it does not have loses the room the first
 time someone checks.
+
+---
+
+## ADR-034 — A fixed height belongs to the map, not to the pane
+**Date:** 2026-08-18 · **Status:** Accepted
+
+On a phone the Edge section's content painted straight over the panel rail
+stacked below it, and the first hypothesis was Recharts leaving its `<svg>`
+overflow visible. That was wrong, and the wrong fix — `overflow-hidden` on the
+chart wrapper — would have clipped tooltips near the plot edge to cure a
+symptom.
+
+The cause was `max-lg:h-[45vh]` on the `<main>` cell. The map is a WebGL canvas
+with **no natural height** and must be told one. A section view has real
+content; giving it 45vh clips it, and the overflow paints over whatever the
+stacked layout puts underneath. The height is now applied only when the map is
+what's showing.
+
+Third time this exact class of bug has appeared (ADR-026's `lg:h-auto`, the
+`h-dvh` overflow that painted through the alert ticker, and this), so it is
+worth stating as a rule: **a height that exists to prop up a canvas must never
+be applied to a pane that may hold ordinary content.** Scope it to the canvas
+case explicitly.
+
+Recorded also because the first hypothesis was plausible and would have "worked"
+on the screenshot — the lesson of ADR-020 in a different costume.
