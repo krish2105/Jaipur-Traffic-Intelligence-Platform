@@ -335,6 +335,7 @@ async def forecast(
 async def scene(
     session: SessionDep,
     corridor_id: Annotated[int | None, Query()] = None,
+    at: Annotated[datetime | None, Query()] = None,
 ) -> dict[str, Any]:
     """Everything the 3D city needs, in one payload.
 
@@ -348,10 +349,17 @@ async def scene(
     """
     rows = await session.execute(
         text("""
-            WITH latest AS (
+            -- `at` drives the whole scene: pass a moment and every link
+            -- resolves to its measurement at that moment, which is what lets
+            -- the timeline scrub the entire city through the seeded 90 days.
+            WITH anchor AS (
+              SELECT COALESCE(CAST(:at AS timestamptz), now()) AS ts
+            ),
+            latest AS (
               SELECT DISTINCT ON (lc.link_id)
                      lc.link_id, lc.congestion_index, lc.confidence
-              FROM link_congestion lc
+              FROM link_congestion lc, anchor
+              WHERE lc.bucket_start <= anchor.ts
               ORDER BY lc.link_id, lc.bucket_start DESC
             ),
             measured AS (
@@ -371,8 +379,8 @@ async def scene(
               -- Bounded at BOTH ends. The seed writes a whole final day
               -- including hours still ahead of now, so an open-ended window
               -- sweeps up the rest of today and inflates the rate ~20x.
-              WHERE tc.bucket_start >  now() - INTERVAL '30 minutes'
-                AND tc.bucket_start <= now()
+              WHERE tc.bucket_start >  (SELECT ts FROM anchor) - INTERVAL '30 minutes'
+                AND tc.bucket_start <= (SELECT ts FROM anchor)
               GROUP BY tc.link_id
             )
             SELECT l.link_id, l.name_en, l.name_hi, l.corridor_id, l.lanes,
@@ -387,7 +395,7 @@ async def scene(
             LEFT JOIN measured ON measured.link_id = l.link_id
             WHERE (CAST(:corridor_id AS bigint) IS NULL OR l.corridor_id = :corridor_id)
         """),
-        {"corridor_id": corridor_id},
+        {"corridor_id": corridor_id, "at": at},
     )
     links = []
     for r in rows:
@@ -410,6 +418,7 @@ async def scene(
     return {
         "links": links,
         "origin": {"lon": 75.8005, "lat": 26.862},
+        "observed_at": (at or datetime.now().astimezone()).isoformat(),
         "is_synthetic": True,
     }
 

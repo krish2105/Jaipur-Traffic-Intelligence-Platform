@@ -58,7 +58,7 @@ export interface SceneLink {
 }
 
 export function CityView({
-  links,
+  links: initialLinks,
   buildings,
   initialPalette = "night",
 }: {
@@ -67,6 +67,30 @@ export function CityView({
   initialPalette?: PaletteId;
 }) {
   const [palette, setPalette] = useState<PaletteId>(initialPalette);
+  /** Night is the control-room native mode; day is the public-facing one. */
+  const [scene, setScene] = useState<"night" | "day">("night");
+  /** Hour of the seeded day the whole city is rendered at. */
+  const [hour, setHour] = useState<number | null>(null);
+  const [liveLinks, setLiveLinks] = useState<SceneLink[] | null>(null);
+
+  // Scrubbing re-resolves every link at that moment. One request per release,
+  // not per pixel — the slider commits on change, not on drag.
+  useEffect(() => {
+    if (hour === null) return;
+    const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8001";
+    const day = new Date();
+    day.setDate(day.getDate() - 1);
+    const stamp = `${day.toISOString().slice(0, 10)}T${String(hour).padStart(2, "0")}:00:00+05:30`;
+    const controller = new AbortController();
+    fetch(`${base}/api/v1/scene?corridor_id=1&at=${encodeURIComponent(stamp)}`, {
+      signal: controller.signal,
+      cache: "no-store",
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => d && setLiveLinks(d.links as SceneLink[]))
+      .catch(() => {});
+    return () => controller.abort();
+  }, [hour]);
 
   // The palette lives on <html> so the CSS variables cascade to the glass
   // panels AND are readable by the WebGL layer, which resolves the congestion
@@ -79,7 +103,18 @@ export function CityView({
   // needs it — and sets no React state.
   useEffect(() => {
     document.documentElement.setAttribute("data-palette", palette);
-  }, [palette]);
+    document.documentElement.setAttribute("data-scene", scene);
+  }, [palette, scene]);
+
+  // Committed in the click handler as well as the effect. With only the effect,
+  // the DOM lagged one click behind the button state and the two disagreed on
+  // screen — visibly wrong in a demo.
+  const choosePalette = (next: PaletteId) => {
+    document.documentElement.setAttribute("data-palette", next);
+    setPalette(next);
+  };
+
+  const links = liveLinks ?? initialLinks;
 
   const { data, radius, origin } = useMemo(() => {
     // Centre on the geometry we actually have, so the camera always frames the
@@ -120,7 +155,7 @@ export function CityView({
     <div className="relative h-dvh w-full overflow-hidden bg-[var(--ground)]">
       {/* key forces a full remount on palette change so the merged road
           geometry re-resolves its vertex colours from the new ramp */}
-      <City data={data} radius={radius} origin={origin} fallback={<Fallback links={links} />} />
+      <City data={data} scene={scene} radius={radius} origin={origin} fallback={<Fallback links={links} />} />
 
       {/* ── glass overlay ───────────────────────────────────────────────── */}
       <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-5 md:p-8">
@@ -135,11 +170,20 @@ export function CityView({
           </div>
 
           <div className="pointer-events-auto glass flex flex-wrap gap-1 rounded-2xl p-1.5">
+            <button
+              type="button"
+              onClick={() => setScene(scene === "night" ? "day" : "night")}
+              aria-label={scene === "night" ? "Switch to day" : "Switch to night"}
+              className="mr-1 rounded-xl px-3 py-2 text-xs text-[var(--ink-muted)]
+                         transition-colors hover:text-[var(--ink)]"
+            >
+              {scene === "night" ? "☾" : "☀"}
+            </button>
             {PALETTES.map((p) => (
               <button
                 key={p.id}
                 type="button"
-                onClick={() => setPalette(p.id)}
+                onClick={() => choosePalette(p.id)}
                 aria-pressed={palette === p.id}
                 className="rounded-xl px-3 py-2 text-xs transition-colors
                            text-[var(--ink-muted)] hover:text-[var(--ink)]
@@ -164,6 +208,32 @@ export function CityView({
               {measured.length} of {links.length} links instrumented ·{" "}
               <span className="text-[var(--accent)]">Simulated data</span>
             </p>
+          </div>
+
+          <div className="pointer-events-auto glass flex-1 rounded-2xl px-5 py-4 sm:max-w-md">
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+                {hour === null ? "Live" : "Time travel"}
+              </p>
+              <p className="font-mono text-sm tabular-nums text-[var(--ink)]">
+                {hour === null
+                  ? "now"
+                  : `${String(hour).padStart(2, "0")}:00 IST`}
+              </p>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={23}
+              step={1}
+              value={hour ?? new Date().getHours()}
+              onChange={(e) => setHour(Number(e.target.value))}
+              aria-label="Scrub the city through the day"
+              className="mt-3 w-full accent-[var(--accent)]"
+            />
+            <div className="mt-1 flex justify-between font-mono text-[10px] text-[var(--ink-muted)]">
+              <span>00</span><span>06</span><span>12</span><span>18</span><span>23</span>
+            </div>
           </div>
 
           <div className="pointer-events-auto glass rounded-2xl px-5 py-4">

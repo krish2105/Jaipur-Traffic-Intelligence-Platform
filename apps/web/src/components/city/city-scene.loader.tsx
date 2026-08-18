@@ -44,12 +44,14 @@ export function City({
   data,
   radius,
   origin,
+  scene,
   fallback,
   force2D = false,
 }: {
   data: CityData;
   radius: number;
   origin: Origin;
+  scene: "night" | "day";
   fallback: React.ReactNode;
   force2D?: boolean;
 }) {
@@ -70,5 +72,5 @@ export function City({
   // Undecided on the first paint — render the 2D interface rather than a
   // spinner, so the content is never gated behind a capability check.
   if (capable === null || capable === false || reduce) return <>{fallback}</>;
-  return <CityScene data={data} radius={radius} origin={origin} />;
+  return <CityScene data={data} radius={radius} origin={origin} scene={scene} />;
 }

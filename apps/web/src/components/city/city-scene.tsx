@@ -101,39 +101,63 @@ function useFrameBudget() {
   return quality;
 }
 
+/** Night is the control-room native mode; day is the public-facing one. */
+export type SceneMode = "night" | "day";
+
+const PALETTE_BY_MODE: Record<SceneMode, {
+  background: string; fog: string; ambient: number; key: number; windows: number;
+}> = {
+  night: { background: "#04060F", fog: "#060A16", ambient: 0.35, key: 0.9, windows: 1 },
+  // Daylight: the window lights go out (they would be invisible anyway), the
+  // ground lifts, and the key light does the work. The congestion ramp stays
+  // identical — it is the one thing that must never change meaning.
+  day:   { background: "#AFC0DA", fog: "#C3D0E4", ambient: 1.25, key: 1.6, windows: 0 },
+};
+
 function Scene({
   data,
   showStats,
   radius,
   origin,
+  scene,
 }: {
   data: CityData;
   showStats: boolean;
   radius: number;
   origin: Origin;
+  scene: SceneMode;
 }) {
   const [flying, setFlying] = useState(true);
   const quality = useFrameBudget();
+  const fogDensity = 1.6 / Math.max(60, radius);
+  const mode = PALETTE_BY_MODE[scene];
 
   return (
     <>
-      <color attach="background" args={["#04060F"]} />
+      <color attach="background" args={[mode.background]} />
       {/* Volumetric-feeling depth without a volumetric cost. */}
       {/* Fog density scales with the scene so a small corridor is not lost in
-          it and a large one still has depth. */}
-      <fogExp2 attach="fog" args={["#060A16", 1.6 / Math.max(60, radius)]} />
+          it and a large one still has depth. The buildings' shader is handed
+          the same value — a raw ShaderMaterial gets no fog for free. */}
+      <fogExp2 attach="fog" args={[mode.fog, fogDensity]} />
 
-      <ambientLight intensity={0.35} />
+      <ambientLight intensity={mode.ambient} />
       <directionalLight
         position={[radius, radius * 2, -radius]}
-        intensity={0.9}
+        intensity={mode.key}
         color="#8FA6FF"
       />
-      <Environment preset="night" />
+      <Environment preset={scene === "day" ? "city" : "night"} />
 
       <Ground radius={radius} />
       <Roads roads={data.roads} ramp={data.ramp} />
-      <Buildings boxes={data.buildings} origin={origin} />
+      <Buildings
+        boxes={data.buildings}
+        origin={origin}
+        fogDensity={fogDensity}
+        fogColor={mode.fog}
+        windowStrength={mode.windows}
+      />
       <Traffic roads={data.traffic} quality={quality} />
 
       <IntroFlight skip={false} radius={radius} onDone={() => setFlying(false)} />
@@ -164,11 +188,13 @@ export default function CityScene({
   data,
   radius,
   origin,
+  scene,
   showStats = false,
 }: {
   data: CityData;
   radius: number;
   origin: Origin;
+  scene: SceneMode;
   showStats?: boolean;
 }) {
   const dpr = useMemo<[number, number]>(() => [1, 2], []);
@@ -180,7 +206,7 @@ export default function CityScene({
       className="absolute inset-0"
     >
       <Suspense fallback={null}>
-        <Scene data={data} showStats={showStats} radius={radius} origin={origin} />
+        <Scene data={data} showStats={showStats} radius={radius} origin={origin} scene={scene} />
       </Suspense>
     </Canvas>
   );
