@@ -18,6 +18,7 @@ import {
   type NeetiCatalogue,
   type PublishedFigures,
   type Representation,
+  type Fairness,
   type SourceReadiness,
   type SignalAdvisory,
   type WeeklyMatrix,
@@ -816,6 +817,8 @@ function EnforcementSection({
               </p>
             )}
           </Panel>
+
+          <FairnessPanel hi={hi} locale={locale} />
 
           {canDefaulters && (
             <Panel title={hi ? "डिफॉल्टर · गंभीरता-भारित" : "Defaulters · severity-weighted"}>
@@ -1662,6 +1665,156 @@ function RepresentationPanel({ hi, locale }: { hi: boolean; locale: Locale }) {
       >
         {data.sources.registered.name}
       </a>
+    </Panel>
+  );
+}
+
+
+/**
+ * Enforcement fairness.
+ *
+ * The panel deliberately opens by saying what it does NOT measure. A fairness
+ * dashboard that quietly omits demographics reads as an oversight; one that
+ * states it holds no caste, religion, gender or income data and will not
+ * acquire any is making a commitment a reviewer can hold it to.
+ *
+ * What it does measure is the real equity question for Indian traffic
+ * enforcement: whether the burden falls hardest on the road users least able
+ * to carry it. Two-wheeler riders are the test case — and on this data they
+ * carry noticeably more of it than their share of the road implies.
+ */
+function FairnessPanel({ hi, locale }: { hi: boolean; locale: Locale }) {
+  const { data } = useLazy<Fairness>(() => api.fairness(), true);
+  if (!data) return null;
+
+  const worst = data.classes.reduce<number>(
+    (a, c) => Math.max(a, c.disparate_impact ?? 0),
+    0,
+  );
+
+  return (
+    <Panel
+      title={hi ? "प्रवर्तन निष्पक्षता" : "Enforcement fairness"}
+      emphasis
+      aside={
+        <span
+          className="shrink-0 rounded-full px-2 py-0.5 font-mono tabular-nums"
+          style={{
+            fontSize: "calc(var(--d-label) * 0.9)",
+            background: `color-mix(in oklab, ${
+              worst >= 1.2 ? "var(--congestion-severe)" : "var(--congestion-free)"
+            } 18%, transparent)`,
+            color: worst >= 1.2 ? "var(--congestion-severe)" : "var(--congestion-free)",
+          }}
+        >
+          {worst.toFixed(2)}×
+        </span>
+      }
+    >
+      {/* What is not measured, first. */}
+      <p
+        className="rounded-lg bg-[var(--surface-1)] px-3 py-2.5 leading-relaxed text-[var(--ink-muted)]"
+        style={{ fontSize: "var(--d-support)" }}
+      >
+        {hi
+          ? "जनसांख्यिकीय निष्पक्षता यहाँ नहीं मापी जाती और न मापी जाएगी। इस मंच के पास जाति, धर्म, लिंग या आय का कोई डेटा नहीं है — और स्वयं की जाँच के लिए नंबर प्लेट से इनका अनुमान लगाना उस उल्लंघन से भी बड़ा होता जिसकी जाँच हो रही है।"
+          : data.not_measured}
+      </p>
+
+      <div className="mt-4 overflow-x-auto">
+        <table className="w-full min-w-[28rem]" style={{ fontSize: "var(--d-support)" }}>
+          <thead>
+            <tr
+              className="text-left uppercase tracking-widest text-[var(--ink-muted)]"
+              style={{ fontSize: "calc(var(--d-label) * 0.9)" }}
+            >
+              <th className="pb-2 pr-3 font-medium">{hi ? "वर्ग" : "Class"}</th>
+              <th className="pb-2 pr-3 text-right font-medium">{hi ? "चालान" : "Challans"}</th>
+              <th className="pb-2 pr-3 text-right font-medium">{hi ? "चालान %" : "Challan %"}</th>
+              <th className="pb-2 pr-3 text-right font-medium">{hi ? "सड़क %" : "Road %"}</th>
+              <th className="pb-2 text-right font-medium">{hi ? "असमानता" : "Impact"}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.classes.map((c) => {
+              const impact = c.disparate_impact ?? 1;
+              return (
+                <tr key={c.class_code} className="border-t border-[var(--rule)]">
+                  <td className="py-2 pr-3">{c.class_code}</td>
+                  <td className="py-2 pr-3 text-right font-mono tabular-nums text-[var(--ink-muted)]">
+                    {formatCount(c.challans, locale)}
+                  </td>
+                  <td className="py-2 pr-3 text-right font-mono tabular-nums">
+                    {c.challan_share_pct}%
+                  </td>
+                  <td className="py-2 pr-3 text-right font-mono tabular-nums text-[var(--ink-muted)]">
+                    {c.road_share_pct}%
+                  </td>
+                  <td
+                    className="py-2 text-right font-mono tabular-nums"
+                    style={{
+                      color:
+                        impact >= 1.2
+                          ? "var(--congestion-severe)"
+                          : impact <= 0.8
+                            ? "var(--congestion-free)"
+                            : "var(--ink)",
+                    }}
+                  >
+                    {impact.toFixed(2)}×
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <p
+        className="mt-3 leading-relaxed text-[var(--ink-muted)]"
+        style={{ fontSize: "var(--d-support)" }}
+      >
+        {hi
+          ? "हेलमेट का उल्लंघन केवल दोपहिया पर संभव है, इसलिए हर तुलना का हर उसी वर्ग का यातायात है, कुल यातायात नहीं।"
+          : data.denominator_note}
+      </p>
+
+      {/* Concentration: enforcement bunched at one gantry is a policing
+          pattern, not a driving pattern. */}
+      <div className="mt-4">
+        <div
+          className="flex items-baseline justify-between"
+          style={{ fontSize: "var(--d-support)" }}
+        >
+          <span className="uppercase tracking-[0.14em] text-[var(--ink-muted)]">
+            {hi ? "कैमरा वितरण" : "Camera spread"}
+          </span>
+          <span className="font-mono tabular-nums text-[var(--ink-muted)]">
+            {data.camera_concentration}× {hi ? "व्यस्ततम : शांत" : "busiest : quietest"}
+          </span>
+        </div>
+        <ul className="mt-2 grid gap-1.5">
+          {data.cameras.map((cam) => (
+            <li key={cam.camera_id} className="flex items-center gap-2.5">
+              <span
+                className="min-w-0 flex-1 truncate text-[var(--ink-muted)]"
+                style={{ fontSize: "var(--d-support)" }}
+              >
+                {hi ? cam.junction.hi : cam.junction.en}
+              </span>
+              <span className="w-20 shrink-0">
+                <Bar fraction={cam.share_pct / 100} colour="var(--accent)" />
+              </span>
+              <span
+                className="w-10 shrink-0 text-right font-mono tabular-nums text-[var(--ink-faint)]"
+                style={{ fontSize: "var(--d-support)" }}
+              >
+                {cam.share_pct}%
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </Panel>
   );
 }

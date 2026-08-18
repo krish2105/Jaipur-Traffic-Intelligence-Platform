@@ -1602,3 +1602,72 @@ them from `car` or `motorcycle` depending on the angle, `AUTO` is absent from
 the mapping and listed in `UNAVAILABLE_WITHOUT_FINETUNE`, so a zero reads as
 "cannot detect" rather than "none present". Fine-tuning on IDD is what closes
 that, and it needs the Jaipur video the department has not yet provided.
+
+---
+
+## ADR-052 — The 2D map, and designing for the basemap's absence
+**Date:** 2026-08-18 · **Status:** Accepted
+
+`maplibre-gl` and `deck.gl` had been in `package.json` since Sprint 0 and were
+imported nowhere — the 2D toggle showed a table. An officer who turns 3D off got
+a list, not a map, which is the opposite of what turning 3D off is for.
+
+The 3D city answers *what does this road look like*. The 2D map answers *where
+is it*, which is the question someone dispatching a vehicle actually has, and it
+is the view that works on a five-year-old phone with no WebGL headroom.
+
+**The basemap is optional, and its absence is the designed case.** docs/03 §5
+requires the demo to render with the network cable pulled, and a vector basemap
+is a CDN request. So the corridor geometry — real OpenStreetMap data already in
+our own payload — is drawn by deck.gl over a plain themed background, and the
+basemap is layered *underneath* if it happens to load. Pull the cable and the
+roads are still there, correctly placed and correctly coloured; you lose the
+surrounding city and a caption says so. A map that shows nothing without tiles
+is a map that fails in the room.
+
+Line width is in **metres, not pixels**, so a six-lane trunk thickens as you
+zoom the way a road does rather than staying a constant width like a diagram.
+
+Two faults found by running it rather than reasoning about it:
+
+- **`glyphs: ""` is not "no labels".** MapLibre reads it as a URL missing its
+  `{fontstack}` and `{range}` tokens and throws on every style load. The field
+  is optional; omitting it is how you say there are none.
+- **`MapboxOverlay` is not re-exported by the `deck.gl` umbrella**, though the
+  layers are. It and `@deck.gl/layers` were already in the tree as transitives
+  and are now direct dependencies, so the import states what it rests on.
+
+---
+
+## ADR-053 — Fairness: say what is not measured, first
+**Date:** 2026-08-18 · **Status:** Accepted
+
+The enforcement fairness panel opens by stating what it does **not** do:
+demographic fairness is not measured and will not be. The platform holds no
+caste, religion, gender or income data, and inferring any of it from a
+registration number in order to audit itself would be a worse privacy failure
+than the one being audited.
+
+That belongs at the top rather than in a footnote. A fairness dashboard that
+quietly omits demographics reads as an oversight; one that states the omission
+and its reason is making a commitment a reviewer can hold it to.
+
+What it does measure is the real equity question for Indian traffic enforcement
+— whether the burden falls hardest on the road users least able to carry it:
+
+| class | challans | challan share | road share | impact |
+|---|---|---|---|---|
+| 2W | 493 | 90.0% | 71.7% | **1.25×** |
+| CAR | 55 | 10.0% | 28.3% | 0.36× |
+
+**The denominator is the whole argument.** A helmet or triple-riding offence can
+only be committed on a two-wheeler, so the comparison is against two-wheeler
+traffic, not all traffic. Comparing helmet challans against every vehicle on the
+road would manufacture a bias finding out of arithmetic — and would be an easy,
+confident, wrong headline.
+
+Camera spread is reported as busiest-to-quietest (1.24× here), because
+enforcement bunched at one gantry is a policing pattern rather than a driving
+one. And OCR confidence is broken out per violation type: if plates on one class
+read less reliably, that class is either under-enforced or over-referred to
+human review, and both are unfair in different directions.

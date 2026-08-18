@@ -32,6 +32,7 @@ import { SplitHandle } from "./split-handle";
 import { CommandHint, CommandPalette, type Command } from "./command-palette";
 import { AlertRail } from "./alert-rail";
 import { SectionView } from "./sections";
+import { CorridorMap } from "@/components/map/corridor-map.loader";
 import { RoleBadge } from "./role-badge";
 import {
   BlackSpotPanel,
@@ -383,10 +384,10 @@ export function ConsoleShell({
                   radius={scene.radius}
                   origin={scene.origin}
                   scene={sceneMode}
-                  fallback={<MapFallback links={links} locale={locale} />}
+                  fallback={<CorridorMap links={links} locale={locale} />}
                 />
               ) : (
-                <MapFallback links={links} locale={locale} />
+                <CorridorMap links={links} locale={locale} />
               )}
               {/* docs/06 §3 specifies this toggle on the map. */}
               <div className="absolute left-3 top-3 flex gap-1 rounded-lg border border-[var(--rule-strong)] bg-[var(--surface)]/85 p-1 backdrop-blur">

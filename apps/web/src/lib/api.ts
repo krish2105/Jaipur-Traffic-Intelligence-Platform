@@ -290,6 +290,41 @@ export interface Representation {
   caveat: string;
 }
 
+export interface FairnessClass {
+  class_code: string;
+  challans: number;
+  challan_share_pct: number;
+  road_share_pct: number;
+  /** >1 means this class carries more enforcement than its road share implies. */
+  disparate_impact: number | null;
+}
+
+export interface FairnessType {
+  violation_type: string;
+  total: number;
+  attributable_class: string | null;
+  mean_confidence: number;
+  below_gate_pct: number;
+}
+
+export interface FairnessCamera {
+  camera_id: number;
+  junction: Bilingual;
+  violations: number;
+  share_pct: number;
+}
+
+export interface Fairness {
+  classes: FairnessClass[];
+  types: FairnessType[];
+  cameras: FairnessCamera[];
+  camera_concentration: number | null;
+  totals: { violations: number; road_vehicles_today: number };
+  not_measured: string;
+  denominator_note: string;
+  is_synthetic: boolean;
+}
+
 export interface CountsSummary {
   total_vehicles: number;
   total_pcu: number;
@@ -509,6 +544,7 @@ export const api = {
     get<WeeklyMatrix>(`/congestion/weekly${query({ corridor_id: corridorId })}`),
   incidentTimeline: () => get<IncidentTimeline>("/incidents/timeline"),
   enforcement: () => get<EnforcementSummary>("/enforcement/summary"),
+  fairness: () => get<Fairness>("/enforcement/fairness"),
   defaulters: (limit = 10) => get<Defaulters>(`/enforcement/defaulters?limit=${limit}`),
   junctions: () => get<Junctions>("/junctions"),
   edge: () => get<EdgeCameras>("/edge/cameras"),

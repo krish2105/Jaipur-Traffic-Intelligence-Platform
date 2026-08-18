@@ -1318,3 +1318,150 @@ async def representation(
             "over-representation, not a substitute for an origin-destination survey."
         ),
     }
+
+
+#: Which vehicle class each violation type is, in practice, a charge against.
+#: A helmet or triple-riding offence is a two-wheeler offence; a seatbelt
+#: offence is a car offence. Stated explicitly because the fairness comparison
+#: below depends on it, and a wrong mapping produces a confident wrong finding.
+_VIOLATION_CLASS: Final[dict[str, str]] = {
+    "no_helmet": "2W",
+    "triple_riding": "2W",
+    "no_seatbelt": "CAR",
+}
+
+
+@router.get("/enforcement/fairness")
+async def enforcement_fairness(session: SessionDep) -> dict[str, Any]:
+    """Whether enforcement falls evenly, and on what.
+
+    **This deliberately does not measure demographic fairness.** The platform
+    holds no caste, religion, gender or income data, will not acquire any, and
+    a system that inferred them from a registration number in order to audit
+    itself would be a far worse privacy failure than the one it was auditing.
+    Any dashboard claiming demographic parity here would be claiming knowledge
+    it must not have.
+
+    What *can* be measured, and is the real equity question for Indian traffic
+    enforcement, is whether the burden falls disproportionately on the road
+    users least able to carry it:
+
+    * **By vehicle class** — are two-wheeler riders challaned out of proportion
+      to their presence on the road? A helmet offence can only be committed on
+      a two-wheeler, so the honest denominator is two-wheeler traffic, not all
+      traffic. Comparing helmet challans against all vehicles would manufacture
+      a bias finding out of arithmetic.
+    * **By camera** — enforcement concentrated at one gantry is a policing
+      pattern, not a driving pattern.
+    * **By OCR confidence** — if plates on one vehicle class read less reliably,
+      that class is either under-enforced or over-referred to human review, and
+      both are unfair in different directions.
+    """
+    day_start, day_end, _ = await _ist_day_bounds(session, None)
+
+    # Exposure: what is actually on the road, as the denominator.
+    exposure_rows = await session.execute(
+        text("""
+            SELECT class_code, sum(vehicle_count) AS vehicles
+            FROM traffic_counts
+            WHERE bucket_start >= :day_start AND bucket_start < :day_end
+            GROUP BY class_code
+        """),
+        {"day_start": day_start, "day_end": day_end},
+    )
+    exposure = {r.class_code: int(r.vehicles) for r in exposure_rows}
+    total_exposure = sum(exposure.values()) or 1
+
+    type_rows = await session.execute(
+        text("""
+            SELECT violation_type,
+                   count(*)                       AS total,
+                   avg(ocr_confidence)            AS mean_confidence,
+                   count(*) FILTER (WHERE ocr_confidence < 0.85) AS below_gate
+            FROM violations
+            GROUP BY violation_type
+        """)
+    )
+    total_violations = 0
+    by_class: dict[str, dict[str, float]] = {}
+    types: list[dict[str, Any]] = []
+    for r in type_rows:
+        total_violations += int(r.total)
+        class_code = _VIOLATION_CLASS.get(r.violation_type)
+        types.append({
+            "violation_type": r.violation_type,
+            "total": int(r.total),
+            "attributable_class": class_code,
+            "mean_confidence": round(float(r.mean_confidence), 3),
+            "below_gate_pct": round(100.0 * int(r.below_gate) / int(r.total), 1),
+        })
+        if class_code:
+            bucket = by_class.setdefault(class_code, {"violations": 0.0})
+            bucket["violations"] += int(r.total)
+
+    # Disparate impact: share of class-attributable challans against that
+    # class's share of the road, among classes that can be compared at all.
+    comparable_violations = sum(b["violations"] for b in by_class.values()) or 1
+    comparable_exposure = sum(exposure.get(c, 0) for c in by_class) or 1
+    classes = []
+    for class_code, bucket in sorted(by_class.items()):
+        challan_share = bucket["violations"] / comparable_violations
+        road_share = exposure.get(class_code, 0) / comparable_exposure
+        classes.append({
+            "class_code": class_code,
+            "challans": int(bucket["violations"]),
+            "challan_share_pct": round(challan_share * 100, 1),
+            "road_share_pct": round(road_share * 100, 1),
+            # >1 means this class carries more of the enforcement burden than
+            # its presence on the road would imply.
+            "disparate_impact": round(challan_share / road_share, 2) if road_share else None,
+        })
+
+    camera_result = await session.execute(
+        text("""
+            SELECT v.camera_id, j.name_en, j.name_hi, count(*) AS total
+            FROM violations v
+            LEFT JOIN cameras c  ON c.camera_id = v.camera_id
+            LEFT JOIN junctions j ON j.junction_id = c.junction_id
+            GROUP BY v.camera_id, j.name_en, j.name_hi
+            ORDER BY total DESC
+        """)
+    )
+    camera_rows_list = list(camera_result)
+    cameras: list[dict[str, Any]] = [
+        {
+            "camera_id": int(r.camera_id),
+            "junction": {"en": r.name_en, "hi": r.name_hi},
+            "violations": int(r.total),
+            "share_pct": round(100.0 * int(r.total) / (total_violations or 1), 1),
+        }
+        for r in camera_rows_list
+    ]
+    # A perfectly even spread would give each camera an equal share. The ratio
+    # of the busiest to the quietest is the plainest statement of concentration.
+    counts: list[int] = [int(r.total) for r in camera_rows_list] or [0]
+    concentration = round(max(counts) / min(counts), 2) if min(counts) else None
+
+    return {
+        "classes": classes,
+        "types": sorted(types, key=lambda t: t["total"], reverse=True),
+        "cameras": cameras,
+        "camera_concentration": concentration,
+        "totals": {
+            "violations": total_violations,
+            "road_vehicles_today": total_exposure,
+        },
+        "not_measured": (
+            "Demographic fairness is not measured and will not be. This platform "
+            "holds no caste, religion, gender or income data, and inferring any "
+            "of them from a registration number in order to audit itself would be "
+            "a worse privacy failure than the one being audited."
+        ),
+        "denominator_note": (
+            "A helmet offence can only be committed on a two-wheeler, so the "
+            "denominator is two-wheeler traffic rather than all traffic. "
+            "Comparing against all vehicles would manufacture a bias finding out "
+            "of arithmetic."
+        ),
+        "is_synthetic": True,
+    }
