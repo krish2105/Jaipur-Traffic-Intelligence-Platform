@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useReducedMotion } from "motion/react";
 
 import type { CityData } from "./city-scene";
@@ -34,23 +34,23 @@ export function City({
   force2D?: boolean;
 }) {
   const reduce = useReducedMotion();
-  const [capable, setCapable] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    if (force2D) {
-      setCapable(false);
-      return;
-    }
+  // Computed once, lazily, instead of set from an effect: the check reads the
+  // platform and never changes afterwards, so an effect would only buy a
+  // cascading render. Guarded for SSR, where document does not exist.
+  const [capable] = useState<boolean | null>(() => {
+    if (typeof document === "undefined") return null;
+    if (force2D) return false;
     try {
       const canvas = document.createElement("canvas");
       const gl = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
       const lowCores = (navigator.hardwareConcurrency ?? 4) <= 2;
-      const lowMemory = "deviceMemory" in navigator && (navigator as { deviceMemory?: number }).deviceMemory! <= 2;
-      setCapable(Boolean(gl) && !lowCores && !lowMemory);
+      const memory = (navigator as { deviceMemory?: number }).deviceMemory;
+      const lowMemory = memory !== undefined && memory <= 2;
+      return Boolean(gl) && !lowCores && !lowMemory;
     } catch {
-      setCapable(false);
+      return false;
     }
-  }, [force2D]);
+  });
 
   // Undecided on the first paint — render the 2D interface rather than a
   // spinner, so the content is never gated behind a capability check.

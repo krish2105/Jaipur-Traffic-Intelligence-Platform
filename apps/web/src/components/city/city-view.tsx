@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { City } from "./city-scene.loader";
 import type { CityData } from "./city-scene";
@@ -16,14 +16,34 @@ export const PALETTES = [
 
 export type PaletteId = (typeof PALETTES)[number]["id"];
 
-/** Used only for the first paint, before the palette's own values are read. */
-const FALLBACK_RAMP: Ramp = {
-  free: "#2DD4A7",
-  light: "#8CD65B",
-  moderate: "#FFB020",
-  severe: "#FF6B4A",
-  critical: "#FF2D55",
-  suppressed: "#6B7280",
+/**
+ * Congestion ramps for the WebGL layer, keyed by palette.
+ *
+ * Declared here rather than read back out of CSS. Reading computed style was
+ * how every palette ended up rendering the first one's colours: the attribute
+ * is set by an effect, so a build during render sees the palette being left,
+ * not the one being entered. These values mirror palettes.css, and
+ * scripts/check_contrast.py measures that file — the DOM keeps its own copy for
+ * the HTML layer, the scene gets deterministic values with no timing to get
+ * wrong.
+ */
+const RAMPS: Record<PaletteId, Ramp> = {
+  night: {
+    free: "#2DD4A7", light: "#8CD65B", moderate: "#FFB020",
+    severe: "#FF6B4A", critical: "#FF2D55", suppressed: "#6B7280",
+  },
+  signal: {
+    free: "#00E5A0", light: "#A3E635", moderate: "#FFC531",
+    severe: "#FF7849", critical: "#FF3366", suppressed: "#6B7280",
+  },
+  pinkcity: {
+    free: "#3DDC97", light: "#9BE564", moderate: "#FFB627",
+    severe: "#FF6B35", critical: "#E5383B", suppressed: "#6B7280",
+  },
+  araish: {
+    free: "#2DD4A7", light: "#8CD65B", moderate: "#FFB020",
+    severe: "#FF6B4A", critical: "#FF2D55", suppressed: "#6B7280",
+  },
 };
 
 export interface SceneLink {
@@ -51,23 +71,14 @@ export function CityView({
   // The palette lives on <html> so the CSS variables cascade to the glass
   // panels AND are readable by the WebGL layer, which resolves the congestion
   // ramp from computed style rather than duplicating hex values in JS.
-  // Layout effect, and the ramp is read back into state in the same pass: the
-  // WebGL layer needs concrete colours, and reading them during render would
-  // pick up the palette we are leaving rather than the one we are entering.
-  const [ramp, setRamp] = useState<Ramp>(FALLBACK_RAMP);
-  useLayoutEffect(() => {
-    const root = document.documentElement;
-    root.setAttribute("data-palette", palette);
-    const read = (name: string) =>
-      getComputedStyle(root).getPropertyValue(name).trim() || undefined;
-    setRamp({
-      free: read("--congestion-free") ?? FALLBACK_RAMP.free,
-      light: read("--congestion-light") ?? FALLBACK_RAMP.light,
-      moderate: read("--congestion-moderate") ?? FALLBACK_RAMP.moderate,
-      severe: read("--congestion-severe") ?? FALLBACK_RAMP.severe,
-      critical: read("--congestion-critical") ?? FALLBACK_RAMP.critical,
-      suppressed: read("--quality-suppressed") ?? FALLBACK_RAMP.suppressed,
-    });
+  // Derived, not stateful: no effect, no cascading render, and nothing that can
+  // observe the wrong palette mid-build.
+  const ramp = RAMPS[palette];
+
+  // The attribute sync is a genuine external-system update — the CSS layer
+  // needs it — and sets no React state.
+  useEffect(() => {
+    document.documentElement.setAttribute("data-palette", palette);
   }, [palette]);
 
   const { data, radius, origin } = useMemo(() => {

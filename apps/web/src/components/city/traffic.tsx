@@ -74,18 +74,25 @@ export function Traffic({
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
+  // The frame loop advances each particle's offset, which is a mutation. It has
+  // to target a ref rather than the memo's own array: mutating render output
+  // makes later renders depend on how many frames happened to run first.
+  const live = useRef<Particle[]>([]);
+
   useLayoutEffect(() => {
+    live.current = particles.map((p) => ({ ...p }));
     const mesh = ref.current;
-    if (mesh) mesh.count = particles.length;
+    if (mesh) mesh.count = live.current.length;
   }, [particles]);
 
   useFrame((_state, delta) => {
     const mesh = ref.current;
-    if (!mesh || particles.length === 0) return;
+    const items = live.current;
+    if (!mesh || items.length === 0) return;
     const step = Math.min(delta, 0.1); // a tab regaining focus must not teleport them
 
-    for (let i = 0; i < particles.length; i += 1) {
-      const p = particles[i]!;
+    for (let i = 0; i < items.length; i += 1) {
+      const p = items[i]!;
       const road = roads[p.road];
       if (!road) continue;
       const length = lengths[p.road] || 1;
