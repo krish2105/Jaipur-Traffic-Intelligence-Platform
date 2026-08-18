@@ -1269,3 +1269,68 @@ An earlier comment in that file asserted `next/script`'s `beforeInteractive` was
 must be placed in the **root layout** in the App Router, which
 `[locale]/layout.tsx` is. Checking the version's own documentation rather than
 trusting a recalled API was the whole fix.
+
+---
+
+## ADR-044 — Air quality is real and live, with no key
+**Date:** 2026-08-18 · **Status:** Accepted
+
+OpenAQ now gates registration behind an account, which left air quality stuck on
+replay. Open-Meteo's air-quality API (CAMS) needs no key at all and returns
+Jaipur PM2.5, PM10, NO2, O3 and US AQI. Live sources go from 2/7 to **3/7**.
+
+It belongs in a *traffic* platform because the pollutants are the ones road
+traffic produces: NO2 is overwhelmingly a combustion product, and PM is exhaust,
+brake and tyre wear plus re-suspended road dust. That turns the LEZ case in
+NEETI from an argument about road space into an argument about the air people
+breathe — and the second is the one a health department acts on.
+
+Two things it deliberately does not do. It does not call the reading a station
+measurement: CAMS is a **modelled reanalysis**, real about Jaipur but not from a
+Jaipur instrument, and `source_kind` says so. And it attributes **no share** of
+the pollution to traffic — source apportionment needs data this platform does
+not have, and a confident invented percentage is exactly what this project
+refuses.
+
+Exceedance is measured against **CPCB** 24-hour standards rather than WHO
+guidelines, because a Jaipur official is accountable against CPCB and quoting a
+standard they are not measured on is no use to them. A test pins that: 45 µg/m³
+PM2.5 is over the WHO guideline and under CPCB's 60, and must not flag.
+
+---
+
+## ADR-045 — Published figures are code, and the seed is tested against them
+**Date:** 2026-08-18 · **Status:** Accepted
+
+`pravaah.adapters.published` holds the real, sourced figures the platform argues
+from, separate from everything the seed generates. Jaipur police district crash
+returns 2021-2025 and the TomTom Traffic Index, each with its URL.
+
+Putting them in code rather than in a slide buys a tripwire: the test suite
+asserts the **seeded warehouse still reproduces them**, so a regenerated demo
+fails the build rather than drifting away from the evidence it claims to rest
+on.
+
+That tripwire immediately caught a real fault. The seed reproduced every
+published *accident* count exactly — 3,205 / 3,935 / 3,893 / 3,881 / 3,664,
+summing to 18,578 — but distributed deaths independently, and the result
+**contradicted the platform's headline finding**: its 2024 fatality rate came
+out at 35.4 against 34.6 in 2025, so severity appeared to *fall* where Jaipur
+police report it rising. The one claim the whole safety layer rests on was
+argued against by our own data.
+
+`scripts/fix_crash_fatalities.py` aligns the toll to the published trajectory.
+2024 deaths are not published, but they are **derivable** from two figures that
+are — 2025 deaths (1,273) and the reported +3.1% rise — giving 1,235. That is
+kept as `DEATHS_2024_DERIVED`, a separate constant, because derived and
+published are different kinds of number and a reader deserves to know which they
+are looking at.
+
+The seed now shows the reversal in its own data: crashes 3,881 → 3,664 while the
+fatality rate rises 31.82 → **34.74**, which is the published "34.7 per 100,
+highest in five years".
+
+When a death is removed the casualty is **not** removed — it moves to
+`grievous`, because the person survived with a serious injury. Crashes with a
+single death necessarily stop being fatal crashes, and that is the one part of
+the distribution this cannot preserve; it is what a lower toll actually means.

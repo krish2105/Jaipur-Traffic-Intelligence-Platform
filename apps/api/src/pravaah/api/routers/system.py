@@ -7,6 +7,27 @@ from typing import Any
 
 import httpx
 from fastapi import APIRouter
+from pravaah.adapters.air import (
+    CPCB_NO2_24H,
+    CPCB_PM10_24H,
+    CPCB_PM25_24H,
+    fetch_air_quality,
+)
+from pravaah.adapters.published import (
+    ACCIDENTS_CHANGE_2025_PCT,
+    CONGESTION_AVERAGE_PCT,
+    CONGESTION_EVENING_PEAK_PCT,
+    CONGESTION_MORNING_PEAK_PCT,
+    CRASHES_BY_YEAR,
+    DISTRICTS_2025,
+    FATALITIES_CHANGE_2025_PCT,
+    FATALITY_RATE_2025,
+    RAJASTHAN_POLICE,
+    RAJASTHAN_SEVERITY_RATE_PCT,
+    RUSH_HOUR_SPEED_KMH,
+    TOMTOM,
+    TOTAL_ACCIDENTS,
+)
 from pravaah.adapters.weather import WeatherAdapter
 from sqlalchemy import text
 
@@ -112,10 +133,14 @@ async def source_readiness(settings: SettingsDep) -> dict[str, Any]:
         {
             "id": "openaq",
             "name": "Air quality",
-            "provider": "OpenAQ",
-            "mode": "live" if have("OPENAQ_API_KEY") else "replay",
-            "detail": "Enables the idling-emissions cost figure",
-            "needs": None if have("OPENAQ_API_KEY") else "OPENAQ_API_KEY",
+            "provider": "Open-Meteo · CAMS",
+            # Genuinely live, and with no key at all. OpenAQ was the original
+            # plan and now gates registration behind an account; the CAMS
+            # reanalysis is a modelled product rather than a station reading,
+            # which is a real difference and is stated wherever it is shown.
+            "mode": "live",
+            "detail": "PM2.5, PM10, NO2 against CPCB 24-hour standards",
+            "needs": None,
         },
         {
             "id": "cameras",
@@ -174,4 +199,106 @@ async def weather_now(settings: SettingsDep) -> dict[str, Any]:
         "degrades_counting": w.degrades_counting,
         "observed_at": w.observed_at,
         "provider": "Open-Meteo",
+    }
+
+
+@router.get("/meta/air")
+async def air_now() -> dict[str, Any]:
+    """Live Jaipur air quality, and which Indian standards it is under.
+
+    Real data, no key. It belongs in a traffic platform because the pollutants
+    reported here are the ones road traffic produces — NO2 is overwhelmingly a
+    combustion product, and PM is exhaust, brake and tyre wear plus re-suspended
+    road dust. That is what turns the low-emission-zone case from an argument
+    about road space into an argument about the air people breathe.
+
+    Two things this deliberately does NOT do. It does not attribute a share of
+    the pollution to traffic — source apportionment needs data the platform does
+    not have, and a confident invented percentage is exactly what this project
+    refuses. And it does not call the reading a station measurement: it is a
+    modelled reanalysis, real about Jaipur but not from a Jaipur instrument, and
+    `source_kind` says so.
+    """
+    aq = await fetch_air_quality()
+    if aq is None:
+        return {"available": False}
+    return {
+        "available": True,
+        "pm2_5": aq.pm2_5,
+        "pm10": aq.pm10,
+        "nitrogen_dioxide": aq.nitrogen_dioxide,
+        "ozone": aq.ozone,
+        "us_aqi": aq.us_aqi,
+        "band": aq.band,
+        "exceeds_cpcb": list(aq.exceeds_cpcb),
+        "standards": {"pm2_5": CPCB_PM25_24H, "pm10": CPCB_PM10_24H, "no2": CPCB_NO2_24H},
+        "observed_at": aq.observed_at,
+        "provider": "Open-Meteo · CAMS",
+        "source_kind": "modelled reanalysis, not a Jaipur monitoring station",
+        "is_synthetic": False,
+        "traffic_note": (
+            "NO2 and PM are the traffic-linked pollutants. No share of them is "
+            "attributed to traffic here — that needs source apportionment this "
+            "platform does not have."
+        ),
+    }
+
+
+@router.get("/meta/published")
+async def published_figures() -> dict[str, Any]:
+    """The real, published figures this platform argues from.
+
+    Separated from everything the seed generates, and deliberately so. A Jaipur
+    official can check every number below against their own department's
+    returns or a published index; the per-record data in the warehouse is
+    synthetic, calibrated to these totals, and badged as such wherever it
+    appears.
+
+    The test suite asserts the seed still reproduces these, so a regenerated
+    demo fails the build rather than quietly drifting away from its evidence.
+    """
+    return {
+        "crashes": {
+            "by_year": [
+                {"year": y.year, "accidents": y.accidents, "deaths": y.deaths}
+                for y in CRASHES_BY_YEAR
+            ],
+            "total_accidents": TOTAL_ACCIDENTS,
+            # Fewer crashes, more deaths. The finding the whole safety layer
+            # is built on, and the reason black spots rank by severity.
+            "accidents_change_2025_pct": ACCIDENTS_CHANGE_2025_PCT,
+            "fatalities_change_2025_pct": FATALITIES_CHANGE_2025_PCT,
+            "fatality_rate_2025": FATALITY_RATE_2025,
+            "rajasthan_severity_rate_pct": RAJASTHAN_SEVERITY_RATE_PCT,
+            "districts_2025": [
+                {
+                    "name": {"en": d.name_en, "hi": d.name_hi},
+                    "accidents": d.accidents,
+                    "deaths": d.deaths,
+                }
+                for d in DISTRICTS_2025
+            ],
+            "source": {
+                "name": RAJASTHAN_POLICE.name,
+                "detail": RAJASTHAN_POLICE.detail,
+                "url": RAJASTHAN_POLICE.url,
+            },
+        },
+        "congestion": {
+            "average_pct": CONGESTION_AVERAGE_PCT,
+            "morning_peak_pct": CONGESTION_MORNING_PEAK_PCT,
+            "evening_peak_pct": CONGESTION_EVENING_PEAK_PCT,
+            "rush_hour_speed_kmh": RUSH_HOUR_SPEED_KMH,
+            "source": {
+                "name": TOMTOM.name,
+                "detail": TOMTOM.detail,
+                "url": TOMTOM.url,
+            },
+        },
+        "note": (
+            "Published figures, not generated. Per-record data in this instance "
+            "is synthetic and calibrated to these totals; the seed reproduces "
+            "every accident count here exactly, asserted by the test suite."
+        ),
+        "is_synthetic": False,
     }
