@@ -14,6 +14,11 @@ from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Query
 from pravaah.adapters.profiles import CALIBRATION_FREE_FLOW_KMH, speed_kmh
+from pravaah.adapters.published import (
+    FLEET_RAJASTHAN_2022,
+    FLEET_RAJASTHAN_TOTAL,
+    RAJASTHAN_ROAD_SAFETY_CELL,
+)
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -1220,4 +1225,96 @@ async def edge_cameras(session: SessionDep) -> dict[str, Any]:
             "validated on Jaipur video — that needs a read-only RTSP feed."
         ),
         "is_synthetic": True,
+    }
+
+
+@router.get("/policy/representation")
+async def representation(
+    session: SessionDep,
+    corridor_id: Annotated[int | None, Query()] = None,
+) -> dict[str, Any]:
+    """Registered fleet against measured traffic against road space.
+
+    Three shares for the same vehicle class, from two independent real sources
+    and one measurement:
+
+    * **registered** — Rajasthan Road Safety Cell, 31 March 2022. Real, official.
+    * **on the road** — what this corridor actually counts.
+    * **road space** — the same count in PCU.
+
+    The gap between the first two is the finding. A car is 12.4% of the state's
+    registered fleet and about a quarter of measured arterial traffic, so it is
+    roughly **twice over-represented** on this road relative to how many exist;
+    in road space it is over-represented again. A two-wheeler runs the other
+    way. That is an argument no single dataset can make: registration alone
+    says two-wheelers dominate, counting alone says they are a majority, and
+    only the two together show that the road is carrying a different city from
+    the one the registration database describes.
+
+    The caveat is stated in the response rather than left implied. Registration
+    is state-wide and traffic is one Jaipur arterial, so this compares a fleet
+    with a corridor — informative about over-representation, not a substitute
+    for an origin-destination survey.
+    """
+    day_start, day_end, _ = await _ist_day_bounds(session, None)
+    rows = await session.execute(
+        text("""
+            SELECT tc.class_code,
+                   sum(tc.vehicle_count) AS vehicles,
+                   sum(tc.pcu)           AS pcu
+            FROM traffic_counts tc
+            JOIN road_links l ON l.link_id = tc.link_id
+            WHERE tc.bucket_start >= :day_start
+              AND tc.bucket_start <  :day_end
+              AND (CAST(:corridor_id AS bigint) IS NULL OR l.corridor_id = :corridor_id)
+            GROUP BY tc.class_code
+        """),
+        {"day_start": day_start, "day_end": day_end, "corridor_id": corridor_id},
+    )
+    counted = {r.class_code: (int(r.vehicles), float(r.pcu)) for r in rows}
+    total_vehicles = sum(v for v, _ in counted.values()) or 1
+    total_pcu = sum(p for _, p in counted.values()) or 1.0
+
+    comparison: list[dict[str, Any]] = []
+    for category in FLEET_RAJASTHAN_2022:
+        if category.class_code is None:
+            continue
+        registered_pct = category.vehicles / FLEET_RAJASTHAN_TOTAL * 100
+        vehicles, pcu = counted.get(category.class_code, (0, 0.0))
+        road_pct = vehicles / total_vehicles * 100
+        space_pct = pcu / total_pcu * 100
+        comparison.append({
+            "class_code": category.class_code,
+            "name": {"en": category.name_en, "hi": category.name_hi},
+            "registered": category.vehicles,
+            "registered_pct": round(registered_pct, 2),
+            "on_road_pct": round(road_pct, 2),
+            "road_space_pct": round(space_pct, 2),
+            # >1 means the class is over-represented on this road relative to
+            # how many of them exist in the state.
+            "over_representation": (
+                round(road_pct / registered_pct, 2) if registered_pct > 0 else None
+            ),
+        })
+
+    comparison.sort(key=lambda c: float(c["registered_pct"]), reverse=True)
+    return {
+        "classes": comparison,
+        "fleet_total": FLEET_RAJASTHAN_TOTAL,
+        "sources": {
+            "registered": {
+                "name": RAJASTHAN_ROAD_SAFETY_CELL.name,
+                "url": RAJASTHAN_ROAD_SAFETY_CELL.url,
+                "is_synthetic": False,
+            },
+            "counted": {
+                "name": "This instance's seeded counts, calibrated to the TomTom index",
+                "is_synthetic": True,
+            },
+        },
+        "caveat": (
+            "Registration is state-wide; traffic is one Jaipur arterial. This "
+            "compares a fleet with a corridor — informative about "
+            "over-representation, not a substitute for an origin-destination survey."
+        ),
     }

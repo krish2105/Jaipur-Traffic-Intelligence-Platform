@@ -269,6 +269,27 @@ export interface PublishedFigures {
   is_synthetic: boolean;
 }
 
+export interface RepresentationClass {
+  class_code: string;
+  name: Bilingual;
+  registered: number;
+  registered_pct: number;
+  on_road_pct: number;
+  road_space_pct: number;
+  /** >1 means over-represented on this road relative to how many exist. */
+  over_representation: number | null;
+}
+
+export interface Representation {
+  classes: RepresentationClass[];
+  fleet_total: number;
+  sources: {
+    registered: { name: string; url: string; is_synthetic: boolean };
+    counted: { name: string; is_synthetic: boolean };
+  };
+  caveat: string;
+}
+
 export interface CountsSummary {
   total_vehicles: number;
   total_pcu: number;
@@ -500,6 +521,8 @@ export const api = {
     note: string;
     cycle_s: number;
   }) => post<SignalDecisionResult>("/signals/decision", body),
+  representation: (corridorId = 1) =>
+    get<Representation>(`/policy/representation?corridor_id=${corridorId}`),
   policy: (corridorId = 1) =>
     get<PolicyScenarios>(`/policy/scenarios?corridor_id=${corridorId}`),
 };

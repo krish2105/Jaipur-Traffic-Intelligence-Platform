@@ -1369,3 +1369,47 @@ own docs say the strategy "must be placed inside the root layout", and
 above it. Suppressed with that reasoning recorded, and only after checking in
 the browser that the script genuinely runs: all three theme attributes land on
 `<html>` and `--ink` resolves before paint.
+
+---
+
+## ADR-047 — Registered fleet against measured traffic
+**Date:** 2026-08-18 · **Status:** Accepted
+
+Rajasthan publishes its own vehicle population: 1,71,74,784 registered vehicles
+as of 31 March 2022, 72.92% two-wheelers and 12.41% cars. Real, official, and
+the second independent real source this platform can stand on.
+
+Putting it beside the corridor's counts produces the strongest argument on the
+platform, and one **no single dataset can make**:
+
+| class | registered | on the road | road space | ratio |
+|---|---|---|---|---|
+| Two-wheelers | 72.92% | 61.06% | 27.69% | 0.84× |
+| Cars | 12.41% | 24.06% | 43.64% | **1.94×** |
+| Three-wheelers | 1.32% | 6.20% | 5.62% | **4.71×** |
+| Trucks | 3.73% | 0.98% | 5.34% | 0.26× |
+
+Registration alone says two-wheelers dominate. Counting alone says they are a
+majority. Only the two together show that the road carries a **different city
+from the one the registration database describes**: a car is roughly twice
+over-represented on an arterial relative to how many exist, and over-represented
+again in the space it takes. Autos are nearly five times over-represented, which
+is what a commercial vehicle working all day looks like against a private one
+parked most of it.
+
+Three things done deliberately:
+
+- **The caveat ships in the response**, not in a footnote. Registration is
+  state-wide and traffic is one Jaipur arterial, so this compares a fleet with a
+  corridor — informative about over-representation, not a substitute for an
+  origin-destination survey.
+- **Classes with no arterial presence are dropped**, not shown as zeroes.
+  Tractors are 6.9% of the state fleet and belong on a rural road; that is not a
+  finding about Tonk Road.
+- **Registration categories with no counting equivalent map to `None`.** A
+  trailer is not something a camera counts as a distinct vehicle. Forcing it a
+  class code to make the join tidy would be inventing a measurement, and a test
+  pins the unmapped set.
+
+The panel is badged `part real` rather than `real` or `simulated`, because it is
+genuinely both: one axis published by the state, the other seeded and calibrated.

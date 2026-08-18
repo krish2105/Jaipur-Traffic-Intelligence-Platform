@@ -17,6 +17,7 @@ import {
   type NeetiAnswer,
   type NeetiCatalogue,
   type PublishedFigures,
+  type Representation,
   type SourceReadiness,
   type SignalAdvisory,
   type WeeklyMatrix,
@@ -898,6 +899,8 @@ function NeetiSection({ hi, locale }: { hi: boolean; locale: Locale }) {
         <Loading label={hi ? "मॉडल चल रहा है" : "Running the model"} />
       ) : (
         <>
+          <RepresentationPanel hi={hi} locale={locale} />
+
           {/* The PCU argument, which is the whole reason class mix matters. */}
           <Panel
             title={hi ? "सड़क स्थान बनाम वाहन संख्या" : "Road space vs vehicle count"}
@@ -1534,5 +1537,131 @@ function ProvenanceSection({ hi, locale }: { hi: boolean; locale: Locale }) {
         </Panel>
       )}
     </Shell>
+  );
+}
+
+
+/**
+ * Registered fleet against measured traffic against road space.
+ *
+ * The strongest argument on the platform, and the only one that needs two
+ * independent real sources to make: Rajasthan's own published vehicle
+ * population on one side, this corridor's counts on the other.
+ *
+ * Registration alone says two-wheelers dominate. Counting alone says they are a
+ * majority. Only the two together show that the road is carrying a different
+ * city from the one the registration database describes — a car is 12.4% of the
+ * fleet and roughly a quarter of arterial traffic, so it is about twice
+ * over-represented on the road relative to how many exist, and over-represented
+ * again in the space it occupies.
+ */
+function RepresentationPanel({ hi, locale }: { hi: boolean; locale: Locale }) {
+  const { data } = useLazy<Representation>(() => api.representation(1), true);
+  if (!data) return null;
+
+  // Classes with no presence on an urban arterial (tractors, maxi cabs) are
+  // dropped rather than shown as a row of zeroes. Their absence is correct and
+  // uninteresting: a tractor is 6.9% of the state fleet and belongs on a rural
+  // road, which is not a finding about Tonk Road.
+  const shown = data.classes.filter((c) => c.on_road_pct > 0.2);
+
+  return (
+    <Panel
+      title={hi ? "पंजीकृत बनाम सड़क पर" : "Registered vs on the road"}
+      emphasis
+      aside={
+        <span
+          className="shrink-0 rounded-full px-2 py-0.5 uppercase tracking-wider"
+          style={{
+            fontSize: "calc(var(--d-label) * 0.85)",
+            background: "color-mix(in oklab, var(--congestion-free) 18%, transparent)",
+            color: "var(--congestion-free)",
+          }}
+        >
+          {hi ? "आंशिक रूप से वास्तविक" : "part real"}
+        </span>
+      }
+    >
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[30rem]" style={{ fontSize: "var(--d-support)" }}>
+          <thead>
+            <tr
+              className="text-left uppercase tracking-widest text-[var(--ink-muted)]"
+              style={{ fontSize: "calc(var(--d-label) * 0.9)" }}
+            >
+              <th className="pb-2 pr-3 font-medium">{hi ? "वर्ग" : "Class"}</th>
+              <th className="pb-2 pr-3 text-right font-medium">
+                {hi ? "पंजीकृत" : "Registered"}
+              </th>
+              <th className="pb-2 pr-3 text-right font-medium">
+                {hi ? "सड़क पर" : "On road"}
+              </th>
+              <th className="pb-2 pr-3 text-right font-medium">
+                {hi ? "स्थान" : "Space"}
+              </th>
+              <th className="pb-2 text-right font-medium">
+                {hi ? "अनुपात" : "Ratio"}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {shown.map((c) => {
+              const over = c.over_representation ?? 1;
+              return (
+                <tr key={c.class_code} className="border-t border-[var(--rule)]">
+                  <td className="py-2 pr-3">{hi ? c.name.hi : c.name.en}</td>
+                  <td className="py-2 pr-3 text-right font-mono tabular-nums text-[var(--ink-muted)]">
+                    {c.registered_pct}%
+                  </td>
+                  <td className="py-2 pr-3 text-right font-mono tabular-nums">
+                    {c.on_road_pct}%
+                  </td>
+                  <td className="py-2 pr-3 text-right font-mono tabular-nums text-[var(--accent)]">
+                    {c.road_space_pct}%
+                  </td>
+                  <td
+                    className="py-2 text-right font-mono tabular-nums"
+                    style={{
+                      color:
+                        over >= 1.5
+                          ? "var(--congestion-severe)"
+                          : over < 1
+                            ? "var(--congestion-free)"
+                            : "var(--ink)",
+                    }}
+                  >
+                    {over.toFixed(2)}×
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <p
+        className="mt-3 leading-relaxed text-[var(--ink-muted)]"
+        style={{ fontSize: "var(--d-support)" }}
+      >
+        {hi
+          ? `राजस्थान में ${formatCount(data.fleet_total, locale)} पंजीकृत वाहन। "अनुपात" बताता है कि कोई वर्ग इस सड़क पर अपनी पंजीकरण हिस्सेदारी के मुकाबले कितना अधिक दिखता है — 1 से ऊपर यानी अधिक-प्रतिनिधित्व।`
+          : `${formatCount(data.fleet_total, locale)} registered vehicles in Rajasthan. The ratio is how much of this road a class takes compared with how many of them exist — above 1 is over-represented.`}
+      </p>
+      <p
+        className="mt-2 leading-relaxed text-[var(--ink-faint)]"
+        style={{ fontSize: "calc(var(--d-support) * 0.94)" }}
+      >
+        {data.caveat}
+      </p>
+      <a
+        href={data.sources.registered.url}
+        target="_blank"
+        rel="noreferrer noopener"
+        className="mt-2 inline-block text-[var(--accent)]"
+        style={{ fontSize: "calc(var(--d-support) * 0.94)" }}
+      >
+        {data.sources.registered.name}
+      </a>
+    </Panel>
   );
 }

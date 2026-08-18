@@ -6,6 +6,7 @@ the seed with a different distribution, the build fails here rather than in a
 room in Jaipur.
 """
 
+import pytest
 from pravaah.adapters import published as P
 
 
@@ -50,3 +51,27 @@ def test_district_accidents_sum_close_to_the_city_total() -> None:
     total = sum(d.accidents for d in P.DISTRICTS_2025)
     city = {c.year: c.accidents for c in P.CRASHES_BY_YEAR}[2025]
     assert abs(total - city) / city < 0.05
+
+
+def test_the_fleet_is_dominated_by_two_wheelers() -> None:
+    two = next(c for c in P.FLEET_RAJASTHAN_2022 if c.class_code == "2W")
+    assert two.vehicles / P.FLEET_RAJASTHAN_TOTAL * 100 == pytest.approx(
+        P.FLEET_TWO_WHEELER_PCT, abs=0.05
+    )
+
+
+def test_the_published_total_exceeds_the_listed_categories() -> None:
+    # The state's total includes a tail this module does not enumerate. If the
+    # sum ever exceeded the total, a category would have been double-counted.
+    listed = sum(c.vehicles for c in P.FLEET_RAJASTHAN_2022)
+    assert listed < P.FLEET_RAJASTHAN_TOTAL
+    # ...and it should still account for the large majority of the fleet.
+    assert listed / P.FLEET_RAJASTHAN_TOTAL > 0.97
+
+
+def test_registration_categories_without_a_counting_equivalent_are_null() -> None:
+    # A trailer is not something a camera counts as a distinct vehicle on a
+    # carriageway. Mapping it to a class code to make the join tidy would be
+    # inventing a measurement.
+    unmapped = {c.name_en for c in P.FLEET_RAJASTHAN_2022 if c.class_code is None}
+    assert unmapped == {"Trailers", "Construction equipment"}
