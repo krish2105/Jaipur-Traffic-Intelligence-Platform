@@ -18,6 +18,7 @@ import { IncidentTimelineChart } from "@/components/charts/incident-timeline";
 import { ThemeToggle } from "@/components/console/theme-toggle";
 import { Counter, Magnetic, SplitText } from "./motion-primitives";
 import { SeveritySection } from "./severity-section";
+import { AskPanel } from "./ask-panel";
 
 /**
  * The landing page.
@@ -410,6 +411,8 @@ export function LandingView({
       {severity && allocation && (
         <SeveritySection severity={severity} allocation={allocation} />
       )}
+
+      <AskPanel severity={severity} />
 
       {/* ── policy ──────────────────────────────────────────────────────── */}
       {lez && (
