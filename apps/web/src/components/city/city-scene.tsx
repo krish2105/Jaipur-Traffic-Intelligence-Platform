@@ -63,16 +63,30 @@ function IntroFlight({
     const e = t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
     // Framed off the scene's own bounding radius, so the flight always ends
     // with the whole corridor in shot whatever its extent.
-    const far = radius * 2.4;
-    // The framing this scene lives or dies on. Too far and a 21 m carriageway
-    // is sub-pixel; too close and the camera sits in the road and the vehicles
-    // merge into one bar. This is an aerial oblique — high enough to read the
-    // corridor's shape, low enough to resolve individual cars.
-    const near = radius * 0.55;
+    // Framing computed from the camera's own field of view rather than from a
+    // hand-tuned multiple of the radius. Every time I tuned that multiple by
+    // eye it drifted — too far and a 21 m carriageway went sub-pixel, too close
+    // and the camera sat in the road. `fit` is the distance at which a sphere
+    // of `radius` exactly fills the frame, so the fractions below mean
+    // something: 1.0 is the whole corridor, 0.34 is a readable stretch.
+    const fov = (camera as THREE.PerspectiveCamera).fov ?? 40;
+    const fit = radius / Math.sin(((fov / 2) * Math.PI) / 180);
+    const far = fit * 0.85;
+    // 0.12 frames a readable stretch. There is no single distance that shows a
+    // 17 km corridor AND a 4 m car — they are four orders of magnitude apart —
+    // so the default is the stretch, and the overview is a zoom level reached
+    // by scrolling out. See ADR-018.
+    const near = fit * 0.12;
+    // A fixed aerial-oblique bearing: 38 degrees elevation, 35 degrees round.
+    // Only the distance changes during the flight, so the corridor stays framed
+    // the whole way down instead of swinging out of shot.
+    const d = THREE.MathUtils.lerp(far, near, e);
+    const elev = (38 * Math.PI) / 180;
+    const azim = (35 * Math.PI) / 180;
     camera.position.set(
-      THREE.MathUtils.lerp(far * 0.40, near * 0.55, e),
-      THREE.MathUtils.lerp(far * 1.05, near * 0.95, e),
-      THREE.MathUtils.lerp(far * 0.95, near * 0.85, e),
+      d * Math.cos(elev) * Math.sin(azim),
+      d * Math.sin(elev),
+      d * Math.cos(elev) * Math.cos(azim),
     );
     camera.lookAt(0, 0, 0);
     if (t >= 1) onDone();
@@ -217,7 +231,7 @@ export default function CityScene({
     <Canvas
       dpr={dpr}
       gl={{ antialias: false, powerPreference: "high-performance" }}
-      camera={{ position: [radius * 0.7, radius * 1.9, radius * 1.8], fov: 40, near: 0.5, far: radius * 40 }}
+      camera={{ position: [radius * 1.4, radius * 1.8, radius * 2.0], fov: 40, near: 0.5, far: radius * 40 }}
       className="absolute inset-0"
     >
       <Suspense fallback={null}>

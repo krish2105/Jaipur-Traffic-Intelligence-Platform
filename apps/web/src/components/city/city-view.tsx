@@ -53,6 +53,7 @@ export interface SceneLink {
   flow: number;
   speed_kmh: number;
   suppressed: boolean;
+  class_mix?: Record<string, number>;
 }
 
 export function CityView({
@@ -132,6 +133,8 @@ export function CityView({
         flow: link.flow,
         speedKmh: link.speed_kmh,
         suppressed: link.suppressed,
+        // Each link populates from its OWN measured composition.
+        classMix: link.class_mix ?? {},
       })),
       buildings,
       ramp,

@@ -362,6 +362,29 @@ async def scene(
               WHERE lc.bucket_start <= anchor.ts
               ORDER BY lc.link_id, lc.bucket_start DESC
             ),
+            mix AS (
+              -- Per-link class mix. The scene populates each link from ITS OWN
+              -- measured composition, so what you watch on Tonk Road is Tonk
+              -- Road's fleet — which is the entire argument probe data cannot
+              -- make (docs/01 §4).
+              SELECT tc.link_id, tc.class_code,
+                     sum(tc.vehicle_count)::numeric AS n
+              FROM traffic_counts_scoped tc
+              WHERE tc.bucket_start >  (SELECT ts FROM anchor) - INTERVAL '30 minutes'
+                AND tc.bucket_start <= (SELECT ts FROM anchor)
+              GROUP BY tc.link_id, tc.class_code
+            ),
+            mix_total AS (
+              SELECT link_id, sum(n) AS total FROM mix GROUP BY link_id
+            ),
+            mix_json AS (
+              SELECT m.link_id,
+                     jsonb_object_agg(m.class_code, round(m.n / t.total, 4)) AS shares
+              FROM mix m
+              JOIN mix_total t ON t.link_id = m.link_id
+              WHERE t.total > 0
+              GROUP BY m.link_id
+            ),
             measured AS (
               -- Vehicles per hour on the link. Two things this must get right:
               --  * the window is 30 minutes, so the hourly rate is the sum
@@ -389,10 +412,12 @@ async def scene(
                    COALESCE(measured.flow_per_hour, 0)   AS flow,
                    COALESCE(measured.speed_kmh,
                             l.free_flow_speed_kmh, 30)   AS speed_kmh,
-                   COALESCE(measured.quality, 1.0)       AS quality
+                   COALESCE(measured.quality, 1.0)       AS quality,
+                   mix_json.shares                       AS class_mix
             FROM road_links l
             LEFT JOIN latest   ON latest.link_id = l.link_id
             LEFT JOIN measured ON measured.link_id = l.link_id
+            LEFT JOIN mix_json ON mix_json.link_id = l.link_id
             WHERE (CAST(:corridor_id AS bigint) IS NULL OR l.corridor_id = :corridor_id)
         """),
         {"corridor_id": corridor_id, "at": at},
@@ -413,6 +438,7 @@ async def scene(
                 "flow": round(float(r.flow), 1),
                 "speed_kmh": round(float(r.speed_kmh), 1),
                 "suppressed": float(r.quality) < MIN_QUALITY,
+                "class_mix": r.class_mix or {},
             }
         )
     return {

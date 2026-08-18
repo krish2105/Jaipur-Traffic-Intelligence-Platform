@@ -4,135 +4,133 @@ import { useLayoutEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-import { polylineLength } from "@/lib/geo";
+import { SCENE_SCALE, polylineLength } from "@/lib/geo";
+import { DEFAULT_MIX, FLEET, TAIL_LIGHT, type VehicleType } from "./fleet";
 
 export interface TrafficRoad {
   points: [number, number][];
-  /** Measured vehicles per hour on this link. Drives particle count. */
+  /** Measured vehicles per hour on this link. */
   flow: number;
-  /** Measured mean speed, km/h. Drives how fast they travel. */
+  /** Measured mean speed, km/h. */
   speedKmh: number;
   suppressed: boolean;
+  /** This link's OWN measured class mix. */
+  classMix?: Record<string, number>;
 }
 
 /**
- * Traffic, as light.
+ * Traffic, by class.
  *
- * Every particle here is a real measurement, not decoration (docs/06 §3). The
- * number of particles on a link is proportional to its measured flow; how fast
- * they move is its measured speed. Where counts were suppressed for low quality
- * the link carries no particles at all — the twin must never invent traffic it
- * did not measure, and you can watch it refusing to.
+ * Every vehicle here is a real measurement. How many are on a link is its
+ * measured flow; how fast they move is its measured speed; and *what they are*
+ * is that link's own measured class composition. Where counts were suppressed
+ * for low quality the link carries nothing at all — the twin must never invent
+ * traffic it did not measure, and you can watch it refusing to.
  *
- * One InstancedMesh for the whole city, capped, with each particle's progress
- * advanced on the GPU-friendly path: a single matrix write per frame per
- * particle and no allocation inside useFrame.
+ * One InstancedMesh per class, so eight draw calls for the whole city.
  */
-// Enough to read as traffic, few enough that individual vehicles resolve.
-// At 2,400 on a visible stretch they merged into a continuous bar.
-const MAX_PARTICLES = 900;
+const MAX_VEHICLES = 1400;
 
-interface Particle {
+interface Vehicle {
   road: number;
-  offset: number; // 0..1 along the road
-  speed: number; // scene units per second
-  lane: number; // lateral offset so they don't run in a single file
+  offset: number;
+  speed: number;
+  lateral: number;
 }
 
-export function Traffic({
-  roads,
-  quality = 1,
-  daylight = false,
-}: {
-  roads: TrafficRoad[];
-  /** 0..1 — the frame-budget guard halves this when FPS drops. */
-  quality?: number;
-  daylight?: boolean;
-}) {
-  const ref = useRef<THREE.InstancedMesh>(null);
+function buildVehicles(roads: TrafficRoad[], budget: number) {
+  const active = roads.filter((r) => !r.suppressed && r.flow > 0 && r.points.length > 1);
+  const totalFlow = active.reduce((s, r) => s + r.flow, 0) || 1;
+  const byClass = new Map<string, Vehicle[]>(FLEET.map((t) => [t.code, []]));
 
-  const { particles, lengths } = useMemo(() => {
-    const active = roads.filter((r) => !r.suppressed && r.flow > 0 && r.points.length > 1);
-    const totalFlow = active.reduce((sum, r) => sum + r.flow, 0) || 1;
-    const budget = Math.floor(MAX_PARTICLES * Math.max(0.1, Math.min(1, quality)));
+  for (const road of active) {
+    const index = roads.indexOf(road);
+    const share = road.flow / totalFlow;
+    const onThisLink = Math.max(1, Math.round(budget * share));
+    const mix = road.classMix && Object.keys(road.classMix).length ? road.classMix : DEFAULT_MIX;
+    // km/h -> scene units per second (SCENE_SCALE units per metre).
+    const base = (road.speedKmh * 1000) / 3600 * SCENE_SCALE;
 
-    const lens = roads.map((r) => polylineLength(r.points) || 1);
-    const out: Particle[] = [];
-    active.forEach((road) => {
-      const index = roads.indexOf(road);
-      const share = road.flow / totalFlow;
-      const count = Math.max(1, Math.round(budget * share));
-      // km/h → scene units/second. SCENE_SCALE is 0.1 units per metre.
-      const speed = (road.speedKmh * 1000) / 3600 / 10;
+    for (const type of FLEET) {
+      const classShare = Number(mix[type.code] ?? 0);
+      const count = Math.round(onThisLink * classShare);
+      const bucket = byClass.get(type.code)!;
       for (let i = 0; i < count; i += 1) {
-        out.push({
+        // Deterministic spread — the demo must look identical on every run.
+        const jitter = ((i * 2654435761) % 1000) / 1000 - 0.5;
+        bucket.push({
           road: index,
-          offset: i / count,
-          speed,
-          lane: (i % 3) - 1,
+          offset: (i + jitter * 0.5) / Math.max(1, count),
+          speed: base * type.speed,
+          lateral: type.lateral + jitter * type.wander,
         });
       }
-    });
-    return { particles: out.slice(0, budget), lengths: lens };
-  }, [roads, quality]);
+    }
+  }
+  return byClass;
+}
 
+function ClassLayer({
+  type,
+  vehicles,
+  roads,
+  lengths,
+  daylight,
+}: {
+  type: VehicleType;
+  vehicles: Vehicle[];
+  roads: TrafficRoad[];
+  lengths: number[];
+  daylight: boolean;
+}) {
+  const ref = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const scratch = useMemo(() => new THREE.Color(), []);
+  const live = useRef<Vehicle[]>([]);
 
-  // The frame loop advances each particle's offset, which is a mutation. It has
-  // to target a ref rather than the memo's own array: mutating render output
-  // makes later renders depend on how many frames happened to run first.
-  const live = useRef<Particle[]>([]);
+  const [w, h, l] = type.dims;
+  const size: [number, number, number] = [w * SCENE_SCALE, h * SCENE_SCALE, l * SCENE_SCALE];
 
   useLayoutEffect(() => {
-    live.current = particles.map((p) => ({ ...p }));
     const mesh = ref.current;
     if (!mesh) return;
+    live.current = vehicles.map((v) => ({ ...v }));
     mesh.count = live.current.length;
 
-    // Headlights coming toward you, tail lights going away — the single thing
-    // that makes a night road photograph read as traffic rather than as dots.
-    // Direction of travel decides which, so the two carriageways separate.
-    live.current.forEach((p, i) => {
-      const road = roads[p.road];
-      const pts = road?.points;
+    live.current.forEach((v, i) => {
+      const pts = roads[v.road]?.points;
       let heading = 0;
       if (pts && pts.length > 1) {
         heading = Math.atan2(pts[1]![0] - pts[0]![0], pts[1]![1] - pts[0]![1]);
       }
-      const towardCamera = Math.cos(heading) < 0;
       if (daylight) {
-        // In daylight a car is a painted body, not a lamp.
-        const shade = 0.45 + 0.5 * ((i * 2654435761) % 100) / 100;
-        scratch.setRGB(shade * 0.9, shade * 0.92, shade);
-      } else if (towardCamera) {
-        scratch.set("#FFF1CE");
+        scratch.set(type.day);
       } else {
-        scratch.set("#FF3B30");
+        // Headlights toward you, tail lights away — the detail that makes a
+        // night road read as traffic rather than as dots.
+        scratch.set(Math.cos(heading) < 0 ? type.night : TAIL_LIGHT);
       }
       mesh.setColorAt(i, scratch);
     });
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-  }, [particles, roads, daylight, scratch]);
+  }, [vehicles, roads, daylight, type, scratch]);
 
-  useFrame((_state, delta) => {
+  useFrame((_s, delta) => {
     const mesh = ref.current;
     const items = live.current;
     if (!mesh || items.length === 0) return;
-    const step = Math.min(delta, 0.1); // a tab regaining focus must not teleport them
+    const step = Math.min(delta, 0.1);
 
     for (let i = 0; i < items.length; i += 1) {
-      const p = items[i]!;
-      const road = roads[p.road];
+      const v = items[i]!;
+      const road = roads[v.road];
       if (!road) continue;
-      const length = lengths[p.road] || 1;
+      const length = lengths[v.road] || 1;
+      v.offset = (v.offset + (v.speed * step) / length) % 1;
 
-      p.offset = (p.offset + (p.speed * step) / length) % 1;
-
-      // Walk the polyline to the particle's position.
-      const target = p.offset * length;
-      let travelled = 0;
+      const target = v.offset * length;
       const pts = road.points;
+      let travelled = 0;
       let x = pts[0]![0];
       let z = pts[0]![1];
       let dx = 1;
@@ -152,7 +150,10 @@ export function Traffic({
         travelled += seg;
       }
 
-      dummy.position.set(x - dz * p.lane * 0.22, 0.13, z + dx * p.lane * 0.22);
+      // Lateral offset places the class across the carriageway: two-wheelers
+      // filtering, buses holding the left lane.
+      const across = v.lateral * 0.32;
+      dummy.position.set(x - dz * across, size[1] / 2 + 0.06, z + dx * across);
       dummy.rotation.set(0, Math.atan2(dx, dz), 0);
       dummy.updateMatrix();
       mesh.setMatrixAt(i, dummy.matrix);
@@ -160,17 +161,43 @@ export function Traffic({
     mesh.instanceMatrix.needsUpdate = true;
   });
 
-  if (particles.length === 0) return null;
+  if (vehicles.length === 0) return null;
 
   return (
-    <instancedMesh ref={ref} args={[undefined, undefined, MAX_PARTICLES]} frustumCulled={false}>
-      {/* A car-shaped box, not a capsule. Three's capsule is Y-axis aligned, so
-          rotating only around Y left every vehicle standing upright — the
-          picket-fence look. This is 1.8 m wide, 1.5 m tall, 4.2 m long in
-          scene units, with its length on Z so a Y rotation aims it down the
-          road. */}
-      <boxGeometry args={[0.18, 0.15, 0.42]} />
-      <meshBasicMaterial toneMapped={false} vertexColors={false} />
+    <instancedMesh ref={ref} args={[undefined, undefined, vehicles.length]} frustumCulled={false}>
+      <boxGeometry args={size} />
+      <meshBasicMaterial toneMapped={false} />
     </instancedMesh>
+  );
+}
+
+export function Traffic({
+  roads,
+  quality = 1,
+  daylight = false,
+}: {
+  roads: TrafficRoad[];
+  quality?: number;
+  daylight?: boolean;
+}) {
+  const lengths = useMemo(() => roads.map((r) => polylineLength(r.points) || 1), [roads]);
+  const byClass = useMemo(
+    () => buildVehicles(roads, Math.floor(MAX_VEHICLES * Math.max(0.1, Math.min(1, quality)))),
+    [roads, quality],
+  );
+
+  return (
+    <group>
+      {FLEET.map((type) => (
+        <ClassLayer
+          key={type.code}
+          type={type}
+          vehicles={byClass.get(type.code) ?? []}
+          roads={roads}
+          lengths={lengths}
+          daylight={daylight}
+        />
+      ))}
+    </group>
   );
 }

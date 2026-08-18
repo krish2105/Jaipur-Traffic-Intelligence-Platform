@@ -380,3 +380,58 @@ palettes remain defined in `palettes.css` and are still measured by
 **What is kept.** The day/night scene toggle stays — that is a genuine product
 feature, not an evaluation aid. The congestion ramp is byte-identical in both
 modes, because it is the one thing that must never change meaning.
+
+---
+
+## ADR-017 — Google Maps, on the owner's explicit instruction
+**Date:** 2026-08-18 · **Status:** Accepted under owner override · **Overrides:** doc 06 §2
+
+Doc 06 §2 says plainly: *"Do not use Google Maps."* Its reasons are per-load
+billing, a broken offline demo, and — the sharp one — that it *"removes the
+awkward moment where your Google-dependency-solving product depends on Google."*
+
+That objection was put to the owner with alternatives (Esri World Imagery, free
+and keyless; MapTiler; stylised OSM land use). The owner chose Google Maps
+anyway. It is their project and their call, and it is recorded here as an
+override rather than a silent deviation.
+
+**Two mitigations, both mandatory.**
+
+*Offline.* doc 03 §5 requires the demo to run with the network cable pulled, and
+a live tile request cannot. Tiles are cached to a local file at build time and
+the renderer reads the cache first, so a wifi failure degrades to stale imagery
+rather than a blank map.
+
+*The question.* Somebody in that room will ask why a product whose pitch is
+"Google cannot measure volume" is rendering on Google's basemap. The prepared
+answer: Google supplies the photograph, PRAVAAH supplies the measurement; they
+are different jobs, and the platform's own data path touches no foreign service.
+Worth rehearsing, because it will be asked.
+
+**Target.** Photorealistic 3D Tiles, which is what gives real Jaipur buildings
+and terrain rather than a flat image. Requires an API key with billing enabled.
+Behind an adapter, so the scene falls back to the current OSM massing when no
+key is present — the build must never fail for want of a credential.
+
+---
+
+## ADR-018 — Zoom levels, not one compromise framing
+**Date:** 2026-08-18 · **Status:** Accepted
+
+The camera framing was hand-tuned five times and drifted every time, because it
+was being asked to do something impossible: show a 17 km corridor and a 4 m
+vehicle in the same shot. Those are four orders of magnitude apart, and any
+single distance fails one of them.
+
+Two changes. Framing is now computed from the camera's field of view — `fit` is
+the distance at which the scene's bounding sphere exactly fills the frame, so
+the fractions in the code mean something instead of being magic numbers. And the
+product gets explicit zoom levels rather than one compromise:
+
+| Level | Distance | Reads |
+|---|---|---|
+| Overview | `fit × 0.85` | the whole corridor's shape and where it is red |
+| Corridor | `fit × 0.12` | individual vehicles, class mix, buildings — the default |
+| Junction | flown to on click | turning movements, queues, that camera's accuracy |
+
+The junction level is the click-to-fly interaction still to be built.
