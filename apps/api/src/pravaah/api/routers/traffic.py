@@ -591,3 +591,41 @@ async def signal_advisory(session: SessionDep) -> dict[str, Any]:
         "governance": "Advisory only. An engineer reviews; a human applies. "
         "No code path reaches a signal controller.",
     }
+
+
+@router.get("/congestion/weekly")
+async def weekly_matrix(
+    session: SessionDep,
+    corridor_id: Annotated[int | None, Query()] = None,
+) -> dict[str, Any]:
+    """Seven days by twenty-four hours of measured congestion.
+
+    Measured history, not a forecast. The distinction matters: a "predictive
+    heatmap" with nothing behind it is decoration, whereas this is the view
+    where a claim like docs/01 §2's "Friday 17 October was the worst day of
+    2025" becomes checkable rather than quoted.
+    """
+    rows = await session.execute(
+        text("""
+            SELECT extract(dow  FROM lc.bucket_start AT TIME ZONE 'Asia/Kolkata')::int AS dow,
+                   extract(hour FROM lc.bucket_start AT TIME ZONE 'Asia/Kolkata')::int AS hour,
+                   avg(lc.congestion_index) AS index
+            FROM link_congestion lc
+            JOIN road_links l ON l.link_id = lc.link_id
+            WHERE lc.bucket_start >= now() - INTERVAL '28 days'
+              AND (CAST(:corridor_id AS bigint) IS NULL OR l.corridor_id = :corridor_id)
+            GROUP BY dow, hour
+        """),
+        {"corridor_id": corridor_id},
+    )
+    # Monday-first, which is how an Indian working week is read.
+    matrix = [[0.0] * 24 for _ in range(7)]
+    for r in rows:
+        day = (int(r.dow) + 6) % 7  # Postgres dow: 0=Sunday
+        matrix[day][int(r.hour)] = round(float(r.index), 1)
+    return {
+        "matrix": matrix,
+        "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        "window": "last 28 days, measured",
+        "is_synthetic": True,
+    }

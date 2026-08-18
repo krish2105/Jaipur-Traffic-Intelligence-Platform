@@ -3,85 +3,117 @@
 import type { ReactNode } from "react";
 
 /**
- * Panel primitives for the operations console.
+ * Panel primitives — surface elevation (ADR-021).
  *
- * Shared deliberately: the console and the bento shell are two layouts over
- * these same components, so choosing between the shells costs a layout rather
- * than a rebuild.
+ * No borders, no drop shadows. In a dark interface depth comes from surface
+ * COLOUR: a lighter surface reads as closer. Borders and shadows are a
+ * light-mode idiom, and using them is why nine panels previously read as nine
+ * identical flat rectangles.
+ *
+ * Every size is a density token, so phone, laptop, desktop, wall and projector
+ * are a media query rather than nine components to edit.
  */
 
 export function Panel({
   title,
   children,
   aside,
-  dense = false,
+  emphasis = false,
 }: {
   title: string;
   children: ReactNode;
   aside?: ReactNode;
-  dense?: boolean;
+  /** Raises the panel one further surface step. Used for the argument. */
+  emphasis?: boolean;
 }) {
   return (
     <section
-      className="rounded-xl border border-[var(--rule)] bg-[var(--surface)]"
-      style={{ boxShadow: "var(--rim), var(--shadow-panel)" }}
+      className={`rounded-[var(--d-radius)] ${
+        emphasis ? "bg-[var(--surface-3)]" : "bg-[var(--surface-2)]"
+      }`}
+      style={{ padding: "var(--d-pad)", boxShadow: "var(--rim)" }}
     >
-      <header className="flex items-center justify-between gap-2 border-b border-[var(--rule)] px-3.5 py-2.5">
-        <h2 className="text-[10px] font-medium uppercase tracking-[0.16em] text-[var(--ink-muted)]">
+      <header className="flex items-center justify-between gap-2">
+        <h2
+          className="uppercase tracking-[0.14em] text-[var(--ink-muted)]"
+          style={{ fontSize: "var(--d-label)" }}
+        >
           {title}
         </h2>
         {aside}
       </header>
-      <div className={dense ? "p-3" : "p-3.5"}>{children}</div>
+      <div style={{ marginTop: "calc(var(--d-gap) * 0.9)" }}>{children}</div>
     </section>
   );
 }
 
-/**
- * docs/06 §8: every measurement displays its quality or confidence. No naked
- * number ever. This component makes that structural — a figure cannot be
- * rendered without somewhere to put its provenance.
- */
+/** docs/06 §8 — no naked number. A figure always has room for its provenance. */
 export function Metric({
   label,
   value,
   unit,
   delta,
   quality,
+  scale = 1,
 }: {
   label: string;
   value: string;
   unit?: string;
   delta?: { value: string; direction: "up" | "down" | "flat" };
   quality?: string;
+  scale?: number;
 }) {
   return (
-    <div>
-      <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--ink-muted)]">{label}</p>
-      <p className="mt-1 flex items-baseline gap-1.5">
-        <span className="font-mono text-2xl leading-none tabular-nums text-[var(--ink)]">
+    <div className="min-w-0">
+      <p
+        className="uppercase tracking-[0.14em] text-[var(--ink-muted)]"
+        style={{ fontSize: "var(--d-label)" }}
+      >
+        {label}
+      </p>
+      <p className="mt-1.5 flex items-baseline gap-1.5">
+        {/* clamp, not truncate. A figure cut to "6…" is worse than a small
+            one — it is unreadable AND looks broken. The lower bound keeps it
+            legible; the upper bound stops it overflowing a narrow column. */}
+        <span
+          className="font-mono tabular-nums text-[var(--ink)]"
+          style={{
+            fontSize: `clamp(0.95rem, calc(var(--d-figure) * ${scale}), 3.5rem)`,
+            lineHeight: 1.05,
+          }}
+        >
           {value}
         </span>
-        {unit && <span className="text-xs text-[var(--ink-muted)]">{unit}</span>}
-      </p>
-      <div className="mt-1.5 flex items-center gap-2 text-[11px]">
-        {delta && (
-          <span
-            className="font-mono tabular-nums"
-            style={{
-              color:
-                delta.direction === "up"
-                  ? "var(--congestion-severe)"
-                  : delta.direction === "down"
-                    ? "var(--congestion-free)"
-                    : "var(--ink-muted)",
-            }}
-          >
-            {delta.direction === "up" ? "▲" : delta.direction === "down" ? "▼" : "–"} {delta.value}
+        {unit && (
+          <span className="text-[var(--ink-muted)]" style={{ fontSize: "var(--d-support)" }}>
+            {unit}
           </span>
         )}
-        {quality && <span className="text-[var(--ink-faint)]">{quality}</span>}
-      </div>
+      </p>
+      {(delta || quality) && (
+        <div
+          className="mt-1.5 flex flex-wrap items-center gap-x-2"
+          style={{ fontSize: "var(--d-support)" }}
+        >
+          {delta && (
+            <span
+              className="font-mono tabular-nums"
+              style={{
+                color:
+                  delta.direction === "up"
+                    ? "var(--congestion-severe)"
+                    : delta.direction === "down"
+                      ? "var(--congestion-free)"
+                      : "var(--ink-muted)",
+              }}
+            >
+              {delta.direction === "up" ? "▲" : delta.direction === "down" ? "▼" : "–"}{" "}
+              {delta.value}
+            </span>
+          )}
+          {quality && <span className="text-[var(--ink-faint)]">{quality}</span>}
+        </div>
+      )}
     </div>
   );
 }
@@ -90,39 +122,32 @@ export function Metric({
 export function SyntheticTag({ label }: { label: string }) {
   return (
     <span
-      className="rounded border border-[var(--accent-dim)]/50 px-1.5 py-0.5
-                 text-[9px] uppercase tracking-wider text-[var(--accent)]"
+      className="shrink-0 rounded-full bg-[var(--surface-3)] px-2 py-0.5 uppercase tracking-wider text-[var(--accent)]"
+      style={{ fontSize: "calc(var(--d-label) * 0.85)" }}
     >
       {label}
     </span>
   );
 }
 
-/** A source's live/replay state, used by the readiness panel and the top bar. */
 export function ModeDot({ live, title }: { live: boolean; title: string }) {
   return (
     <span
       title={title}
-      className="inline-block size-1.5 rounded-full"
+      className="inline-block size-1.5 shrink-0 rounded-full"
       style={{
         background: live ? "var(--congestion-free)" : "var(--congestion-moderate)",
-        boxShadow: live ? "0 0 6px var(--congestion-free)" : "none",
+        boxShadow: live ? "0 0 8px var(--congestion-free)" : "none",
       }}
     />
   );
 }
 
-export function Bar({
-  fraction,
-  colour = "var(--ink-muted)",
-}: {
-  fraction: number;
-  colour?: string;
-}) {
+export function Bar({ fraction, colour = "var(--ink-muted)" }: { fraction: number; colour?: string }) {
   return (
     <div className="h-1 w-full overflow-hidden rounded-full bg-[var(--surface-3)]">
       <div
-        className="h-full rounded-full"
+        className="h-full rounded-full transition-[width] duration-500"
         style={{ width: `${Math.max(0, Math.min(1, fraction)) * 100}%`, background: colour }}
       />
     </div>

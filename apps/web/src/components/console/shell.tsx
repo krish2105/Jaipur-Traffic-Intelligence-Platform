@@ -10,8 +10,10 @@ import type {
   Corridor,
   Forecast,
   SignalAdvisory,
+  DayProfile,
   SourceReadiness,
   WeatherNow,
+  WeeklyMatrix,
 } from "@/lib/api";
 import type { SceneLink } from "@/components/city/city-view";
 import type { BuildingBox } from "@/components/city/buildings";
@@ -20,17 +22,30 @@ import { boundsOf, centroidOf, projectLine } from "@/lib/geo";
 import { RAMP_NIGHT } from "@/components/city/ramp";
 import type { Locale } from "@/i18n/routing";
 import { ModeDot } from "./primitives";
+import { ThemeToggle } from "./theme-toggle";
 import {
   BlackSpotPanel,
   CompositionPanel,
   CountsPanel,
   ForecastPanel,
   IncidentPanel,
+  HeatmapPanel,
   QualityPanel,
   ReadinessPanel,
   SignalPanel,
   WeatherPanel,
 } from "./panels";
+
+/** Minutes since local midnight in Jaipur — where the brass marker sits. */
+function jaipurNowMinutes(): number {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: false,
+  }).formatToParts(new Date());
+  return (
+    Number(parts.find((p) => p.type === "hour")?.value ?? 0) * 60 +
+    Number(parts.find((p) => p.type === "minute")?.value ?? 0)
+  );
+}
 
 const NAV = [
   { id: "dashboard", en: "Dashboard", hi: "डैशबोर्ड" },
@@ -63,6 +78,8 @@ export function ConsoleShell({
   signals,
   readiness,
   weather,
+  profile,
+  weekly,
 }: {
   corridors: Corridor[];
   summary: CountsSummary;
@@ -74,6 +91,8 @@ export function ConsoleShell({
   signals: SignalAdvisory;
   readiness: SourceReadiness;
   weather: WeatherNow;
+  profile: DayProfile;
+  weekly: WeeklyMatrix;
 }) {
   const locale = useLocale() as Locale;
   const [active, setActive] = useState<string>("dashboard");
@@ -132,7 +151,9 @@ export function ConsoleShell({
           {corridor ? (locale === "hi" ? corridor.name.hi : corridor.name.en) : "—"} ·{" "}
           {measured} of {links.length} links instrumented
         </span>
-        <span className="ml-auto font-mono text-xs tabular-nums text-[var(--ink-muted)]">
+        <div className="ml-auto flex items-center gap-3">
+        <ThemeToggle />
+        <span className="font-mono text-xs tabular-nums text-[var(--ink-muted)]">
           {new Intl.DateTimeFormat(locale === "hi" ? "hi-IN" : "en-IN", {
             timeZone: "Asia/Kolkata",
             dateStyle: "medium",
@@ -140,6 +161,7 @@ export function ConsoleShell({
           }).format(new Date())}{" "}
           IST
         </span>
+        </div>
       </header>
 
       {/* ── nav | map | rail ────────────────────────────────────────────── */}
@@ -197,12 +219,13 @@ export function ConsoleShell({
         </main>
 
         <aside className="min-h-0 space-y-2.5 overflow-y-auto border-l border-[var(--rule)] bg-[var(--ground)] p-2.5">
-          <CountsPanel summary={summary} />
+          <CountsPanel summary={summary} profile={profile} nowMinutes={jaipurNowMinutes()} />
           <CompositionPanel summary={summary} />
           <ForecastPanel forecast={forecast} />
           <QualityPanel summary={summary} cameras={cameras} />
           <IncidentPanel />
           <BlackSpotPanel data={blackspots} />
+          <HeatmapPanel data={weekly} />
           <SignalPanel data={signals} />
           <WeatherPanel data={weather} />
           <ReadinessPanel data={readiness} />

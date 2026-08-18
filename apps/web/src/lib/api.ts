@@ -165,6 +165,13 @@ export interface WeatherNow {
   provider?: string;
 }
 
+export interface WeeklyMatrix {
+  matrix: number[][];
+  days: string[];
+  window: string;
+  is_synthetic: boolean;
+}
+
 async function get<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE}/api/v1${path}`, {
     // Measurements move every five minutes; a stale dashboard is a wrong one.
@@ -199,6 +206,8 @@ export const api = {
   signals: () => get<SignalAdvisory>("/signals/advisory"),
   readiness: () => get<SourceReadiness>("/meta/sources"),
   weather: () => get<WeatherNow>("/meta/weather"),
+  weekly: (corridorId?: number) =>
+    get<WeeklyMatrix>(`/congestion/weekly${query({ corridor_id: corridorId })}`),
 };
 
 /**

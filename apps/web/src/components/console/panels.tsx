@@ -7,28 +7,31 @@ import type {
   Camera,
   CountsSummary,
   Forecast,
+  DayProfile,
   SignalAdvisory,
   SourceReadiness,
   WeatherNow,
+  WeeklyMatrix,
 } from "@/lib/api";
 import { congestionBandKey, congestionVar } from "@/lib/api";
 import { formatCompact, formatCount, formatPercent } from "@/lib/format";
 import type { Locale } from "@/i18n/routing";
 import { Bar, Metric, ModeDot, Panel, SyntheticTag } from "./primitives";
+import { DayProfileChart } from "@/components/charts/day-profile";
+import { CompositionChart } from "@/components/charts/composition";
+import { CongestionHeatmap } from "@/components/charts/heatmap";
 
-const CLASS_LABEL: Record<string, { en: string; hi: string }> = {
-  "2W": { en: "Two-wheeler", hi: "दोपहिया" },
-  CAR: { en: "Car / jeep / van", hi: "कार / जीप / वैन" },
-  AUTO: { en: "Auto-rickshaw", hi: "ऑटो-रिक्शा" },
-  ERIK: { en: "E-rickshaw", hi: "ई-रिक्शा" },
-  LCV: { en: "Light commercial", hi: "हल्का व्यावसायिक" },
-  BUS: { en: "Bus", hi: "बस" },
-  TRK2: { en: "Truck", hi: "ट्रक" },
-  NMV: { en: "Non-motorised", hi: "गैर-मोटर चालित" },
-};
 
 /** Live counts and PCU. The headline the whole product exists to produce. */
-export function CountsPanel({ summary }: { summary: CountsSummary }) {
+export function CountsPanel({
+  summary,
+  profile,
+  nowMinutes,
+}: {
+  summary: CountsSummary;
+  profile?: DayProfile;
+  nowMinutes?: number;
+}) {
   const locale = useLocale() as Locale;
   const q = summary.data_quality;
   return (
@@ -52,8 +55,16 @@ export function CountsPanel({ summary }: { summary: CountsSummary }) {
           }
         />
       </div>
+      {profile && profile.points.length > 0 && (
+        <div className="mt-4">
+          <DayProfileChart points={profile.points} nowMinutes={nowMinutes ?? 0} />
+        </div>
+      )}
       {summary.peak_hour && (
-        <p className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] text-[var(--ink-muted)]">
+        <p
+          className="mt-3 text-[var(--ink-muted)]"
+          style={{ fontSize: "var(--d-support)" }}
+        >
           Peak hour {String(summary.peak_hour.hour).padStart(2, "0")}:00 ·{" "}
           <span className="font-mono tabular-nums">
             {formatCompact(summary.peak_hour.pcu, locale)}
@@ -70,35 +81,20 @@ export function CountsPanel({ summary }: { summary: CountsSummary }) {
  * the reason docs/01 §4 says this whole platform exists.
  */
 export function CompositionPanel({ summary }: { summary: CountsSummary }) {
-  const locale = useLocale() as Locale;
   return (
     <Panel
       title="Composition"
+      emphasis
       aside={summary.is_synthetic ? <SyntheticTag label="Simulated" /> : undefined}
     >
-      <ul className="space-y-2">
-        {summary.class_mix.slice(0, 6).map((entry) => {
-          const label = CLASS_LABEL[entry.class_code] ?? entry.name;
-          return (
-            <li key={entry.class_code}>
-              <div className="flex items-baseline justify-between gap-2 text-[12px]">
-                <span className="text-[var(--ink)]">
-                  {locale === "hi" ? label.hi : label.en}
-                </span>
-                <span className="font-mono tabular-nums text-[var(--ink-muted)]">
-                  {formatPercent(entry.share, locale)}
-                </span>
-              </div>
-              <div className="mt-1">
-                <Bar fraction={entry.share} />
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-      <p className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] leading-relaxed text-[var(--ink-muted)]">
+      <CompositionChart mix={summary.class_mix} />
+      <p
+        className="mt-4 leading-relaxed text-[var(--ink-muted)]"
+        style={{ fontSize: "var(--d-support)" }}
+      >
         Probe data reports delay, never composition. Every capacity calculation,
-        signal plan and freight window depends on this split.
+        signal plan and freight window depends on this split — and no probe
+        product in the world can produce it.
       </p>
     </Panel>
   );
@@ -164,13 +160,18 @@ export function QualityPanel({
   const q = summary.data_quality;
   return (
     <Panel title="Data quality · today">
-      <div className="grid grid-cols-3 gap-3">
-        <Metric label="Cameras" value={`${active.length}/${cameras.length}`} />
-        <Metric label="Mean" value={q.mean_score.toFixed(2)} quality="incl. night bins" />
+      {/* Two across, not three: at rail width three columns forced every figure
+          into an ellipsis. The third sits below with room for its caveat. */}
+      <div className="grid grid-cols-2 gap-3">
+        <Metric label="Cameras" value={`${active.length}/${cameras.length}`} scale={0.7} />
+        <Metric label="Mean quality" value={q.mean_score.toFixed(2)} scale={0.7} />
+      </div>
+      <div className="mt-3">
         <Metric
           label="Suppressed"
           value={formatPercent(q.suppressed_pct, locale)}
-          quality="over the full day"
+          scale={0.7}
+          quality="whole day, includes night bins"
         />
       </div>
       {cert && (
@@ -369,6 +370,26 @@ export function WeatherPanel({ data }: { data: WeatherNow }) {
         {data.degrades_counting
           ? " — counting accuracy reduced; affected bins are suppressed and shown as such."
           : " — no weather degradation of counting."}
+      </p>
+    </Panel>
+  );
+}
+
+
+/** Seven days by twenty-four hours. Measured history, not a forecast. */
+export function HeatmapPanel({ data }: { data: WeeklyMatrix }) {
+  return (
+    <Panel
+      title="Weekly pattern"
+      aside={<SyntheticTag label={data.window} />}
+    >
+      <CongestionHeatmap matrix={data.matrix} days={data.days} />
+      <p
+        className="mt-3 leading-relaxed text-[var(--ink-muted)]"
+        style={{ fontSize: "var(--d-support)" }}
+      >
+        Twin peaks every weekday; Friday heaviest; Sunday materially quieter.
+        Measured, not predicted.
       </p>
     </Panel>
   );

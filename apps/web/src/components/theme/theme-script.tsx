@@ -1,5 +1,3 @@
-import Script from "next/script";
-
 /**
  * Runs before first paint. Sets both theme axes on <html> so there is no FOUC
  * and no flash of the wrong direction (docs/06 §6).
@@ -37,8 +35,13 @@ document.documentElement.setAttribute('data-scene','night');
  */
 export function ThemeScript() {
   return (
-    <Script id="pravaah-theme" strategy="beforeInteractive">
-      {script}
-    </Script>
+    // dangerouslySetInnerHTML on a plain <script> in <head> is the documented
+    // App Router pattern for a pre-paint theme script. next/script's
+    // beforeInteractive is only valid in pages/_document, which this is not.
+    <script
+      id="pravaah-theme"
+      dangerouslySetInnerHTML={{ __html: script }}
+      suppressHydrationWarning
+    />
   );
 }

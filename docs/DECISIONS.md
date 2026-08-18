@@ -500,3 +500,43 @@ non-background pixel — rather than reading an empty frame as evidence.
 The `<Environment>` removal stands on its own merits regardless: a scene that
 waits on a CDN cannot satisfy docs/03 §5's requirement to render with the
 network cable pulled.
+
+---
+
+## ADR-021 — Surface elevation, and every panel carries a chart
+**Date:** 2026-08-18 · **Status:** Accepted · **Supersedes:** the console's first card language
+
+The first console panels were 1px-bordered rectangles with 10px labels — the
+same fault as the very first interface, rebuilt in dark mode. The specific error
+is worth naming: **in a dark interface, elevation comes from surface colour, not
+from borders and shadows.** A lighter surface reads as closer. Borders and drop
+shadows are a light-mode idiom, and using them is why nine panels read as nine
+identical flat rectangles with no hierarchy.
+
+Three treatments were built on one panel and compared on live data at
+`/en/design` — surface elevation, command telemetry, editorial. The owner chose
+**surface elevation**. Telemetry is kept in the repo as a candidate for a future
+ICCC wall build; it is genuinely good and structurally fragile at three figures
+across, which it demonstrated by colliding into one run-together number.
+
+**Every panel now carries a chart**, which the first version had none of:
+
+- 24-hour congestion profile, an area chart whose vertical gradient IS the
+  published ramp, with a brass marker at the current moment — the gnomon idea
+  carried into the chart an engineer actually reads
+- Composition donut plus proportional bar, hand-built SVG so ring and bar share
+  exact class colours. This panel is raised one further surface step, because it
+  is the argument: no probe product can produce this split
+- Weekly heatmap, seven days by twenty-four hours, measured history rather than
+  a forecast — the view where "Friday 17 October was the worst day of 2025"
+  becomes checkable rather than quoted
+
+**Density is five real targets**, not three breakpoints: phone, laptop, desktop,
+control-room wall, projector. No component hardcodes a size, so a density change
+is a media query. There is an explicit override for a demo where the automatic
+guess is wrong.
+
+**Figures clamp, never truncate.** A number cut to "6…" is unreadable *and*
+looks broken; a smaller number is merely smaller. Both failure modes appeared
+during this work — telemetry at three-across and the quality panel at rail
+width — and both are now structurally impossible.
