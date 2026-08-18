@@ -881,3 +881,41 @@ assumptions and are labelled as "the numbers a department should argue with".
 The congestion-vs-PCU relationship is stated as first-order, valid near
 saturation, optimistic once flow is free. A policy model whose assumptions are
 hard to find is one designed to win an argument rather than inform one.
+
+---
+
+## ADR-033 — The edge section reports what a probe cannot
+**Date:** 2026-08-18 · **Status:** Accepted
+
+`Edge · CV` exists to answer one question in the room: *what does this do that
+Google Maps does not?* So it reports the things a GPS probe structurally cannot
+produce.
+
+**Vehicles per minute, per camera, by class.** Per minute rather than per hour,
+deliberately: an operator can check 52.2 veh/min against a live feed by counting
+for sixty seconds. A per-hour figure is unfalsifiable in the room, which makes
+it worth less than a smaller number that can be tested.
+
+**Observed minutes, not wall-clock minutes.** The rate divides by `bins × 5`
+rather than by 60. A camera that was down for half the day would otherwise
+report as half as busy, which is a data-availability problem disguised as a
+traffic finding.
+
+Three constraints are stated on screen rather than in a document, because each
+is a procurement question that will be asked:
+
+- **No face recognition, no person tracking, no biometrics**, at any point.
+  Vehicles are counted and classified; people are not identified.
+- **No Ultralytics YOLO in shippable code.** AGPL-3.0 is a procurement blocker
+  for a government deployment. RT-DETRv2 is Apache-2.0 and ByteTrack via
+  `supervision` is MIT. Putting the licence on the screen turns a constraint
+  into evidence of diligence.
+- **Video never leaves the gantry.** The edge node emits counts, classes, speeds
+  and violation events — metadata in bytes, not a video backhaul in megabits.
+  This is the answer to "what will this cost in bandwidth", which is the second
+  question every time.
+
+And the status line stays honest: counting runs on IDD and UA-DETRAC, and is
+**not yet validated on Jaipur video** — that needs a read-only RTSP feed. A
+platform that claims local validation it does not have loses the room the first
+time someone checks.

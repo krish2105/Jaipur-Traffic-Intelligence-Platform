@@ -1066,3 +1066,107 @@ async def policy_scenarios(
         },
         "is_synthetic": True,
     }
+
+
+@router.get("/edge/cameras")
+async def edge_cameras(session: SessionDep) -> dict[str, Any]:
+    """Per-camera counting throughput and the class breakdown each one produces.
+
+    This is the endpoint that distinguishes the platform from a probe product,
+    so it reports the thing a probe cannot: vehicles per minute **by class**,
+    per camera, with each camera's own validated accuracy beside it.
+
+    Vehicles per minute is reported rather than per hour because that is the
+    rate an operator can sanity-check against a live feed by counting for sixty
+    seconds. A per-hour figure is unfalsifiable in the room.
+    """
+    rows = await session.execute(
+        text("""
+            SELECT c.camera_id,
+                   c.external_ref,
+                   c.status,
+                   j.name_en,
+                   j.name_hi,
+                   sum(tc.vehicle_count)                          AS vehicles,
+                   count(DISTINCT tc.bucket_start)                AS bins,
+                   avg(tc.quality_score)                          AS quality
+            FROM cameras c
+            LEFT JOIN junctions j ON j.junction_id = c.junction_id
+            LEFT JOIN traffic_counts tc
+                   ON tc.camera_id = c.camera_id
+                  AND tc.bucket_start >= now() - INTERVAL '24 hours'
+                  AND tc.bucket_start <= now()
+            GROUP BY c.camera_id, c.external_ref, c.status, j.name_en, j.name_hi
+            ORDER BY c.camera_id
+        """)
+    )
+    cameras = []
+    for r in rows:
+        bins = int(r.bins or 0)
+        vehicles = int(r.vehicles or 0)
+        # Counts are binned in five-minute buckets, so minutes observed is
+        # bins * 5. Dividing by 60 minutes of wall clock instead would report a
+        # camera that was down for half the day as half as busy.
+        minutes = bins * 5
+        cameras.append({
+            "camera_id": int(r.camera_id),
+            "external_ref": r.external_ref,
+            "status": r.status,
+            "junction": {"en": r.name_en, "hi": r.name_hi},
+            "vehicles_24h": vehicles,
+            "observed_minutes": minutes,
+            "vehicles_per_minute": round(vehicles / minutes, 1) if minutes else None,
+            "quality": round(float(r.quality), 3) if r.quality is not None else None,
+        })
+
+    classes = await session.execute(
+        text("""
+            SELECT tc.class_code, v.name_en, v.name_hi, sum(tc.vehicle_count) AS vehicles
+            FROM traffic_counts tc
+            JOIN vehicle_classes v ON v.class_code = tc.class_code
+            WHERE tc.bucket_start >= now() - INTERVAL '24 hours'
+              AND tc.bucket_start <= now()
+            GROUP BY tc.class_code, v.name_en, v.name_hi
+            ORDER BY vehicles DESC
+        """)
+    )
+    detected = [
+        {
+            "class_code": r.class_code,
+            "name": {"en": r.name_en, "hi": r.name_hi},
+            "vehicles": int(r.vehicles),
+        }
+        for r in classes
+    ]
+
+    return {
+        "cameras": cameras,
+        "classes": detected,
+        "pipeline": {
+            "detector": "RT-DETRv2 (Apache-2.0)",
+            "tracker": "ByteTrack via supervision (MIT)",
+            "runtime": "PyTorch → ONNX Runtime on the edge node",
+            # docs/04 and CLAUDE.md both bar Ultralytics from shippable code.
+            # Saying why on the screen turns a licence constraint into evidence
+            # of procurement diligence.
+            "licence_note": (
+                "No Ultralytics YOLO anywhere in shippable code — AGPL-3.0 is a "
+                "procurement blocker for a government deployment."
+            ),
+            "privacy": (
+                "No face recognition, no person tracking, no biometric analysis, "
+                "at any point in the pipeline. Vehicles are counted and classified; "
+                "people are not identified."
+            ),
+            "edge_note": (
+                "Video never leaves the gantry. The edge node emits counts, classes, "
+                "speeds and violation events — metadata measured in bytes, not a "
+                "video backhaul measured in megabits."
+            ),
+        },
+        "status": (
+            "Counting runs on public Indian datasets (IDD, UA-DETRAC). Not yet "
+            "validated on Jaipur video — that needs a read-only RTSP feed."
+        ),
+        "is_synthetic": True,
+    }

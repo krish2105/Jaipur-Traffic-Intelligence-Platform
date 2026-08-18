@@ -144,6 +144,32 @@ export interface PolicyScenarios {
   is_synthetic: boolean;
 }
 
+export interface EdgeCamera {
+  camera_id: number;
+  external_ref: string;
+  status: string;
+  junction: Bilingual;
+  vehicles_24h: number;
+  observed_minutes: number;
+  vehicles_per_minute: number | null;
+  quality: number | null;
+}
+
+export interface EdgeCameras {
+  cameras: EdgeCamera[];
+  classes: { class_code: string; name: Bilingual; vehicles: number }[];
+  pipeline: {
+    detector: string;
+    tracker: string;
+    runtime: string;
+    licence_note: string;
+    privacy: string;
+    edge_note: string;
+  };
+  status: string;
+  is_synthetic: boolean;
+}
+
 export interface CountsSummary {
   total_vehicles: number;
   total_pcu: number;
@@ -319,6 +345,7 @@ export const api = {
   enforcement: () => get<EnforcementSummary>("/enforcement/summary"),
   defaulters: (limit = 10) => get<Defaulters>(`/enforcement/defaulters?limit=${limit}`),
   junctions: () => get<Junctions>("/junctions"),
+  edge: () => get<EdgeCameras>("/edge/cameras"),
   policy: (corridorId = 1) =>
     get<PolicyScenarios>(`/policy/scenarios?corridor_id=${corridorId}`),
 };

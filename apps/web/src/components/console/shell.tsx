@@ -73,6 +73,7 @@ export const NAV = [
   { id: "map", en: "Live map", hi: "लाइव मानचित्र", cap: "read:traffic" },
   { id: "counts", en: "Counts", hi: "गणना", cap: "read:traffic" },
   { id: "junctions", en: "Junctions", hi: "चौराहे", cap: "read:traffic" },
+  { id: "edge", en: "Edge · CV", hi: "एज · CV", cap: "read:traffic" },
   { id: "incidents", en: "Incidents", hi: "घटनाएँ", cap: "read:traffic" },
   { id: "signals", en: "Signals", hi: "सिग्नल", cap: "read:signals" },
   { id: "enforcement", en: "Enforcement", hi: "प्रवर्तन", cap: "read:enforcement" },

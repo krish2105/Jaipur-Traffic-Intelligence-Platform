@@ -13,6 +13,7 @@ import {
   type IncidentTimeline,
   type Junctions,
   type PolicyScenarios,
+  type EdgeCameras,
   type SignalAdvisory,
   type WeeklyMatrix,
 } from "@/lib/api";
@@ -22,7 +23,7 @@ import { formatCount } from "@/lib/format";
 import { useCan } from "@/lib/rbac";
 import { IncidentTimelineChart } from "@/components/charts/incident-timeline";
 import { CongestionHeatmap } from "@/components/charts/heatmap";
-import { Bar, Metric, MetricRow, Panel, Pulse, SyntheticTag } from "./primitives";
+import { Bar, Metric, MetricRow, ModeDot, Panel, Pulse, SyntheticTag } from "./primitives";
 
 /**
  * The non-map sections.
@@ -141,6 +142,9 @@ export function SectionView({
   }
   if (section === "junctions") {
     return <JunctionsSection hi={hi} active />;
+  }
+  if (section === "edge") {
+    return <EdgeSection hi={hi} locale={locale} />;
   }
   if (section === "incidents") {
     return <IncidentsSection {...{ hi, incidents, blackspots }} />;
@@ -350,6 +354,162 @@ function JunctionsSection({ hi, active }: { hi: boolean; active: boolean }) {
             </Panel>
           ))}
         </div>
+      )}
+    </Shell>
+  );
+}
+
+
+/* ── edge & computer vision ─────────────────────────────────────────────── */
+
+function EdgeSection({ hi, locale }: { hi: boolean; locale: Locale }) {
+  const { data } = useLazy<EdgeCameras>(() => api.edge(), true);
+  const totalClass = data ? data.classes.reduce((a, c) => a + c.vehicles, 0) : 0;
+
+  return (
+    <Shell
+      title={hi ? "एज · कंप्यूटर विज़न" : "Edge · computer vision"}
+      subtitle={
+        hi
+          ? "यही वह चीज़ है जो प्रोब उत्पाद नहीं कर सकते। वे देरी का अनुमान लगाते हैं; यह वाहन गिनता है, उनका वर्ग बताता है, और हर कैमरे की अपनी सत्यापित सटीकता साथ दिखाता है।"
+          : "This is the part a probe product cannot do. Probes estimate delay; this counts vehicles, classifies them, and shows each camera's own validated accuracy beside its output."
+      }
+    >
+      {!data ? (
+        <Loading label={hi ? "एज नोड्स" : "Edge nodes"} />
+      ) : (
+        <>
+          <Panel
+            title={hi ? "प्रति कैमरा थ्रूपुट" : "Throughput per camera"}
+            emphasis
+            aside={<SyntheticTag label={hi ? "अनुरूपित" : "Simulated"} />}
+          >
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[32rem]" style={{ fontSize: "var(--d-support)" }}>
+                <thead>
+                  <tr
+                    className="text-left uppercase tracking-widest text-[var(--ink-muted)]"
+                    style={{ fontSize: "calc(var(--d-label) * 0.9)" }}
+                  >
+                    <th className="pb-2 font-medium">{hi ? "स्थान" : "Location"}</th>
+                    <th className="pb-2 font-medium">{hi ? "स्थिति" : "Status"}</th>
+                    <th className="pb-2 text-right font-medium">
+                      {hi ? "वाहन/मिनट" : "Veh/min"}
+                    </th>
+                    <th className="pb-2 text-right font-medium">{hi ? "24 घं" : "24h"}</th>
+                    <th className="pb-2 text-right font-medium">{hi ? "गुणवत्ता" : "Quality"}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.cameras.map((c) => (
+                    <tr
+                      key={c.camera_id}
+                      className="border-t border-[var(--rule)] transition-colors hover:bg-[var(--surface-3)]"
+                    >
+                      <td className="py-2">
+                        {hi ? c.junction.hi : c.junction.en}
+                        <span className="ml-2 font-mono text-[var(--ink-faint)]">
+                          {c.external_ref}
+                        </span>
+                      </td>
+                      <td className="py-2">
+                        <ModeDot
+                          live={c.status === "active"}
+                          title={c.status}
+                        />
+                        <span className="ml-1.5 text-[var(--ink-muted)]">{c.status}</span>
+                      </td>
+                      <td className="py-2 text-right font-mono tabular-nums">
+                        {c.vehicles_per_minute ?? "—"}
+                      </td>
+                      <td className="py-2 text-right font-mono tabular-nums text-[var(--ink-muted)]">
+                        {formatCount(c.vehicles_24h, locale)}
+                      </td>
+                      <td className="py-2 text-right font-mono tabular-nums text-[var(--ink-faint)]">
+                        {c.quality?.toFixed(2) ?? "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p
+              className="mt-3 leading-relaxed text-[var(--ink-muted)]"
+              style={{ fontSize: "var(--d-support)" }}
+            >
+              {hi
+                ? "प्रति मिनट बताया गया है, प्रति घंटा नहीं — एक ऑपरेटर साठ सेकंड गिनकर इसे लाइव फ़ीड के विरुद्ध जाँच सकता है। प्रति-घंटा आँकड़ा कमरे में असत्यापनीय है।"
+                : "Reported per minute, not per hour: an operator can check it against a live feed by counting for sixty seconds. A per-hour figure is unfalsifiable in the room."}
+            </p>
+          </Panel>
+
+          <Panel title={hi ? "वर्गीकरण · 24 घंटे" : "Classification · 24h"}>
+            <ul className="grid gap-2">
+              {data.classes.map((c) => (
+                <li key={c.class_code}>
+                  <div
+                    className="flex items-baseline justify-between gap-2"
+                    style={{ fontSize: "var(--d-support)" }}
+                  >
+                    <span className="min-w-0 truncate">{hi ? c.name.hi : c.name.en}</span>
+                    <span className="shrink-0 font-mono tabular-nums text-[var(--ink-muted)]">
+                      {formatCount(c.vehicles, locale)}
+                    </span>
+                  </div>
+                  <div className="mt-1">
+                    <Bar
+                      fraction={totalClass ? c.vehicles / totalClass : 0}
+                      colour="var(--accent)"
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </Panel>
+
+          <Panel title={hi ? "पाइपलाइन" : "Pipeline"}>
+            <dl className="grid gap-2.5" style={{ fontSize: "var(--d-support)" }}>
+              {(
+                [
+                  [hi ? "डिटेक्टर" : "Detector", data.pipeline.detector],
+                  [hi ? "ट्रैकर" : "Tracker", data.pipeline.tracker],
+                  [hi ? "रनटाइम" : "Runtime", data.pipeline.runtime],
+                ] as const
+              ).map(([label, value]) => (
+                <div key={label} className="flex items-baseline justify-between gap-3">
+                  <dt className="shrink-0 uppercase tracking-[0.14em] text-[var(--ink-faint)]">
+                    {label}
+                  </dt>
+                  <dd className="min-w-0 truncate text-right font-mono text-[var(--ink)]">
+                    {value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
+            <div className="mt-4 grid gap-2.5">
+              {[data.pipeline.privacy, data.pipeline.licence_note, data.pipeline.edge_note].map(
+                (note) => (
+                  <p
+                    key={note}
+                    className="rounded-lg bg-[var(--surface-1)] px-3 py-2 leading-relaxed
+                               text-[var(--ink-muted)]"
+                    style={{ fontSize: "var(--d-support)" }}
+                  >
+                    {note}
+                  </p>
+                ),
+              )}
+            </div>
+
+            <p
+              className="mt-3 leading-relaxed text-[var(--accent)]"
+              style={{ fontSize: "var(--d-support)" }}
+            >
+              {data.status}
+            </p>
+          </Panel>
+        </>
       )}
     </Shell>
   );
