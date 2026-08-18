@@ -1825,3 +1825,78 @@ nothing executed.
 Two additions beyond the sprint's wording, both worth having: a role without
 `use:neeti` is **refused with 403** rather than merely not shown the button, and
 no answer may contain a plate or a 64-character digest at any role.
+
+---
+
+## ADR-058 — WebSocket push, and why it pushes on change only
+**Date:** 2026-08-18 · **Status:** Accepted
+
+Sprint 2 asked for pushes within 2 s. The console polled on a 20-second timer,
+which is three faults at once: an operations room sees a figure up to twenty
+seconds stale, every open console costs a request whether or not anything moved,
+and a wall display left overnight keeps asking.
+
+`/ws/live` samples every two seconds and **sends only when the payload
+differs**. A socket that re-emits an identical frame on a timer is a poll
+wearing a different hat, and it would defeat the property that makes the
+interface's pulse honest — that a flash means something happened (ADR-031).
+Verified: first frame on connect, then silence while the corridor is unchanged.
+
+**A dropped socket falls back to polling, not to nothing.** The console already
+had a working poll path, so the socket is an optimisation on top of it. It
+retries once, then stays on polling. Government networks eat WebSocket upgrades,
+and a console that retries a blocked upgrade every second spends the night
+hammering a proxy.
+
+---
+
+## ADR-059 — The seed's congestion and its junction flows do not reconcile
+**Date:** 2026-08-18 · **Status:** Accepted · **Blocks:** Sprint 6 calibration
+
+Asked to add signal timings to close the SUMO calibration gap, I derived them
+from our own Webster advisory and found the reason the gap will not close:
+
+| junction | degree of saturation | Webster cycle |
+|---|---|---|
+| Yaadgaar | 0.21 | 45 s (minimum) |
+| Gandhi Nagar Mor | 0.29 | 45 s |
+| Ram Niwas Bagh | 0.09 | 45 s |
+| Durgapura | 0.09 | 45 s |
+
+**Every instrumented junction is under-saturated.** Webster returns the minimum
+cycle for all of them, because on the measured flows none is near capacity.
+
+That contradicts the rest of the warehouse, which reports a congestion index of
+86 and a mean speed of 15.5 km/h at the same hour. A corridor cannot be at 15.5
+km/h while every junction on it runs at a fifth of capacity.
+
+The cause is that the two numbers were produced independently and never
+reconciled. The congestion index is **top-down**, calibrated to the published
+TomTom figures (ADR-002 and `profiles.py`). The per-link counts are **bottom-up**
+from the seed generator. Each reproduces its own source faithfully; together
+they describe two different roads.
+
+So **no simulation can satisfy both targets**, and adding signal timings cannot
+help: signals at 0.2 saturation add almost no delay. Tuning until the numbers
+matched would have picked one target arbitrarily and hidden the contradiction.
+
+This is the calibration gate doing the job it exists for — it found an
+inconsistency in the data that neither endpoint alone would have revealed, and
+that the console displays side by side today without either figure looking
+wrong.
+
+**What resolves it,** in order:
+
+1. **Turning-movement counts** at the eight junctions. `turning_movements` is
+   empty; without it, junction saturation is inferred from adjacent link counts
+   rather than measured, and inference is where the two views diverge.
+2. **Department signal timings**, so delay comes from the real plan rather than
+   Webster's optimum — real junctions run worse than optimal, which is the
+   direction the gap needs.
+3. Failing both, **regenerate the seed so per-link counts imply the published
+   congestion**, making the warehouse self-consistent at the cost of one more
+   layer of synthesis.
+
+I have not done (3), because a seed rebuilt to agree with itself would remove
+the evidence of the inconsistency while leaving the underlying uncertainty
+exactly where it is.
