@@ -10,6 +10,7 @@ import type {
   IncidentTimeline,
   PolicyScenarios,
   SeverityFinding,
+  SeverityModel,
 } from "@/lib/api";
 import type { Locale } from "@/i18n/routing";
 import { formatCount } from "@/lib/format";
@@ -19,6 +20,7 @@ import { ThemeToggle } from "@/components/console/theme-toggle";
 import { Counter, Magnetic, SplitText } from "./motion-primitives";
 import { SeveritySection } from "./severity-section";
 import { AskPanel } from "./ask-panel";
+import { SeverityModelPanel } from "./severity-model-panel";
 
 /**
  * The landing page.
@@ -131,6 +133,7 @@ export function LandingView({
   policy,
   severity,
   allocation,
+  severityModel,
 }: {
   summary: CountsSummary;
   profile: DayProfile;
@@ -138,6 +141,7 @@ export function LandingView({
   policy: PolicyScenarios;
   severity: SeverityFinding | null;
   allocation: EnforcementAllocation | null;
+  severityModel: SeverityModel | null;
 }) {
   const locale = useLocale() as Locale;
   const hi = locale === "hi";
@@ -411,6 +415,11 @@ export function LandingView({
       {severity && allocation && (
         <SeveritySection severity={severity} allocation={allocation} />
       )}
+
+      <SeverityModelPanel
+        model={severityModel}
+        crashesPerYear={severity?.crashes?.count ?? 0}
+      />
 
       <AskPanel severity={severity} />
 

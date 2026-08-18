@@ -11,7 +11,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [summary, profile, incidents, policy, severity, allocation] = await Promise.all([
+  const [summary, profile, incidents, policy, severity, allocation, severityModel] = await Promise.all([
     // `.catch()` here matches the other three calls below. Its absence was
     // the actual production bug: one unreachable call took the whole
     // Server Component down with an unhandled rejection (a bare 500, no
@@ -50,6 +50,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
     // so a fabricated fallback would be worse here than an absent section.
     api.severity().catch(() => null),
     api.allocation().catch(() => null),
+    api.severityModel().catch(() => null),
   ]);
 
   return (
@@ -60,6 +61,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       policy={policy}
       severity={severity}
       allocation={allocation}
+      severityModel={severityModel}
     />
   );
 }

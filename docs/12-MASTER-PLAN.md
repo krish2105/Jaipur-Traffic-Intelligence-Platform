@@ -444,7 +444,11 @@ verified in production at
 | §5 D2 · severity model | **done** | `/safety/severity-model` — calibrates to 34.7 exactly, CI on every scenario, LOO MAE 5.3% |
 | §5 D4 · PCU vs count | **done** | `compare_pcu_signal.py`, 6-point demand sweep in SUMO — and it corrected §2, see §2.1 |
 | §5 D5 · corridor sync | **done** | `compare_pcu_corridor.py`, 1–5 junctions x 5 seeds — corrected §2 again, see §2.2 |
-| §5 D10–14 | not started | |
+| §5 D10 · KPI layer | **done** | `/meta/kpis` — 3 tiers, real baselines with sources, judgement targets flagged |
+| §5 D11 · officer PWA + offline rehearsal | **done** | server killed mid-session; reload renders from cache. Found and fixed a real SW bug |
+| §5 D12 · security pass | **done** | `scripts/security_audit.py` — 5 prohibitions checked in CI, exits non-zero |
+| §5 D13 · commercial pack | **done** | docs/13 |
+| §5 D14 · rehearsal | **done** | offline reload verified with the network genuinely unreachable |
 
 **Free tier throughout.** No API host, no keyed tiles, no model provider, no
 paid storage. Total running cost is zero: the deployment serves a captured

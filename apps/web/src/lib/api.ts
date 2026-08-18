@@ -531,6 +531,38 @@ export interface EnforcementAllocation {
   is_synthetic: boolean;
 }
 
+/** Calibrated severity risk. Carries its own model, not just its answer. */
+export interface SeverityModel {
+  anchor: {
+    observed_deaths_per_100_crashes: number;
+    year: number;
+    source: string;
+    calibration_residual: number;
+  };
+  two_wheeler_odds_ratio: {
+    aggregate: number;
+    unhelmeted_low: number;
+    unhelmeted_high: number;
+    derived_from: string;
+  };
+  assumptions: Record<string, { low: number; high: number; basis: string; is_assumption: boolean }>;
+  scenarios: Record<string, { deaths_per_100_crashes: number; ci_low: number; ci_high: number }>;
+  hour_effect: {
+    available: boolean;
+    loo_mae?: number;
+    loo_mae_relative?: number;
+    peak_hour?: number;
+    n_hours?: number;
+    fitted_on?: string;
+    is_synthetic_input?: boolean;
+  };
+  method: string;
+  upgrade_path: string;
+  draws: number;
+  is_synthetic: boolean;
+  is_fitted: boolean;
+}
+
 /**
  * The demo role, read from the session at call time.
  *
@@ -632,6 +664,7 @@ const query = (params: Record<string, string | number | undefined>) => {
 export const api = {
   corridors: () => get<Corridor[]>("/corridors"),
   severity: () => get<SeverityFinding>("/safety/severity"),
+  severityModel: () => get<SeverityModel>("/safety/severity-model"),
   allocation: () => get<EnforcementAllocation>("/enforcement/allocation"),
   // Routed through get() rather than fetched raw in the page, so the 3D scene
   // falls back to the snapshot like every other panel. Fetched directly, it

@@ -55,6 +55,7 @@ PATHS: tuple[str, ...] = (
     "/safety/blackspots?corridor_id=1",
     "/signals/advisory",
     "/meta/sources",
+    "/meta/kpis",
     "/meta/weather",
     "/meta/air",
     "/meta/published",

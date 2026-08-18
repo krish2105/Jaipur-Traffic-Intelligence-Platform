@@ -330,7 +330,11 @@ def main() -> None:
 
     result = {
         "corridor": f"{SPACING_M} m spacing, 2 lanes, no turns, cross street at each junction",
-        "arterial": {"veh_per_hour": ARTERIAL_VPH, "pcu_per_hour": round(art_pcu_h), "mix": ARTERIAL},
+        "arterial": {
+            "veh_per_hour": ARTERIAL_VPH,
+            "pcu_per_hour": round(art_pcu_h),
+            "mix": ARTERIAL,
+        },
         "cross": {"veh_per_hour": CROSS_VPH, "pcu_per_hour": round(cross_pcu_h), "mix": CROSS},
         "plans": {
             "count": {"green_arterial_s": green_count, "progression_speed_ms": POSTED_MS},

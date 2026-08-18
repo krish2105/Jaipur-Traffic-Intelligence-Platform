@@ -28,7 +28,7 @@
  *     nobody signed off, and docs/07 keeps P2 data off the device.
  */
 
-const VERSION = "pravaah-v1";
+const VERSION = "pravaah-v2";  // v2: document-key caching, see documentKey()
 const SHELL = `${VERSION}-shell`;
 const DATA = `${VERSION}-data`;
 
@@ -74,14 +74,47 @@ self.addEventListener("fetch", (event) => {
   );
 });
 
+/**
+ * The cache key for a page document.
+ *
+ * Next's App Router answers a page URL with `Vary: rsc,
+ * next-router-state-tree, next-router-prefetch, ...`, and `caches.match()`
+ * honours Vary. So an entry stored from a prefetch or an RSC fetch does not
+ * match a plain navigation for the same URL — which meant the offline console
+ * came back happily to a `fetch()` and failed to a reload. A reload is the
+ * only one of those an officer actually performs when the wifi dies.
+ *
+ * Documents are therefore stored under a URL-only key, stripped of search and
+ * headers, so every later request for that page finds the same entry.
+ */
+function documentKey(url) {
+  return new Request(url.origin + url.pathname);
+}
+
 async function cacheFirst(request) {
-  const cached = await caches.match(request);
+  const url = new URL(request.url);
+  const isDocument = request.mode === "navigate";
+  // `ignoreVary` only on the document key, and only for navigations: a blanket
+  // ignoreVary could hand a navigation the RSC flight payload cached for the
+  // same path, which would render as garbage rather than as a page.
+  const cached = isDocument
+    ? await caches.match(documentKey(url), { ignoreVary: true })
+    : await caches.match(request);
   if (cached) return cached;
   try {
     const response = await fetch(request);
     if (response.ok) {
       const cache = await caches.open(SHELL);
-      cache.put(request, response.clone());
+      if (isDocument) {
+        // Only a real HTML document is stored under the document key, so the
+        // offline reload cannot be answered with an RSC payload.
+        const type = response.headers.get("content-type") || "";
+        if (type.includes("text/html")) {
+          cache.put(documentKey(url), response.clone());
+        }
+      } else {
+        cache.put(request, response.clone());
+      }
     }
     return response;
   } catch {

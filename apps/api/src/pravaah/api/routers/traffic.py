@@ -24,6 +24,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..allocator import allocate
 from ..deps import SessionDep
+from ..kpis import kpi_board
 from ..real_data import severity_finding
 from ..severity import severity_model
 
@@ -744,6 +745,18 @@ async def safety_severity_model(session: SessionDep) -> dict[str, Any]:
     """
     timeline = await incident_timeline(session)
     return severity_model(timeline.get("hours", []))
+
+
+@router.get("/meta/kpis")
+async def meta_kpis() -> dict[str, Any]:
+    """The three KPI tiers (docs/12 §6), with real baselines and their sources.
+
+    Outcome baselines are published figures. System entries are targets only —
+    live values are read from the running system rather than stated here,
+    because a dashboard that reports its own SLA compliance from a constant
+    always passes.
+    """
+    return kpi_board()
 
 
 @router.get("/incidents/timeline")
