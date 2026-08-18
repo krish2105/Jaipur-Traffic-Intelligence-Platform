@@ -1086,3 +1086,45 @@ This is docs/06 §8 — "no naked number" — applied to a field that had been
 quietly exempt. The rule is not only that a figure carries its quality; it is
 that a figure must not silently change what it *is* depending on whether the
 data arrived.
+
+---
+
+## ADR-039 — The officer PWA records decisions and applies nothing
+**Date:** 2026-08-18 · **Status:** Accepted
+
+docs/07 §6 forbids a model actuating anything. The officer app is where that
+rule stops being a policy statement and becomes a screen: an advisory is a
+recommendation until a named human accepts it, and **the acceptance is the thing
+that gets recorded** — not the recommendation.
+
+`POST /signals/decision` writes an `audit_log` row and returns `applied: false`.
+That field is always false, and it exists precisely so that a future version
+which genuinely drives a controller cannot be added quietly — it would have to
+change the field, in a response an auditor reads.
+
+**Authorisation is enforced twice, and the second one is the real one.**
+`apps/api/src/pravaah/api/core/rbac.py` mirrors the client matrix and refuses
+with 403. Four tests pin them together, including two that pin decisions rather
+than mechanics: only `enforcement_supervisor` may unmask a plate, and **no
+enforcement role may approve a signal plan** — the people issuing challans at a
+junction are not the people retiming it. Verified end to end: viewer 403,
+enforcement officer 403, rejection-without-reason 422, traffic officer 201 with
+an audit id, and the audit trail itself refused to the officer and served to the
+auditor.
+
+The interface is built for one hand, outdoors, on a phone that is not new:
+
+- Targets are 48px and sit at the **bottom** of each card, in thumb reach. A
+  control-room layout shrunk to 375px is not a field tool.
+- One junction is one card. An officer standing at a junction should not have
+  to read a table.
+- Advisories are ordered **heaviest first**. Someone opening this needs the
+  junction that needs them, not `junction_id = 1`.
+- A junction at capacity says so, and says that no cycle length rescues it —
+  that is a geometry problem, and telling an officer the truth is more useful
+  than handing them a longer green.
+- A rejection requires a reason, refused client-side and server-side both,
+  because "the next officer will read this" is the entire point of the record.
+
+Every card carries the sentence *"This records a decision. It does not change a
+signal."* on the card itself, not in a help page nobody opens.

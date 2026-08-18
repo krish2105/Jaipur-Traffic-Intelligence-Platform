@@ -170,6 +170,31 @@ export interface EdgeCameras {
   is_synthetic: boolean;
 }
 
+export interface SignalDecisionResult {
+  audit_id: number;
+  recorded_at: string;
+  decision: string;
+  junction_id: number;
+  /** Always false. No code path in this system reaches a signal controller. */
+  applied: boolean;
+  note: string;
+}
+
+export interface AuditEntry {
+  audit_id: number;
+  occurred_at: string;
+  actor: string;
+  role: string;
+  action: string;
+  resource: string;
+  reason: string | null;
+}
+
+export interface AuditTrail {
+  entries: AuditEntry[];
+  immutability: string;
+}
+
 export interface CountsSummary {
   total_vehicles: number;
   total_pcu: number;
@@ -305,14 +330,58 @@ export interface WeeklyMatrix {
   is_synthetic: boolean;
 }
 
+/**
+ * The demo role, read from the session at call time.
+ *
+ * Sent as `X-Demo-Role`, which the API accepts ONLY while DEMO_MODE is on and
+ * refuses with a 403 otherwise. In deployment this is replaced by the Keycloak
+ * bearer token and the header stops existing — the server already treats its
+ * presence in production as an error rather than ignoring it, which is the
+ * difference between a demo affordance and an authentication bypass.
+ *
+ * Read per request rather than captured once: an officer switching role in the
+ * demo must see the next request answered as the new role, not the old one.
+ */
+function demoRoleHeader(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem("pravaah-session");
+    if (!raw) return {};
+    const role = (JSON.parse(raw) as { role?: string }).role;
+    return role ? { "X-Demo-Role": role } : {};
+  } catch {
+    return {};
+  }
+}
+
 async function get<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE}/api/v1${path}`, {
     // Measurements move every five minutes; a stale dashboard is a wrong one.
     cache: "no-store",
     ...init,
+    headers: { ...demoRoleHeader(), ...(init?.headers ?? {}) },
   });
   if (!response.ok) {
     throw new Error(`PRAVAAH API ${path} responded ${response.status}`);
+  }
+  return (await response.json()) as T;
+}
+
+/** POST, for the few actions that record a human decision. */
+export async function post<T>(path: string, body: unknown): Promise<T> {
+  const response = await fetch(`${BASE}/api/v1${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...demoRoleHeader() },
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) {
+    let detail = `responded ${response.status}`;
+    try {
+      detail = ((await response.json()) as { detail?: string }).detail ?? detail;
+    } catch {
+      // A non-JSON error body is still an error; the status carries it.
+    }
+    throw new Error(detail);
   }
   return (await response.json()) as T;
 }
@@ -346,6 +415,13 @@ export const api = {
   defaulters: (limit = 10) => get<Defaulters>(`/enforcement/defaulters?limit=${limit}`),
   junctions: () => get<Junctions>("/junctions"),
   edge: () => get<EdgeCameras>("/edge/cameras"),
+  audit: () => get<AuditTrail>("/audit/recent"),
+  decideSignal: (body: {
+    junction_id: number;
+    decision: "accepted" | "rejected" | "deferred";
+    note: string;
+    cycle_s: number;
+  }) => post<SignalDecisionResult>("/signals/decision", body),
   policy: (corridorId = 1) =>
     get<PolicyScenarios>(`/policy/scenarios?corridor_id=${corridorId}`),
 };

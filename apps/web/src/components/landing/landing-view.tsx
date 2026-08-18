@@ -490,6 +490,7 @@ export function LandingView({
             {[
               { href: `/${locale}/console`, en: "Console", hi: "कंसोल" },
               { href: `/${locale}/citizen`, en: "For citizens", hi: "नागरिकों के लिए" },
+              { href: `/${locale}/officer`, en: "For officers", hi: "अधिकारियों के लिए" },
               { href: `/${locale}/login`, en: "Sign in", hi: "साइन इन" },
             ].map((l) => (
               <Link
