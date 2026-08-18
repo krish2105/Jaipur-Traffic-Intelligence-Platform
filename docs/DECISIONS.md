@@ -803,3 +803,41 @@ ciphertext; the defaulter list shows an eight-character digest prefix — enough
 to tell two rows apart in a meeting, useless for re-identification. Every
 defaulter score carries its SHAP explanation, which the database refuses to
 store without.
+
+---
+
+## ADR-031 — Console strings live beside the console; "live" has to be live
+**Date:** 2026-08-18 · **Status:** Accepted
+
+The console panels were written in English while the shape of each panel was
+still moving. That was the right order to build in and the wrong place to stop —
+CLAUDE.md prohibits a hardcoded user-facing string, and docs/02 rule 7 makes
+Hindi first-class rather than a translation layer.
+
+`apps/web/src/lib/strings.ts` holds every console string as an `[en, hi]` pair,
+deliberately as a plain table rather than next-intl messages. These are the ~90
+strings of one dense operator surface, they change together whenever a panel
+changes, and keeping them next to the components is what makes a missed English
+string obvious in review. The marketing surfaces stay on next-intl, where
+translator workflow matters more than proximity.
+
+The Hindi is what a Jaipur traffic engineer says: "भीड़" for congestion rather
+than a Sanskritised coinage, "चालान" for a challan, "लिंक" transliterated
+because that is the department's own word.
+
+**A panel titled "Counts · live" that never changes is a lie the interface
+repeats every few seconds.** It now polls. Three properties matter more than the
+polling:
+
+- It **stops while the tab is hidden**, and refetches on return. A console left
+  on a wall overnight should not issue a request every fifteen seconds until
+  morning.
+- A failed poll **keeps the last good value** and marks itself stale. Blanking a
+  figure because one request timed out is worse than showing one that is fifteen
+  seconds old, provided the age is visible.
+- It **backs off** on repeated failure. A control room that loses its API should
+  not become a client hammering a struggling server.
+
+The pulse keys on the **value changing**, not on the poll completing. A poll
+returning the same count does not flash, because nothing happened — an animation
+on a static number is a lie told in motion.

@@ -16,6 +16,9 @@ import type {
 } from "@/lib/api";
 import { congestionBandKey, congestionVar } from "@/lib/api";
 import { formatCompact, formatCount, formatPercent } from "@/lib/format";
+import { translator } from "@/lib/strings";
+import { useChanged, usePoll } from "@/lib/live";
+import { api } from "@/lib/api";
 import type { Locale } from "@/i18n/routing";
 import {
   Bar,
@@ -24,6 +27,7 @@ import {
   MetricRow,
   ModeDot,
   Panel,
+  Pulse,
   SyntheticTag,
 } from "./primitives";
 import { DayProfileChart } from "@/components/charts/day-profile";
@@ -43,41 +47,79 @@ export function CountsPanel({
   nowMinutes?: number;
 }) {
   const locale = useLocale() as Locale;
-  const q = summary.data_quality;
+  const t = translator(locale);
+
+  // A panel titled "live" that never changes is a lie the interface repeats
+  // every few seconds. It polls, keeps the last good value on failure, and
+  // stops entirely while the tab is hidden.
+  const { data: fresh, updatedAt, failing } = usePoll(() => api.summary(1), {
+    intervalMs: 20_000,
+  });
+  const current = fresh ?? summary;
+  const q = current.data_quality;
+  // Keyed on the value, not on the poll: a poll returning the same count must
+  // not flash, because nothing happened.
+  const pulsed = useChanged(current.total_vehicles);
+
   return (
     <Panel
-      title="Counts · live"
-      aside={summary.is_synthetic ? <SyntheticTag label="Simulated" /> : undefined}
+      title={t("countsLive")}
+      aside={
+        <div className="flex shrink-0 items-center gap-2">
+          {updatedAt && !failing && <Pulse label={t("live")} />}
+          {failing && (
+            <span
+              className="text-[var(--congestion-moderate)]"
+              style={{ fontSize: "calc(var(--d-label) * 0.85)" }}
+            >
+              {locale === "hi" ? "पुराना" : "stale"}
+            </span>
+          )}
+          {current.is_synthetic && <SyntheticTag label={t("simulated")} />}
+        </div>
+      }
     >
+      <div
+        className="transition-colors duration-700"
+        style={{
+          background: pulsed
+            ? "color-mix(in oklab, var(--accent) 10%, transparent)"
+            : "transparent",
+          borderRadius: "calc(var(--d-radius) - 6px)",
+          margin: "-4px",
+          padding: "4px",
+        }}
+      >
       <MetricPair>
         <Metric
-          label="Vehicles"
-          value={formatCompact(summary.total_vehicles, locale)}
-          quality={`quality ${q.mean_score.toFixed(2)}`}
+          label={t("vehicles")}
+          value={formatCompact(current.total_vehicles, locale)}
+          quality={`${t("quality")} ${q.mean_score.toFixed(2)}`}
         />
         <Metric
-          label="PCU"
-          value={formatCompact(summary.total_pcu, locale)}
+          label={t("pcu")}
+          value={formatCompact(current.total_pcu, locale)}
           quality={
             q.suppressed_bins > 0
-              ? `${formatCount(q.suppressed_bins, locale)} bins suppressed`
-              : "no bins suppressed"
+              ? `${formatCount(q.suppressed_bins, locale)} ${t("binsSuppressed")}`
+              : t("noBinsSuppressed")
           }
         />
       </MetricPair>
+      </div>
       {profile && profile.points.length > 0 && (
         <div className="mt-4">
           <DayProfileChart points={profile.points} nowMinutes={nowMinutes ?? 0} />
         </div>
       )}
-      {summary.peak_hour && (
+      {current.peak_hour && (
         <p
           className="mt-3 text-[var(--ink-muted)]"
           style={{ fontSize: "var(--d-support)" }}
         >
-          Peak hour {String(summary.peak_hour.hour).padStart(2, "0")}:00 ·{" "}
+          {t("peakHour")} {String(current.peak_hour.hour).padStart(2, "0")}:00 ·{" "}
           <span className="font-mono tabular-nums">
-            {formatCompact(summary.peak_hour.pcu, locale)}
+            {formatCompact(current.peak_hour.pcu, locale)}
           </span>{" "}
           PCU
         </p>
@@ -91,20 +133,19 @@ export function CountsPanel({
  * the reason docs/01 §4 says this whole platform exists.
  */
 export function CompositionPanel({ summary }: { summary: CountsSummary }) {
+  const t = translator(useLocale() as Locale);
   return (
     <Panel
-      title="Composition"
+      title={t("composition")}
       emphasis
-      aside={summary.is_synthetic ? <SyntheticTag label="Simulated" /> : undefined}
+      aside={summary.is_synthetic ? <SyntheticTag label={t("simulated")} /> : undefined}
     >
       <CompositionChart mix={summary.class_mix} />
       <p
         className="mt-4 leading-relaxed text-[var(--ink-muted)]"
         style={{ fontSize: "var(--d-support)" }}
       >
-        Probe data reports delay, never composition. Every capacity calculation,
-        signal plan and freight window depends on this split — and no probe
-        product in the world can produce it.
+        {t("compositionArgument")}
       </p>
     </Panel>
   );
@@ -112,8 +153,9 @@ export function CompositionPanel({ summary }: { summary: CountsSummary }) {
 
 /** docs/04 §5 — a forecast without its uncertainty is not decision support. */
 export function ForecastPanel({ forecast }: { forecast: Forecast }) {
+  const t = translator(useLocale() as Locale);
   return (
-    <Panel title="Forecast" aside={<SyntheticTag label="80% band" />}>
+    <Panel title={t("forecast")} aside={<SyntheticTag label={t("band80")} />}>
       <ul className="space-y-2.5">
         {forecast.horizons.map((h) => (
           <li key={h.horizon_min}>
@@ -165,28 +207,29 @@ export function QualityPanel({
   cameras: Camera[];
 }) {
   const locale = useLocale() as Locale;
+  const t = translator(locale);
   const active = cameras.filter((c) => c.status === "active");
   const cert = cameras[0]?.accuracy_cert;
   const q = summary.data_quality;
   return (
-    <Panel title="Data quality · today">
+    <Panel title={t("dataQuality")}>
       {/* One row that reflows on the PANEL's width. Three across when the rail
           is wide, two when it is dragged in, one on a phone — decided by the
           container, which is the only thing that actually knows. */}
       <MetricRow>
-        <Metric label="Cameras" value={`${active.length}/${cameras.length}`} span={0.3} />
-        <Metric label="Mean quality" value={q.mean_score.toFixed(2)} span={0.3} />
+        <Metric label={t("cameras")} value={`${active.length}/${cameras.length}`} span={0.3} />
+        <Metric label={t("meanQuality")} value={q.mean_score.toFixed(2)} span={0.3} />
         <Metric
-          label="Suppressed"
+          label={t("suppressed")}
           value={formatPercent(q.suppressed_pct, locale)}
           span={0.3}
-          quality="incl. night bins"
+          quality={t("inclNightBins")}
         />
       </MetricRow>
       {cert && (
         <p className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] leading-relaxed text-[var(--ink-muted)]">
-          Validated {formatPercent(1 - cert.day_mape, locale)} daylight ·{" "}
-          {formatPercent(1 - cert.night_mape, locale)} night, published per camera.
+          {formatPercent(1 - cert.day_mape, locale)} {t("daylight")} ·{" "}
+          {formatPercent(1 - cert.night_mape, locale)} {t("night")}, {t("validatedPer")}.
           <br />
           <span className="text-[var(--accent)]">{cert.status}</span> — {cert.basis}
         </p>
@@ -203,13 +246,14 @@ export function QualityPanel({
  */
 export function BlackSpotPanel({ data }: { data: BlackSpots }) {
   const locale = useLocale() as Locale;
+  const t = translator(locale);
   return (
     <Panel
-      title="Black spots · severity"
-      aside={data.segments[0]?.is_synthetic ? <SyntheticTag label="Simulated" /> : undefined}
+      title={t("blackSpots")}
+      aside={data.segments[0]?.is_synthetic ? <SyntheticTag label={t("simulated")} /> : undefined}
     >
       {data.segments.length === 0 ? (
-        <p className="text-[11px] text-[var(--ink-muted)]">No segment has enough crashes to rank.</p>
+        <p className="text-[11px] text-[var(--ink-muted)]">{t("noSegments")}</p>
       ) : (
         <ul className="space-y-2">
           {data.segments.slice(0, 5).map((s) => (
@@ -247,9 +291,10 @@ export function BlackSpotPanel({ data }: { data: BlackSpots }) {
 /** docs/04 §7 — the system recommends, a person decides. Every time. */
 export function SignalPanel({ data }: { data: SignalAdvisory }) {
   const locale = useLocale() as Locale;
+  const t = translator(locale);
   const measured = data.advisories.filter((a) => a.has_measurement);
   return (
-    <Panel title="Signal advisory" aside={<SyntheticTag label="Advisory" />}>
+    <Panel title={t("signalAdvisory")} aside={<SyntheticTag label={t("advisory")} />}>
       <ul className="space-y-2">
         {data.advisories.slice(0, 5).map((a) => (
           <li key={a.junction_id} className="text-[12px]">
@@ -295,12 +340,13 @@ export function SignalPanel({ data }: { data: SignalAdvisory }) {
  */
 export function IncidentPanel({ data }: { data: IncidentTimeline }) {
   const locale = useLocale() as Locale;
+  const t = translator(locale);
   const peak = String(data.peak_hour).padStart(2, "0");
 
   return (
     <Panel
-      title="Incidents · safety"
-      aside={data.is_synthetic ? <SyntheticTag label="Simulated" /> : undefined}
+      title={t("incidentsSafety")}
+      aside={data.is_synthetic ? <SyntheticTag label={t("simulated")} /> : undefined}
     >
       {data.hours.length > 0 && (
         <>
@@ -349,9 +395,10 @@ export function IncidentPanel({ data }: { data: IncidentTimeline }) {
  * a source cannot claim to be live here unless its key is genuinely present.
  */
 export function ReadinessPanel({ data }: { data: SourceReadiness }) {
+  const t = translator(useLocale() as Locale);
   return (
     <Panel
-      title="Live data · readiness"
+      title={t("readiness")}
       aside={
         <span className="font-mono text-[10px] tabular-nums text-[var(--ink-muted)]">
           {data.live_count}/{data.total} live
@@ -390,10 +437,11 @@ export function ReadinessPanel({ data }: { data: SourceReadiness }) {
  * panel says why, rather than letting accuracy quietly sag.
  */
 export function WeatherPanel({ data }: { data: WeatherNow }) {
+  const t = translator(useLocale() as Locale);
   if (!data.available) return null;
   return (
     <Panel
-      title="Conditions"
+      title={t("conditions")}
       aside={
         <span className="text-[10px] text-[var(--ink-faint)]">
           {data.provider} · {data.observed_at === "replay" ? "replay" : "live"}
@@ -401,15 +449,15 @@ export function WeatherPanel({ data }: { data: WeatherNow }) {
       }
     >
       <MetricRow>
-        <Metric label="Temp" value={`${data.temperature_c?.toFixed(0)}°`} span={0.28} />
+        <Metric label={t("temp")} value={`${data.temperature_c?.toFixed(0)}°`} span={0.28} />
         <Metric
-          label="Rain"
+          label={t("rain")}
           value={`${data.precipitation_mm?.toFixed(1)}`}
           unit="mm"
           span={0.28}
         />
         <Metric
-          label="Visibility"
+          label={t("visibility")}
           value={data.visibility_m != null ? `${(data.visibility_m / 1000).toFixed(1)}` : "—"}
           unit="km"
           span={0.28}
@@ -423,8 +471,8 @@ export function WeatherPanel({ data }: { data: WeatherNow }) {
       >
         {data.summary}
         {data.degrades_counting
-          ? " — counting accuracy reduced; affected bins are suppressed and shown as such."
-          : " — no weather degradation of counting."}
+          ? ` ${t("weatherDegraded")}`
+          : ` ${t("weatherOk")}`}
       </p>
     </Panel>
   );
@@ -433,9 +481,10 @@ export function WeatherPanel({ data }: { data: WeatherNow }) {
 
 /** Seven days by twenty-four hours. Measured history, not a forecast. */
 export function HeatmapPanel({ data }: { data: WeeklyMatrix }) {
+  const t = translator(useLocale() as Locale);
   return (
     <Panel
-      title="Weekly pattern"
+      title={t("weeklyPattern")}
       aside={<SyntheticTag label={data.window} />}
     >
       <CongestionHeatmap matrix={data.matrix} days={data.days} />
@@ -443,8 +492,7 @@ export function HeatmapPanel({ data }: { data: WeeklyMatrix }) {
         className="mt-3 leading-relaxed text-[var(--ink-muted)]"
         style={{ fontSize: "var(--d-support)" }}
       >
-        Twin peaks every weekday; Friday heaviest; Sunday materially quieter.
-        Measured, not predicted.
+        {t("weeklyNote")}
       </p>
     </Panel>
   );
