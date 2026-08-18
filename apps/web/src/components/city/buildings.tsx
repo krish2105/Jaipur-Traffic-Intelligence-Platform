@@ -3,7 +3,7 @@
 import { useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 
-import { metres, project } from "@/lib/geo";
+import { metres, project, type Origin } from "@/lib/geo";
 
 export interface BuildingBox {
   lon: number;
@@ -22,7 +22,15 @@ export interface BuildingBox {
  * attention the data stops being the subject. A faint emissive floor keeps
  * them from reading as black holes against the fog.
  */
-export function Buildings({ boxes, max = 6000 }: { boxes: BuildingBox[]; max?: number }) {
+export function Buildings({
+  boxes,
+  origin,
+  max = 6000,
+}: {
+  boxes: BuildingBox[];
+  origin: Origin;
+  max?: number;
+}) {
   const ref = useRef<THREE.InstancedMesh>(null);
 
   const shown = useMemo(() => {
@@ -36,7 +44,7 @@ export function Buildings({ boxes, max = 6000 }: { boxes: BuildingBox[]; max?: n
     if (!mesh) return;
     const dummy = new THREE.Object3D();
     shown.forEach((b, i) => {
-      const [x, z] = project(b.lon, b.lat);
+      const [x, z] = project(b.lon, b.lat, origin);
       const height = metres(b.h);
       dummy.position.set(x, height / 2, z);
       dummy.rotation.set(0, -b.r, 0);
@@ -46,7 +54,7 @@ export function Buildings({ boxes, max = 6000 }: { boxes: BuildingBox[]; max?: n
     });
     mesh.instanceMatrix.needsUpdate = true;
     mesh.computeBoundingSphere();
-  }, [shown]);
+  }, [shown, origin]);
 
   if (shown.length === 0) return null;
 
@@ -54,11 +62,11 @@ export function Buildings({ boxes, max = 6000 }: { boxes: BuildingBox[]; max?: n
     <instancedMesh ref={ref} args={[undefined, undefined, shown.length]} castShadow={false}>
       <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial
-        color="#0B0F1A"
+        color="#151C30"
         roughness={0.92}
         metalness={0.05}
-        emissive="#141B2E"
-        emissiveIntensity={0.32}
+        emissive="#1B2440"
+        emissiveIntensity={0.85}
       />
     </instancedMesh>
   );

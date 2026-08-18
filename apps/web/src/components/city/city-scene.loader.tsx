@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useReducedMotion } from "motion/react";
 
 import type { CityData } from "./city-scene";
+import type { Origin } from "@/lib/geo";
 
 const CityScene = dynamic(() => import("./city-scene"), {
   ssr: false,
@@ -21,10 +22,14 @@ const CityScene = dynamic(() => import("./city-scene"), {
  */
 export function City({
   data,
+  radius,
+  origin,
   fallback,
   force2D = false,
 }: {
   data: CityData;
+  radius: number;
+  origin: Origin;
   fallback: React.ReactNode;
   force2D?: boolean;
 }) {
@@ -50,5 +55,5 @@ export function City({
   // Undecided on the first paint — render the 2D interface rather than a
   // spinner, so the content is never gated behind a capability check.
   if (capable === null || capable === false || reduce) return <>{fallback}</>;
-  return <CityScene data={data} />;
+  return <CityScene data={data} radius={radius} origin={origin} />;
 }

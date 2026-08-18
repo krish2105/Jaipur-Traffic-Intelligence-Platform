@@ -1,6 +1,5 @@
 import * as THREE from "three";
 
-import { congestionVar } from "@/lib/api";
 import { polylineLength } from "@/lib/geo";
 
 /**
@@ -24,20 +23,32 @@ export interface RoadInput {
   suppressed: boolean;
 }
 
-/** Resolve the palette's congestion CSS variable to a concrete colour. */
-function resolveBand(index: number, suppressed: boolean): THREE.Color {
-  if (typeof window === "undefined") return new THREE.Color("#2DD4A7");
-  if (suppressed) {
-    // docs/06 §3 — the twin must never invent traffic it did not measure.
-    // Suppressed stretches render inert grey, not a colour that implies data.
-    return new THREE.Color("#3A3F4A");
-  }
-  const varName = congestionVar(index).replace(/var\(|\)/g, "");
-  const value = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
-  return new THREE.Color(value || "#2DD4A7");
+/**
+ * The five congestion band colours, resolved for the active palette.
+ *
+ * Passed in rather than read from `getComputedStyle` inside the builder: the
+ * palette attribute is set by an effect, so a builder that reads the DOM during
+ * render always sees the *previous* palette. That bug shipped once — every
+ * palette rendered the first one's colours.
+ */
+export interface Ramp {
+  free: string;
+  light: string;
+  moderate: string;
+  severe: string;
+  critical: string;
+  suppressed: string;
 }
 
-export function buildRoadGeometry(roads: RoadInput[]): THREE.BufferGeometry {
+function bandFor(index: number, ramp: Ramp): string {
+  if (index <= 25) return ramp.free;
+  if (index <= 50) return ramp.light;
+  if (index <= 70) return ramp.moderate;
+  if (index <= 85) return ramp.severe;
+  return ramp.critical;
+}
+
+export function buildRoadGeometry(roads: RoadInput[], ramp: Ramp): THREE.BufferGeometry {
   const positions: number[] = [];
   const colors: number[] = [];
   const uvs: number[] = [];
@@ -48,7 +59,11 @@ export function buildRoadGeometry(roads: RoadInput[]): THREE.BufferGeometry {
     const pts = road.points;
     if (pts.length < 2) continue;
 
-    const colour = resolveBand(road.congestionIndex, road.suppressed);
+    // docs/06 §3 — suppressed stretches render inert, never a colour that
+    // implies a measurement we do not have.
+    const colour = new THREE.Color(
+      road.suppressed ? ramp.suppressed : bandFor(road.congestionIndex, ramp),
+    );
     const total = polylineLength(pts) || 1;
     const half = road.width / 2;
     let travelled = 0;

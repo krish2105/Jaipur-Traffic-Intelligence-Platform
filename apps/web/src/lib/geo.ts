@@ -19,8 +19,44 @@ export interface Origin {
   lat: number;
 }
 
-/** Corridor centroid — the scene origin. Tonk Road, Yaadgaar to Sanganer. */
+/**
+ * Fallback origin only. The real origin is computed from the geometry actually
+ * loaded — see `centroidOf`. A hardcoded centre is a guess that silently drifts
+ * the moment the corridor changes, and the symptom is a camera pointing at
+ * empty space next to the city.
+ */
 export const SCENE_ORIGIN: Origin = { lon: 75.8005, lat: 26.862 };
+
+/** True centroid of a set of lon/lat rings — the origin the camera should orbit. */
+export function centroidOf(lines: [number, number][][]): Origin {
+  let lon = 0;
+  let lat = 0;
+  let n = 0;
+  for (const line of lines) {
+    for (const [x, y] of line) {
+      lon += x;
+      lat += y;
+      n += 1;
+    }
+  }
+  return n === 0 ? SCENE_ORIGIN : { lon: lon / n, lat: lat / n };
+}
+
+/** Bounding radius of projected points, for framing the camera. */
+export function boundsOf(points: [number, number][]): { radius: number } {
+  if (points.length === 0) return { radius: 100 };
+  let maxX = -Infinity;
+  let minX = Infinity;
+  let maxZ = -Infinity;
+  let minZ = Infinity;
+  for (const [x, z] of points) {
+    if (x > maxX) maxX = x;
+    if (x < minX) minX = x;
+    if (z > maxZ) maxZ = z;
+    if (z < minZ) minZ = z;
+  }
+  return { radius: Math.max(20, Math.hypot(maxX - minX, maxZ - minZ) / 2) };
+}
 
 /** Metres are unwieldy at city scale, so the scene works in units of 10 m. */
 export const SCENE_SCALE = 0.1;

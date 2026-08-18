@@ -7,11 +7,13 @@ import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 
 import { Buildings, type BuildingBox } from "./buildings";
+import type { Origin } from "@/lib/geo";
 import { Roads } from "./roads";
 import { Traffic, type TrafficRoad } from "./traffic";
-import type { RoadInput } from "@/lib/ribbon";
+import type { Ramp, RoadInput } from "@/lib/ribbon";
 
 export interface CityData {
+  ramp: Ramp;
   roads: RoadInput[];
   traffic: TrafficRoad[];
   buildings: BuildingBox[];
@@ -24,7 +26,15 @@ export interface CityData {
  * trails resolve. Four seconds, once, and any pointer input cancels it — a
  * cinematic that fights the user is a cinematic that gets hated.
  */
-function IntroFlight({ onDone, skip }: { onDone: () => void; skip: boolean }) {
+function IntroFlight({
+  onDone,
+  skip,
+  radius,
+}: {
+  onDone: () => void;
+  skip: boolean;
+  radius: number;
+}) {
   const { camera } = useThree();
   const elapsed = useRef(0);
   const cancelled = useRef(skip);
@@ -51,10 +61,14 @@ function IntroFlight({ onDone, skip }: { onDone: () => void; skip: boolean }) {
     const t = Math.min(1, elapsed.current / 4);
     // ease-out-expo, matching the CSS easing used everywhere else
     const e = t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+    // Framed off the scene's own bounding radius, so the flight always ends
+    // with the whole corridor in shot whatever its extent.
+    const far = radius * 3.2;
+    const near = radius * 0.85;
     camera.position.set(
-      THREE.MathUtils.lerp(120, 34, e),
-      THREE.MathUtils.lerp(340, 62, e),
-      THREE.MathUtils.lerp(300, 118, e),
+      THREE.MathUtils.lerp(far * 0.35, near * 0.32, e),
+      THREE.MathUtils.lerp(far * 1.1, near * 0.62, e),
+      THREE.MathUtils.lerp(far * 0.95, near * 0.95, e),
     );
     camera.lookAt(0, 0, 0);
     if (t >= 1) onDone();
@@ -84,7 +98,17 @@ function useFrameBudget() {
   return quality;
 }
 
-function Scene({ data, showStats }: { data: CityData; showStats: boolean }) {
+function Scene({
+  data,
+  showStats,
+  radius,
+  origin,
+}: {
+  data: CityData;
+  showStats: boolean;
+  radius: number;
+  origin: Origin;
+}) {
   const [flying, setFlying] = useState(true);
   const quality = useFrameBudget();
 
@@ -92,31 +116,37 @@ function Scene({ data, showStats }: { data: CityData; showStats: boolean }) {
     <>
       <color attach="background" args={["#04060F"]} />
       {/* Volumetric-feeling depth without a volumetric cost. */}
-      <fogExp2 attach="fog" args={["#060A16", 0.0045]} />
+      {/* Fog density scales with the scene so a small corridor is not lost in
+          it and a large one still has depth. */}
+      <fogExp2 attach="fog" args={["#060A16", 1.6 / Math.max(60, radius)]} />
 
-      <ambientLight intensity={0.28} />
-      <directionalLight position={[60, 120, -40]} intensity={0.5} color="#8FA6FF" />
+      <ambientLight intensity={0.75} />
+      <directionalLight
+        position={[radius, radius * 2, -radius]}
+        intensity={0.5}
+        color="#8FA6FF"
+      />
       <Environment preset="night" />
 
-      <Roads roads={data.roads} />
-      <Buildings boxes={data.buildings} />
+      <Roads roads={data.roads} ramp={data.ramp} />
+      <Buildings boxes={data.buildings} origin={origin} />
       <Traffic roads={data.traffic} quality={quality} />
 
-      <IntroFlight skip={false} onDone={() => setFlying(false)} />
+      <IntroFlight skip={false} radius={radius} onDone={() => setFlying(false)} />
       <OrbitControls
         enabled={!flying}
         enableDamping
         dampingFactor={0.06}
         maxPolarAngle={Math.PI / 2.15}
-        minDistance={30}
-        maxDistance={520}
+        minDistance={radius * 0.2}
+        maxDistance={radius * 5}
         target={[0, 0, 0]}
       />
 
       <EffectComposer>
         {/* Bloom is what turns emissive ribbons into light. Kept tight so the
             whole screen does not wash out. */}
-        <Bloom intensity={0.85} luminanceThreshold={0.22} luminanceSmoothing={0.5} mipmapBlur />
+        <Bloom intensity={1.5} luminanceThreshold={0.12} luminanceSmoothing={0.5} mipmapBlur />
         <Vignette offset={0.28} darkness={0.68} />
       </EffectComposer>
 
@@ -128,9 +158,13 @@ function Scene({ data, showStats }: { data: CityData; showStats: boolean }) {
 
 export default function CityScene({
   data,
+  radius,
+  origin,
   showStats = false,
 }: {
   data: CityData;
+  radius: number;
+  origin: Origin;
   showStats?: boolean;
 }) {
   const dpr = useMemo<[number, number]>(() => [1, 2], []);
@@ -138,11 +172,11 @@ export default function CityScene({
     <Canvas
       dpr={dpr}
       gl={{ antialias: false, powerPreference: "high-performance" }}
-      camera={{ position: [120, 340, 300], fov: 42, near: 1, far: 4000 }}
+      camera={{ position: [radius, radius * 3, radius * 3], fov: 42, near: 1, far: radius * 40 }}
       className="absolute inset-0"
     >
       <Suspense fallback={null}>
-        <Scene data={data} showStats={showStats} />
+        <Scene data={data} showStats={showStats} radius={radius} origin={origin} />
       </Suspense>
     </Canvas>
   );

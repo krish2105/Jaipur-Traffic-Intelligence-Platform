@@ -6,7 +6,9 @@ Every response that carries a measurement also carries its data quality. docs/06
 
 from __future__ import annotations
 
+import json
 from datetime import date, datetime
+from pathlib import Path
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Query
@@ -410,3 +412,33 @@ async def scene(
         "origin": {"lon": 75.8005, "lat": 26.862},
         "is_synthetic": True,
     }
+
+
+def _find_seed(name: str) -> Path | None:
+    """Locate a seed file by walking up from this module.
+
+    Counting `parents[n]` is brittle — it breaks the moment the package moves or
+    the deployment flattens the tree. Walking up until data/seeds appears works
+    from anywhere.
+    """
+    for directory in Path(__file__).resolve().parents:
+        candidate = directory / "data" / "seeds" / name
+        if candidate.exists():
+            return candidate
+    return None
+
+
+@router.get("/scene/buildings")
+async def scene_buildings() -> dict[str, Any]:
+    """Building massing for the 3D city.
+
+    Served from the cached OSM extract rather than the database: this is static
+    reference geometry, it never changes between requests, and putting it
+    through Postgres would buy nothing.
+    """
+    path = _find_seed("osm_buildings.json")
+    if path is None:
+        # The scene is designed to work without them, so this is not an error.
+        return {"buildings": [], "count": 0, "note": "no cached building extract"}
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return {"buildings": data.get("buildings", []), "count": data.get("count", 0)}
