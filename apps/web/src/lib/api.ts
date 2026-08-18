@@ -53,6 +53,65 @@ export interface IncidentTimeline {
   is_synthetic: boolean;
 }
 
+export interface ViolationType {
+  violation_type: string;
+  total: number;
+  pending: number;
+  confirmed: number;
+  auto_confirmed: number;
+  rejected: number;
+  mean_confidence: number;
+}
+
+export interface EnforcementSummary {
+  types: ViolationType[];
+  by_hour: number[];
+  totals: {
+    total: number;
+    below_confidence_gate: number;
+    auto_confirmed_below_gate: number;
+  };
+  governance: string;
+  is_synthetic: boolean;
+}
+
+export interface ShapFactor {
+  feature: string;
+  direction: string;
+  shap_value: number;
+}
+
+export interface Defaulter {
+  plate_ref: string;
+  repeat_risk: number;
+  recovery_propensity: number | null;
+  severity_score: number | null;
+  pending_challans: number;
+  pending_amount_inr: number | null;
+  explanation: ShapFactor[];
+  model_version: string;
+}
+
+export interface Defaulters {
+  defaulters: Defaulter[];
+  basis: string;
+  is_synthetic: boolean;
+}
+
+export interface Junction {
+  junction_id: number;
+  name: Bilingual;
+  coordinates: [number, number];
+  approaches: number;
+  signal_type: string;
+  congestion: number | null;
+}
+
+export interface Junctions {
+  junctions: Junction[];
+  is_synthetic: boolean;
+}
+
 export interface CountsSummary {
   total_vehicles: number;
   total_pcu: number;
@@ -225,6 +284,9 @@ export const api = {
   weekly: (corridorId?: number) =>
     get<WeeklyMatrix>(`/congestion/weekly${query({ corridor_id: corridorId })}`),
   incidentTimeline: () => get<IncidentTimeline>("/incidents/timeline"),
+  enforcement: () => get<EnforcementSummary>("/enforcement/summary"),
+  defaulters: (limit = 10) => get<Defaulters>(`/enforcement/defaulters?limit=${limit}`),
+  junctions: () => get<Junctions>("/junctions"),
 };
 
 /**

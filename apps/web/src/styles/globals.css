@@ -171,3 +171,31 @@ html[data-theme-swapping="true"]::view-transition-new(root) { z-index: 1; }
 
 .font-display { font-family: var(--font-display), var(--font-ui); }
 .font-mono    { font-family: var(--font-mono), ui-monospace, monospace; }
+
+/* ---------------------------------------------------------------------------
+   Overlay motion. Two keyframes, shared by the command palette and every
+   floating surface, so a dialog never invents its own timing. Both are gated
+   by `motion-safe:` at the call site rather than being disabled here, which
+   keeps the reduced-motion path a genuine absence of animation rather than a
+   zero-duration one that still triggers a paint.
+   --------------------------------------------------------------------------- */
+@keyframes fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   A resize in progress must not select text or swap the cursor mid-drag. Set
+   on <html> while a split handle is captured.
+   --------------------------------------------------------------------------- */
+html[data-resizing] {
+  cursor: col-resize;
+  user-select: none;
+}
+html[data-resizing] * {
+  cursor: col-resize !important;
+}

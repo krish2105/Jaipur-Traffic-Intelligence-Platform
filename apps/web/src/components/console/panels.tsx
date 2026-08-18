@@ -17,7 +17,15 @@ import type {
 import { congestionBandKey, congestionVar } from "@/lib/api";
 import { formatCompact, formatCount, formatPercent } from "@/lib/format";
 import type { Locale } from "@/i18n/routing";
-import { Bar, Metric, ModeDot, Panel, SyntheticTag } from "./primitives";
+import {
+  Bar,
+  Metric,
+  MetricPair,
+  MetricRow,
+  ModeDot,
+  Panel,
+  SyntheticTag,
+} from "./primitives";
 import { DayProfileChart } from "@/components/charts/day-profile";
 import { CompositionChart } from "@/components/charts/composition";
 import { CongestionHeatmap } from "@/components/charts/heatmap";
@@ -41,16 +49,14 @@ export function CountsPanel({
       title="Counts · live"
       aside={summary.is_synthetic ? <SyntheticTag label="Simulated" /> : undefined}
     >
-      <div className="grid grid-cols-2 gap-4">
+      <MetricPair>
         <Metric
           label="Vehicles"
-          scale={0.82}
           value={formatCompact(summary.total_vehicles, locale)}
           quality={`quality ${q.mean_score.toFixed(2)}`}
         />
         <Metric
           label="PCU"
-          scale={0.82}
           value={formatCompact(summary.total_pcu, locale)}
           quality={
             q.suppressed_bins > 0
@@ -58,7 +64,7 @@ export function CountsPanel({
               : "no bins suppressed"
           }
         />
-      </div>
+      </MetricPair>
       {profile && profile.points.length > 0 && (
         <div className="mt-4">
           <DayProfileChart points={profile.points} nowMinutes={nowMinutes ?? 0} />
@@ -164,20 +170,19 @@ export function QualityPanel({
   const q = summary.data_quality;
   return (
     <Panel title="Data quality · today">
-      {/* Two across, not three: at rail width three columns forced every figure
-          into an ellipsis. The third sits below with room for its caveat. */}
-      <div className="grid grid-cols-2 gap-3">
-        <Metric label="Cameras" value={`${active.length}/${cameras.length}`} scale={0.7} />
-        <Metric label="Mean quality" value={q.mean_score.toFixed(2)} scale={0.7} />
-      </div>
-      <div className="mt-3">
+      {/* One row that reflows on the PANEL's width. Three across when the rail
+          is wide, two when it is dragged in, one on a phone — decided by the
+          container, which is the only thing that actually knows. */}
+      <MetricRow>
+        <Metric label="Cameras" value={`${active.length}/${cameras.length}`} span={0.3} />
+        <Metric label="Mean quality" value={q.mean_score.toFixed(2)} span={0.3} />
         <Metric
           label="Suppressed"
           value={formatPercent(q.suppressed_pct, locale)}
-          scale={0.7}
-          quality="whole day, includes night bins"
+          span={0.3}
+          quality="incl. night bins"
         />
-      </div>
+      </MetricRow>
       {cert && (
         <p className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] leading-relaxed text-[var(--ink-muted)]">
           Validated {formatPercent(1 - cert.day_mape, locale)} daylight ·{" "}
@@ -395,17 +400,21 @@ export function WeatherPanel({ data }: { data: WeatherNow }) {
         </span>
       }
     >
-      <div className="grid grid-cols-3 gap-3">
-        <Metric label="Temp" value={`${data.temperature_c?.toFixed(0)}°`} />
-        <Metric label="Rain" value={`${data.precipitation_mm?.toFixed(1)}`} unit="mm" />
+      <MetricRow>
+        <Metric label="Temp" value={`${data.temperature_c?.toFixed(0)}°`} span={0.28} />
+        <Metric
+          label="Rain"
+          value={`${data.precipitation_mm?.toFixed(1)}`}
+          unit="mm"
+          span={0.28}
+        />
         <Metric
           label="Visibility"
-          value={
-            data.visibility_m != null ? `${(data.visibility_m / 1000).toFixed(1)}` : "—"
-          }
+          value={data.visibility_m != null ? `${(data.visibility_m / 1000).toFixed(1)}` : "—"}
           unit="km"
+          span={0.28}
         />
-      </div>
+      </MetricRow>
       <p
         className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] leading-relaxed"
         style={{

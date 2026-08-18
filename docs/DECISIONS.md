@@ -683,3 +683,123 @@ canvas is correctly sized, and the frame-budget guard floors at 0.25 and gates
 only vehicles — so none of those is the cause and the real one is not yet known.
 Recorded rather than guessed at, because ADR-020's lesson was exactly this:
 investigating a second hypothesis against an undiagnosed first one wastes both.
+
+---
+
+## ADR-027 — Figures are sized by container query, not by viewport
+**Date:** 2026-08-18 · **Status:** Accepted · **Supersedes:** the `scale` prop in ADR-021
+
+The same fault came back three times: a figure truncating to "6…", two figures
+colliding into "0.012.0", a unit orphaned on its own line. Each time it was
+patched with a hand-tuned `scale` multiplier, and each time a different width
+brought it back.
+
+The cause is that **a figure sized off the viewport knows nothing about the
+column it is in.** Three metrics in a 300px rail collide; the same three in a
+500px rail are comfortable; the viewport is identical in both cases, so no
+media query can tell them apart. Only the container can.
+
+Every panel is now a `@container`, and `Metric` computes its own size:
+
+```
+chars = value.length            // the value actually being rendered
+cqi   = span · 100 / (0.62 · chars)
+font  = clamp(0.95rem, {cqi}cqi, var(--d-figure))
+```
+
+0.62em is a monospace glyph's advance width. The figure therefore occupies its
+allotted fraction of *its own panel* and cannot overflow — at any viewport, at
+any density, and at any width the user drags the panel to. A value that gains a
+digit shrinks itself instead of colliding. The clamp keeps it legible at the
+bottom and stops it going cartoonish on a projector at the top.
+
+`MetricRow` reflows 3 → 2 → 1 on the panel's width rather than the window's.
+
+This is what made resizable panels safe to ship at all. Without it, every drag
+would be a new opportunity to reproduce the collision.
+
+---
+
+## ADR-028 — The console is resizable, and the drag does not go through React
+**Date:** 2026-08-18 · **Status:** Accepted
+
+A control room is not one layout. The officer watching a corridor wants the map
+wide; the analyst reading panels wants the rail wide; a review on a projector
+wants it wider still so the back row can read a figure. A fixed 312px rail
+makes two of those three lose.
+
+The split is draggable, keyboard-operable (`role="separator"` with arrow keys —
+a wall display driven from a lectern has no mouse), double-click to reset, and
+persisted per key.
+
+**The drag writes a CSS custom property, not React state.** A `setState` per
+`pointermove` re-renders the console — including the WebGL canvas's parent —
+sixty times a second, dropping frames exactly while the user is judging whether
+the drag feels smooth. React learns the value once, on release.
+
+**Persistence is read through `useSyncExternalStore`, not restored in an
+effect.** Restoring in an effect renders the default, sets state, then renders
+again: a cascade the React compiler refuses, and a visible jump of the rail on
+every load. The same reasoning as ADR-022 — storage is the store.
+
+The command palette follows the same principle from the other direction: it is
+**mounted fresh** each time rather than reset by an effect. A component that
+should start clean should be created clean.
+
+---
+
+## ADR-029 — RBAC is drawn twice and enforced once
+**Date:** 2026-08-18 · **Status:** Accepted
+
+Seven roles, mirroring `VALID_ROLES` in the API exactly, with a capability
+matrix in `apps/web/src/lib/rbac.ts`.
+
+**The client matrix is a rendering aid and is documented as one, at the top of
+the file.** Every capability is checked again by `request_scope` and enforced by
+Postgres RLS. Hiding a control the user cannot use is good interface design;
+relying on that hiding is how products get breached, because the API is
+reachable without the interface.
+
+A role sees only the sections it can use — not nine greyed-out entries. Disabled
+items an operator can never enable train people to ignore the nav, and on a
+shared control-room screen they advertise which functions exist to someone who
+should not know.
+
+**The login screen collects no password, deliberately.** In deployment it
+redirects to Keycloak federated to the state SSO with mandatory MFA. A demo that
+asks an official to type a password into a bespoke form teaches a government
+workforce the exact habit that makes them phishable. The demo path selects a
+role instead, shows that role's capabilities before you commit to it — "what
+will my enforcement team actually see?" is the question that decides a
+procurement — and says on screen that this is demo mode.
+
+The role switcher is disabled in two independent places: `NEXT_PUBLIC_DEMO_MODE`
+at build time, and a 403 from the API for the `X-Demo-Role` header whenever
+`DEMO_MODE` is off. One of those would be a convenience; two make it an
+affordance that cannot survive into production.
+
+---
+
+## ADR-030 — Enforcement shows the gate, not just the queue
+**Date:** 2026-08-18 · **Status:** Accepted
+
+The enforcement surface leads with the **confidence gate**, not with the
+violation count: 1,051 violations, 631 below 0.85 confidence and therefore
+requiring a human, and **0 auto-confirmed below the gate**.
+
+That last figure is the one worth putting on screen. docs/04 §4 requires a
+reading below 0.85 to go to a human, and the database enforces it with a CHECK
+constraint, so the zero is not a claim of good behaviour — it is a number that
+*cannot* be anything else. A department evaluating this can see the rule is on
+rather than being told it is.
+
+`confirmed` and `auto_confirmed` are reported separately and never summed. They
+are different claims: one says a machine was confident enough to skip a human,
+the other says a named person agreed. The split is what a procurement needs
+before it trusts either.
+
+No endpoint returns a registration number. Plates live as an HMAC digest and as
+ciphertext; the defaulter list shows an eight-character digest prefix — enough
+to tell two rows apart in a meeting, useless for re-identification. Every
+defaulter score carries its SHAP explanation, which the database refuses to
+store without.

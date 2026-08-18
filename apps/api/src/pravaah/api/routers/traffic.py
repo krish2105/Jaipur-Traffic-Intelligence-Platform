@@ -720,3 +720,188 @@ async def incident_timeline(session: SessionDep) -> dict[str, Any]:
         },
         "is_synthetic": True,
     }
+
+
+@router.get("/enforcement/summary")
+async def enforcement_summary(session: SessionDep) -> dict[str, Any]:
+    """The violation queue, by type and by review state.
+
+    **No registration number is returned by this endpoint, at any role.** The
+    plate lives as an HMAC-SHA256 digest and as ciphertext, and revealing it is
+    a separate, audited action requiring a reason code (docs/07 §3). An
+    aggregate view has no legitimate need for one, so it does not get the
+    option.
+
+    `auto_confirmed` is reported separately from `confirmed` rather than summed
+    with it. They are different claims: one says a machine was confident enough
+    to skip a human, the other says a named person agreed. A department
+    procuring this needs to see the split before it trusts either.
+    """
+    rows = await session.execute(
+        text("""
+            SELECT violation_type,
+                   count(*)                                                  AS total,
+                   count(*) FILTER (WHERE review_status = 'pending')         AS pending,
+                   count(*) FILTER (WHERE review_status = 'confirmed')       AS confirmed,
+                   count(*) FILTER (WHERE review_status = 'auto_confirmed')  AS auto_confirmed,
+                   count(*) FILTER (WHERE review_status = 'rejected')        AS rejected,
+                   avg(ocr_confidence)                                       AS mean_confidence
+            FROM violations
+            GROUP BY violation_type
+            ORDER BY total DESC
+        """)
+    )
+    types = [
+        {
+            "violation_type": r.violation_type,
+            "total": int(r.total),
+            "pending": int(r.pending),
+            "confirmed": int(r.confirmed),
+            "auto_confirmed": int(r.auto_confirmed),
+            "rejected": int(r.rejected),
+            "mean_confidence": round(float(r.mean_confidence), 3),
+        }
+        for r in rows
+    ]
+
+    hourly = await session.execute(
+        text("""
+            SELECT extract(hour FROM occurred_at AT TIME ZONE 'Asia/Kolkata')::int AS hour,
+                   count(*) AS total
+            FROM violations
+            GROUP BY hour
+        """)
+    )
+    by_hour = [0] * 24
+    for r in hourly:
+        by_hour[int(r.hour)] = int(r.total)
+
+    # docs/04 §4: a read below 0.85 must go to a human. Reporting how many
+    # cleared that bar is how a department checks the rule is actually on.
+    gate = await session.execute(
+        text("""
+            SELECT count(*) FILTER (WHERE ocr_confidence < 0.85) AS below_gate,
+                   count(*) FILTER (
+                       WHERE ocr_confidence < 0.85 AND review_status = 'auto_confirmed'
+                   ) AS violations_of_gate,
+                   count(*) AS total
+            FROM violations
+        """)
+    )
+    g = gate.one()
+
+    return {
+        "types": types,
+        "by_hour": by_hour,
+        "totals": {
+            "total": int(g.total),
+            "below_confidence_gate": int(g.below_gate),
+            "auto_confirmed_below_gate": int(g.violations_of_gate),
+        },
+        "governance": (
+            "Plates are stored as an HMAC digest and as ciphertext, never as text. "
+            "Revealing one is a separate audited action with a reason code. "
+            "No reading below 0.85 confidence may auto-confirm."
+        ),
+        "is_synthetic": True,
+    }
+
+
+@router.get("/enforcement/defaulters")
+async def defaulters(
+    session: SessionDep,
+    limit: Annotated[int, Query(ge=1, le=50)] = 10,
+) -> dict[str, Any]:
+    """Repeat-risk scores, ranked. Plates stay hashed; only a prefix is shown.
+
+    docs/03 §3 is explicit that this is a road-safety targeting tool and not a
+    revenue one, so the ordering is severity-weighted risk rather than money
+    owed, and the amount is reported beside it rather than instead of it.
+
+    Every score carries its SHAP explanation — the database refuses to store one
+    without (`score_must_be_explained`), so an unexplained score cannot reach
+    this endpoint even if the code forgot to ask for it.
+    """
+    rows = await session.execute(
+        text("""
+            SELECT plate_hash, repeat_risk, recovery_propensity, severity_weighted_score,
+                   pending_challan_count, pending_amount_inr, shap_explanation, model_version
+            FROM defaulter_scores
+            WHERE computed_on = (SELECT max(computed_on) FROM defaulter_scores)
+            ORDER BY severity_weighted_score DESC NULLS LAST
+            LIMIT :limit
+        """),
+        {"limit": limit},
+    )
+    return {
+        "defaulters": [
+            {
+                # An eight-character prefix of a 64-character digest. Enough to
+                # tell two rows apart in a meeting; useless for re-identifying
+                # anyone, because the digest is already irreversible.
+                "plate_ref": r.plate_hash[:8],
+                "repeat_risk": round(float(r.repeat_risk), 3),
+                "recovery_propensity": (
+                    round(float(r.recovery_propensity), 3)
+                    if r.recovery_propensity is not None
+                    else None
+                ),
+                "severity_score": (
+                    round(float(r.severity_weighted_score), 1)
+                    if r.severity_weighted_score is not None
+                    else None
+                ),
+                "pending_challans": int(r.pending_challan_count or 0),
+                "pending_amount_inr": (
+                    round(float(r.pending_amount_inr), 0)
+                    if r.pending_amount_inr is not None
+                    else None
+                ),
+                "explanation": (
+                    json.loads(r.shap_explanation)
+                    if isinstance(r.shap_explanation, str)
+                    else r.shap_explanation
+                ),
+                "model_version": r.model_version,
+            }
+            for r in rows
+        ],
+        "basis": "severity-weighted risk, not amount owed — docs/03 §3",
+        "is_synthetic": True,
+    }
+
+
+@router.get("/junctions")
+async def junctions(session: SessionDep) -> dict[str, Any]:
+    """Instrumented junctions with their current approach state."""
+    rows = await session.execute(
+        text("""
+            SELECT j.junction_id, j.name_en, j.name_hi,
+                   ST_X(j.geom) AS lon, ST_Y(j.geom) AS lat,
+                   j.approach_count, j.signal_type,
+                   (
+                     SELECT round(avg(lc.congestion_index), 1)
+                     FROM link_congestion lc
+                     JOIN road_links l ON l.link_id = lc.link_id
+                     WHERE lc.bucket_start > now() - INTERVAL '30 minutes'
+                       AND lc.bucket_start <= now()
+                       AND ST_DWithin(l.geom::geography, j.geom::geography, 250)
+                   ) AS congestion
+            FROM junctions j
+            ORDER BY j.junction_id
+        """)
+    )
+    return {
+        "junctions": [
+            {
+                "junction_id": int(r.junction_id),
+                "name": {"en": r.name_en, "hi": r.name_hi},
+                "coordinates": [float(r.lon), float(r.lat)],
+                "approaches": int(r.approach_count or 0),
+                "signal_type": r.signal_type,
+                "congestion": float(r.congestion) if r.congestion is not None else None,
+            }
+            for r in rows
+        ],
+        "is_synthetic": True,
+    }

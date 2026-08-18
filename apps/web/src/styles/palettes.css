@@ -22,6 +22,7 @@
   --rim-strong: inset 0 1px 0 0 rgb(255 255 255 / 0.10);
   --shadow-panel: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -8px rgb(0 0 0 / 0.5);
   --shadow-float: 0 2px 4px rgb(0 0 0 / 0.4), 0 24px 48px -12px rgb(0 0 0 / 0.6);
+  --scrim:       rgb(2 4 10 / 0.62);
   --glass-blur: 20px;
 }
 
@@ -153,6 +154,7 @@
   --accent-2:    #C08A10;
   --accent-ink:  #FFFFFF;
   --overlay:     rgb(11 18 32 / 0.35);
+  --scrim:       rgb(11 18 32 / 0.32);
   --rim:         inset 0 1px 0 0 rgb(255 255 255 / 0.9);
   --shadow-float: 0 2px 4px rgb(11 18 32 / 0.08), 0 20px 40px -12px rgb(11 18 32 / 0.18);
 }

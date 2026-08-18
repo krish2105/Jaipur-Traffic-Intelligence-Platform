@@ -142,7 +142,7 @@ export function BentoShell({
         />
       </div>
     ),
-    [scene],
+    [scene, sceneMode],
   );
 
   const tiles: Tile[] = useMemo(
@@ -178,7 +178,7 @@ export function BentoShell({
         render: () => <ReadinessPanel data={readiness} />,
       },
     ],
-    [mapTile, summary, forecast, cameras, blackspots, signals, weather, readiness],
+    [mapTile, summary, forecast, cameras, blackspots, signals, weather, readiness, incidents],
   );
 
   const focused = tiles.find((t) => t.id === expanded);
