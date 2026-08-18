@@ -1334,3 +1334,38 @@ When a death is removed the casualty is **not** removed — it moves to
 `grievous`, because the person survived with a serious injury. Crashes with a
 single death necessarily stop being fatal crashes, and that is the one part of
 the distribution this cannot preserve; it is what a lower toll actually means.
+
+---
+
+## ADR-046 — Provenance is a screen, not a slide
+**Date:** 2026-08-18 · **Status:** Accepted
+
+"Is any of this real?" is the second question a government reviewer asks, right
+after "does it work?" — and answering it in a slide answers it in the one place
+they cannot check. The console now has a **Provenance** section that answers it
+in the product:
+
+- **Sources**, with the live ones actually live. 3 of 7. The other four say
+  `replay` in plain text.
+- **Datasets**, each tagged `real`, `calibrated to real`, or `generated`, with
+  what it is calibrated against. Road network real from OpenStreetMap; crashes
+  generated per record but reproducing Jaipur police annual returns exactly;
+  counts generated against the four TomTom figures; violations and defaulter
+  scores simply generated, and said so.
+- **Published figures**, with the year table and links to both sources.
+
+The table is deliberately unflattering. Four of seven sources are on replay, and
+stating that plainly is what makes the three that are live believable. A
+provenance screen that made everything look finished would be worth nothing.
+
+The air-quality panel carries `real · live` as a badge, because it is currently
+the only panel whose numbers are both — which makes it the proof that the
+pipeline is wired rather than mocked.
+
+**On the `beforeInteractive` lint warning:** `@next/next/no-before-interactive-script-outside-document`
+predates the App Router and only knows about `pages/_document`. This version's
+own docs say the strategy "must be placed inside the root layout", and
+`[locale]/layout.tsx` is the root layout — it renders `<html>` and nothing sits
+above it. Suppressed with that reasoning recorded, and only after checking in
+the browser that the script genuinely runs: all three theme attributes land on
+`<html>` and `--ink` resolves before paint.

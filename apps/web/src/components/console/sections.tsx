@@ -16,6 +16,8 @@ import {
   type EdgeCameras,
   type NeetiAnswer,
   type NeetiCatalogue,
+  type PublishedFigures,
+  type SourceReadiness,
   type SignalAdvisory,
   type WeeklyMatrix,
 } from "@/lib/api";
@@ -160,6 +162,9 @@ export function SectionView({
   }
   if (section === "neeti") {
     return <NeetiSection hi={hi} locale={locale} />;
+  }
+  if (section === "provenance") {
+    return <ProvenanceSection hi={hi} locale={locale} />;
   }
   if (section === "reports") {
     return <ReportsSection hi={hi} weekly={weekly} cameras={cameras} />;
@@ -1257,5 +1262,277 @@ function NeetiAsk({ hi }: { hi: boolean }) {
         </>
       )}
     </Panel>
+  );
+}
+
+
+/* ── provenance ─────────────────────────────────────────────────────────── */
+
+/**
+ * Where every number on this platform comes from.
+ *
+ * This section exists because "is any of this real?" is the question a
+ * government reviewer asks second, right after "does it work?", and answering
+ * it in a slide is answering it in the one place they cannot check. Answering
+ * it in the product — with the live sources actually live, and the synthetic
+ * ones named as synthetic beside what they are calibrated against — is the
+ * difference between a claim and a demonstration.
+ *
+ * The table below is deliberately unflattering. Four of seven sources are on
+ * replay, and saying so plainly is what makes the three that are live
+ * believable.
+ */
+
+const DATASETS: {
+  table: string;
+  en: string;
+  hi: string;
+  rows: string;
+  kind: "real" | "calibrated" | "generated";
+  basis_en: string;
+  basis_hi: string;
+}[] = [
+  {
+    table: "road_links",
+    en: "Road network",
+    hi: "सड़क नेटवर्क",
+    rows: "594 links · 8 junctions",
+    kind: "real",
+    basis_en: "OpenStreetMap geometry, fetched and tiled. Real carriageways, lane counts and building footprints.",
+    basis_hi: "OpenStreetMap ज्यामिति। वास्तविक सड़कें, लेन संख्या और भवन।",
+  },
+  {
+    table: "crashes",
+    en: "Crash records",
+    hi: "दुर्घटना रिकॉर्ड",
+    rows: "18,578",
+    kind: "calibrated",
+    basis_en: "Individual records generated; annual totals reproduce Jaipur police district returns exactly, 2021–2025. Asserted by the test suite.",
+    basis_hi: "व्यक्तिगत रिकॉर्ड निर्मित; वार्षिक कुल जयपुर पुलिस के आँकड़ों से ठीक मेल खाते हैं।",
+  },
+  {
+    table: "traffic_counts",
+    en: "Vehicle counts",
+    hi: "वाहन गणना",
+    rows: "1,403,654",
+    kind: "calibrated",
+    basis_en: "Generated against the TomTom Traffic Index: 94.9% evening peak, 73.9% morning, 17.5 km/h rush mean. All four reproduced exactly.",
+    basis_hi: "TomTom सूचकांक के विरुद्ध निर्मित: 94.9% शाम, 73.9% सुबह, 17.5 किमी/घंटा।",
+  },
+  {
+    table: "link_congestion",
+    en: "Congestion index",
+    hi: "भीड़ सूचकांक",
+    rows: "777,600",
+    kind: "calibrated",
+    basis_en: "Derived from the same calibrated profile. Speed follows a curve solved so the rush-window mean lands on the published figure.",
+    basis_hi: "उसी अंशांकित प्रोफ़ाइल से। गति वक्र प्रकाशित आँकड़े पर सेट है।",
+  },
+  {
+    table: "violations",
+    en: "Violations",
+    hi: "उल्लंघन",
+    rows: "1,051",
+    kind: "generated",
+    basis_en: "No real challan data exists in this instance. Plates are HMAC digests throughout; there is no plaintext registration number to leak.",
+    basis_hi: "इस इंस्टेंस में कोई वास्तविक चालान डेटा नहीं। नंबर प्लेट केवल HMAC डाइजेस्ट।",
+  },
+  {
+    table: "defaulter_scores",
+    en: "Defaulter scores",
+    hi: "डिफॉल्टर स्कोर",
+    rows: "500",
+    kind: "generated",
+    basis_en: "Generated. Every score carries a SHAP explanation — the database refuses to store one without.",
+    basis_hi: "निर्मित। हर स्कोर SHAP व्याख्या के साथ — डेटाबेस बिना उसके संग्रह करने से मना करता है।",
+  },
+];
+
+const KIND_LABEL: Record<string, { en: string; hi: string; colour: string }> = {
+  real: { en: "real", hi: "वास्तविक", colour: "var(--congestion-free)" },
+  calibrated: { en: "calibrated to real", hi: "वास्तविक से अंशांकित", colour: "var(--congestion-moderate)" },
+  generated: { en: "generated", hi: "निर्मित", colour: "var(--ink-faint)" },
+};
+
+function ProvenanceSection({ hi, locale }: { hi: boolean; locale: Locale }) {
+  const { data: pub } = useLazy<PublishedFigures>(() => api.published(), true);
+  const { data: sources } = useLazy<SourceReadiness>(() => api.readiness(), true);
+
+  return (
+    <Shell
+      title={hi ? "स्रोत और प्रामाणिकता" : "Data provenance"}
+      subtitle={
+        hi
+          ? "हर आँकड़ा कहाँ से आता है। लाइव स्रोत वास्तव में लाइव हैं; अनुरूपित डेटा को अनुरूपित कहा गया है, साथ में यह भी कि वह किसके विरुद्ध अंशांकित है।"
+          : "Where every number comes from. The live sources are genuinely live; the synthetic ones are named as synthetic, beside what they are calibrated against."
+      }
+    >
+      {sources && (
+        <Panel
+          title={hi ? "स्रोत" : "Sources"}
+          emphasis
+          aside={
+            <span
+              className="shrink-0 font-mono tabular-nums text-[var(--ink-muted)]"
+              style={{ fontSize: "var(--d-support)" }}
+            >
+              {sources.live_count}/{sources.total} {hi ? "लाइव" : "live"}
+            </span>
+          }
+        >
+          <ul className="grid gap-2">
+            {sources.sources.map((s) => (
+              <li
+                key={s.id}
+                className="flex items-center gap-3 border-b border-[var(--rule)] pb-2 last:border-0"
+                style={{ fontSize: "var(--d-support)" }}
+              >
+                <ModeDot live={s.mode === "live"} title={s.mode} />
+                <span className="min-w-0 flex-1 truncate">{s.name}</span>
+                <span className="shrink-0 text-[var(--ink-faint)]">{s.provider}</span>
+                <span
+                  className="w-16 shrink-0 text-right uppercase tracking-wider"
+                  style={{
+                    color:
+                      s.mode === "live" ? "var(--congestion-free)" : "var(--ink-faint)",
+                    fontSize: "calc(var(--d-label) * 0.9)",
+                  }}
+                >
+                  {s.mode}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p
+            className="mt-3 leading-relaxed text-[var(--ink-muted)]"
+            style={{ fontSize: "var(--d-support)" }}
+          >
+            {sources.note}
+          </p>
+        </Panel>
+      )}
+
+      <Panel title={hi ? "डेटासेट" : "Datasets"}>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[40rem]" style={{ fontSize: "var(--d-support)" }}>
+            <thead>
+              <tr
+                className="text-left uppercase tracking-widest text-[var(--ink-muted)]"
+                style={{ fontSize: "calc(var(--d-label) * 0.9)" }}
+              >
+                <th className="pb-2 pr-3 font-medium">{hi ? "डेटा" : "Dataset"}</th>
+                <th className="pb-2 pr-3 font-medium">{hi ? "पंक्तियाँ" : "Rows"}</th>
+                <th className="pb-2 pr-3 font-medium">{hi ? "प्रकार" : "Kind"}</th>
+                <th className="pb-2 font-medium">{hi ? "आधार" : "Basis"}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {DATASETS.map((d) => (
+                <tr key={d.table} className="border-t border-[var(--rule)] align-top">
+                  <td className="py-2.5 pr-3">
+                    {hi ? d.hi : d.en}
+                    <span className="ml-2 font-mono text-[var(--ink-faint)]">{d.table}</span>
+                  </td>
+                  <td className="py-2.5 pr-3 font-mono tabular-nums text-[var(--ink-muted)]">
+                    {d.rows}
+                  </td>
+                  <td className="py-2.5 pr-3">
+                    <span
+                      className="whitespace-nowrap rounded-full px-2 py-0.5 uppercase tracking-wider"
+                      style={{
+                        fontSize: "calc(var(--d-label) * 0.85)",
+                        background: `color-mix(in oklab, ${KIND_LABEL[d.kind]!.colour} 16%, transparent)`,
+                        color: KIND_LABEL[d.kind]!.colour,
+                      }}
+                    >
+                      {KIND_LABEL[d.kind]![hi ? "hi" : "en"]}
+                    </span>
+                  </td>
+                  <td className="py-2.5 leading-relaxed text-[var(--ink-muted)]">
+                    {hi ? d.basis_hi : d.basis_en}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+
+      {pub && (
+        <Panel title={hi ? "प्रकाशित आँकड़े" : "Published figures"} emphasis>
+          <p
+            className="leading-relaxed text-[var(--ink-muted)]"
+            style={{ fontSize: "var(--d-support)" }}
+          >
+            {pub.note}
+          </p>
+
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[26rem]" style={{ fontSize: "var(--d-support)" }}>
+              <thead>
+                <tr
+                  className="text-left uppercase tracking-widest text-[var(--ink-muted)]"
+                  style={{ fontSize: "calc(var(--d-label) * 0.9)" }}
+                >
+                  <th className="pb-2 font-medium">{hi ? "वर्ष" : "Year"}</th>
+                  <th className="pb-2 text-right font-medium">{hi ? "दुर्घटनाएँ" : "Accidents"}</th>
+                  <th className="pb-2 text-right font-medium">{hi ? "मौतें" : "Deaths"}</th>
+                  <th className="pb-2 text-right font-medium">{hi ? "प्रति 100" : "Per 100"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pub.crashes.by_year.map((y) => (
+                  <tr key={y.year} className="border-t border-[var(--rule)]">
+                    <td className="py-1.5 font-mono tabular-nums">{y.year}</td>
+                    <td className="py-1.5 text-right font-mono tabular-nums">
+                      {formatCount(y.accidents, locale)}
+                    </td>
+                    <td className="py-1.5 text-right font-mono tabular-nums">
+                      {y.deaths != null ? formatCount(y.deaths, locale) : (
+                        <span
+                          className="text-[var(--ink-faint)]"
+                          title={hi ? "प्रकाशित नहीं" : "not published"}
+                        >
+                          —
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-1.5 text-right font-mono tabular-nums text-[var(--ink-muted)]">
+                      {y.deaths != null ? ((y.deaths / y.accidents) * 100).toFixed(1) : "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <p
+            className="mt-3 leading-relaxed text-[var(--ink-muted)]"
+            style={{ fontSize: "var(--d-support)" }}
+          >
+            {hi
+              ? `2025 में दुर्घटनाएँ ${pub.crashes.accidents_change_2025_pct}% घटीं और मौतें ${pub.crashes.fatalities_change_2025_pct}% बढ़ीं — प्रति 100 दुर्घटनाओं पर ${pub.crashes.fatality_rate_2025} मौतें, पाँच वर्षों में सर्वाधिक। इसीलिए ब्लैक स्पॉट गंभीरता से क्रमित हैं, आवृत्ति से नहीं।`
+              : `In 2025 accidents fell ${pub.crashes.accidents_change_2025_pct}% while deaths rose ${pub.crashes.fatalities_change_2025_pct}% — ${pub.crashes.fatality_rate_2025} deaths per 100 crashes, the highest in five years. That is why black spots rank by severity, not frequency.`}
+          </p>
+
+          <div className="mt-4 grid gap-2">
+            {[pub.crashes.source, pub.congestion.source].map((src) => (
+              <a
+                key={src.url}
+                href={src.url}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="rounded-lg bg-[var(--surface-1)] px-3 py-2 transition-colors
+                           hover:bg-[var(--surface-3)]"
+                style={{ fontSize: "var(--d-support)" }}
+              >
+                <span className="text-[var(--accent)]">{src.name}</span>
+                <span className="mt-0.5 block text-[var(--ink-faint)]">{src.detail}</span>
+              </a>
+            ))}
+          </div>
+        </Panel>
+      )}
+    </Shell>
   );
 }

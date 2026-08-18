@@ -224,6 +224,51 @@ export interface NeetiAnswer {
   is_synthetic: boolean;
 }
 
+export interface AirQuality {
+  available: boolean;
+  pm2_5?: number | null;
+  pm10?: number | null;
+  nitrogen_dioxide?: number | null;
+  ozone?: number | null;
+  us_aqi?: number | null;
+  band?: string;
+  exceeds_cpcb?: string[];
+  standards?: { pm2_5: number; pm10: number; no2: number };
+  observed_at?: string;
+  provider?: string;
+  source_kind?: string;
+  traffic_note?: string;
+  is_synthetic?: boolean;
+}
+
+export interface PublishedSource {
+  name: string;
+  detail: string;
+  url: string;
+}
+
+export interface PublishedFigures {
+  crashes: {
+    by_year: { year: number; accidents: number; deaths: number | null }[];
+    total_accidents: number;
+    accidents_change_2025_pct: number;
+    fatalities_change_2025_pct: number;
+    fatality_rate_2025: number;
+    rajasthan_severity_rate_pct: number;
+    districts_2025: { name: Bilingual; accidents: number; deaths: number | null }[];
+    source: PublishedSource;
+  };
+  congestion: {
+    average_pct: number;
+    morning_peak_pct: number;
+    evening_peak_pct: number;
+    rush_hour_speed_kmh: number;
+    source: PublishedSource;
+  };
+  note: string;
+  is_synthetic: boolean;
+}
+
 export interface CountsSummary {
   total_vehicles: number;
   total_pcu: number;
@@ -437,6 +482,8 @@ export const api = {
   signals: () => get<SignalAdvisory>("/signals/advisory"),
   readiness: () => get<SourceReadiness>("/meta/sources"),
   weather: () => get<WeatherNow>("/meta/weather"),
+  air: () => get<AirQuality>("/meta/air"),
+  published: () => get<PublishedFigures>("/meta/published"),
   weekly: (corridorId?: number) =>
     get<WeeklyMatrix>(`/congestion/weekly${query({ corridor_id: corridorId })}`),
   incidentTimeline: () => get<IncidentTimeline>("/incidents/timeline"),

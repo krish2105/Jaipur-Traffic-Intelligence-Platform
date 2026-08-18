@@ -45,6 +45,13 @@ document.documentElement.setAttribute('data-scene','night');
  */
 export function ThemeScript() {
   return (
+    /* The rule below predates the App Router and only knows about
+       pages/_document. This version's own docs say beforeInteractive "must be
+       placed inside the root layout", and `[locale]/layout.tsx` IS the root
+       layout — it renders <html> and nothing sits above it. Verified in the
+       browser rather than assumed: data-theme, data-palette and data-scene are
+       all present on <html> and --ink resolves, so it does run before paint. */
+    // eslint-disable-next-line @next/next/no-before-interactive-script-outside-document
     <Script
       id="pravaah-theme"
       strategy="beforeInteractive"

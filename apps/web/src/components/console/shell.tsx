@@ -44,6 +44,7 @@ import {
   ReadinessPanel,
   SignalPanel,
   WeatherPanel,
+  AirPanel,
 } from "./panels";
 
 /** Minutes since local midnight in Jaipur — where the brass marker sits. */
@@ -79,6 +80,7 @@ export const NAV = [
   { id: "enforcement", en: "Enforcement", hi: "प्रवर्तन", cap: "read:enforcement" },
   { id: "neeti", en: "NEETI", hi: "नीति", cap: "use:neeti" },
   { id: "reports", en: "Reports", hi: "रिपोर्ट", cap: "read:analytics" },
+  { id: "provenance", en: "Provenance", hi: "स्रोत", cap: "read:traffic" },
 ] as const satisfies readonly { id: string; en: string; hi: string; cap: Capability }[];
 
 const RAIL = { key: "pravaah-rail", initial: 340, min: 260, max: 640 };
@@ -443,6 +445,7 @@ export function ConsoleShell({
           <HeatmapPanel data={weekly} />
           <SignalPanel data={signals} />
           <WeatherPanel data={weather} />
+          <AirPanel />
           <ReadinessPanel data={readiness} />
         </aside>
       </div>

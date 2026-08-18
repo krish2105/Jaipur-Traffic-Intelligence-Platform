@@ -497,3 +497,104 @@ export function HeatmapPanel({ data }: { data: WeeklyMatrix }) {
     </Panel>
   );
 }
+
+
+/**
+ * Air quality.
+ *
+ * The only panel on this console whose numbers are BOTH live and real, so it is
+ * the one that proves the rest of the pipeline is wired rather than mocked.
+ *
+ * It says three things a pollution reading usually leaves out: which standard
+ * it is measured against (CPCB, because that is what an Indian department is
+ * accountable on), that the value is modelled rather than read from a Jaipur
+ * instrument, and that no share of it is attributed to traffic. The last one
+ * matters most — attributing pollution to traffic needs source apportionment
+ * this platform does not have, and the temptation to put a confident
+ * percentage there is exactly what would make the panel untrustworthy.
+ */
+export function AirPanel() {
+  const locale = useLocale() as Locale;
+  const hi = locale === "hi";
+  const { data } = usePoll(() => api.air(), { intervalMs: 300_000 });
+
+  if (!data?.available) return null;
+
+  const over = data.exceeds_cpcb ?? [];
+  const bandColour =
+    (data.us_aqi ?? 0) <= 50
+      ? "var(--congestion-free)"
+      : (data.us_aqi ?? 0) <= 100
+        ? "var(--congestion-light)"
+        : (data.us_aqi ?? 0) <= 150
+          ? "var(--congestion-moderate)"
+          : (data.us_aqi ?? 0) <= 200
+            ? "var(--congestion-severe)"
+            : "var(--congestion-critical)";
+
+  return (
+    <Panel
+      title={hi ? "वायु गुणवत्ता" : "Air quality"}
+      aside={
+        <span
+          className="shrink-0 rounded-full px-2 py-0.5 uppercase tracking-wider"
+          style={{
+            fontSize: "calc(var(--d-label) * 0.85)",
+            background: "color-mix(in oklab, var(--congestion-free) 18%, transparent)",
+            color: "var(--congestion-free)",
+          }}
+        >
+          {hi ? "वास्तविक · लाइव" : "real · live"}
+        </span>
+      }
+    >
+      <MetricRow>
+        <Metric label="PM2.5" value={data.pm2_5?.toFixed(0) ?? "—"} unit="µg/m³" span={0.28} />
+        <Metric label="PM10" value={data.pm10?.toFixed(0) ?? "—"} unit="µg/m³" span={0.28} />
+        <Metric
+          label="NO₂"
+          value={data.nitrogen_dioxide?.toFixed(0) ?? "—"}
+          unit="µg/m³"
+          span={0.28}
+        />
+      </MetricRow>
+
+      <div className="mt-3 flex items-center gap-2">
+        <span
+          className="rounded-md px-2 py-0.5 font-mono tabular-nums"
+          style={{
+            fontSize: "var(--d-support)",
+            background: `color-mix(in oklab, ${bandColour} 18%, transparent)`,
+            color: bandColour,
+          }}
+        >
+          AQI {data.us_aqi ?? "—"}
+        </span>
+        <span className="text-[var(--ink-muted)]" style={{ fontSize: "var(--d-support)" }}>
+          {over.length > 0
+            ? hi
+              ? `CPCB सीमा से ऊपर: ${over.join(", ")}`
+              : `over CPCB: ${over.join(", ")}`
+            : hi
+              ? "सभी CPCB 24-घंटा मानकों के भीतर"
+              : "within all CPCB 24-hour standards"}
+        </span>
+      </div>
+
+      <p
+        className="mt-3 leading-relaxed text-[var(--ink-muted)]"
+        style={{ fontSize: "var(--d-support)" }}
+      >
+        {hi
+          ? "NO₂ और PM यातायात से जुड़े प्रदूषक हैं। इनमें से कितना यातायात से आता है — यह यहाँ नहीं बताया गया, क्योंकि उसके लिए स्रोत-विभाजन चाहिए जो इस मंच के पास नहीं है।"
+          : data.traffic_note}
+      </p>
+      <p
+        className="mt-1.5 text-[var(--ink-faint)]"
+        style={{ fontSize: "calc(var(--d-support) * 0.92)" }}
+      >
+        {data.provider} — {data.source_kind}
+      </p>
+    </Panel>
+  );
+}
