@@ -22,6 +22,7 @@ from pravaah.adapters.published import (
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..allocator import allocate
 from ..deps import SessionDep
 from ..real_data import severity_finding
 
@@ -708,6 +709,22 @@ async def safety_severity() -> dict[str, Any]:
     warehouse down and with the network cable pulled.
     """
     return severity_finding()
+
+
+@router.get("/enforcement/allocation")
+async def enforcement_allocation() -> dict[str, Any]:
+    """Where the next thousand challans should go, and what moving them is worth.
+
+    The only question in this API whose answer is a recommendation rather than a
+    measurement, so it carries its whole model with it: attributable fractions,
+    the saturation constant, the floor, a sensitivity sweep, and the range of
+    assumptions over which the recommendation actually holds.
+
+    It will be argued with by the department that produced the inputs. That is
+    the point — an argument about K is a better conversation than an argument
+    about whether we are guessing.
+    """
+    return allocate()
 
 
 @router.get("/incidents/timeline")
