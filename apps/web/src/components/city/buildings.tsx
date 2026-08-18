@@ -43,9 +43,11 @@ export function Buildings({
 
   const material = useMemo(() => {
     const mat = new THREE.MeshStandardMaterial({
-      color: "#161C2B",
-      roughness: 0.86,
-      metalness: 0.08,
+      // Light enough to hold a silhouette against the fog. Pure dark grey
+      // disappears into the background and the city stops existing.
+      color: "#232B3E",
+      roughness: 0.82,
+      metalness: 0.06,
     });
 
     mat.onBeforeCompile = (shader) => {
@@ -56,7 +58,8 @@ export function Buildings({
            attribute float aSeed;
            varying float vSeed;
            varying vec3 vLocal;
-           varying vec3 vScale;`,
+           varying vec3 vScale;
+           varying float vUpness;`,
         )
         .replace(
           "#include <begin_vertex>",
@@ -69,7 +72,12 @@ export function Buildings({
              length(instanceMatrix[1].xyz),
              length(instanceMatrix[2].xyz)
            );
-           vLocal = position * vScale;`,
+           vLocal = position * vScale;
+           // World-space up, computed here on purpose: vNormal in the fragment
+           // shader is in VIEW space, so testing it for "is this a roof" makes
+           // the windows appear and disappear as the camera orbits.
+           vec3 worldNormal = normalize(mat3(instanceMatrix) * normal);
+           vUpness = abs(worldNormal.y);`,
         );
 
       shader.fragmentShader = shader.fragmentShader
@@ -79,6 +87,7 @@ export function Buildings({
            varying float vSeed;
            varying vec3 vLocal;
            varying vec3 vScale;
+           varying float vUpness;
            uniform vec3 uWindowWarm;
            uniform vec3 uWindowCool;
 
@@ -92,22 +101,26 @@ export function Buildings({
            {
              // Windows only on the vertical faces — a roof full of windows is
              // the classic tell of a procedural city.
-             float verticality = 1.0 - abs(normalize(vNormal).y);
+             float verticality = 1.0 - smoothstep(0.35, 0.75, vUpness);
              // ~3.2 m floors, ~2.6 m bays, in this instance's own metres.
              vec2 grid = vec2(
                abs(vLocal.x) > abs(vLocal.z) ? vLocal.z : vLocal.x,
                vLocal.y
              );
              vec2 cell = floor(vec2(grid.x / 2.6, grid.y / 3.2));
-             float lit = step(0.62, hash(cell + vSeed * 97.0));
+             // Roughly half the windows lit. Too few reads as derelict, too
+             // many as a render test.
+             float lit = step(0.48, hash(cell + vSeed * 97.0));
              // Leave a margin so windows are panes, not a continuous band.
-             vec2 f = fract(vec2(grid.x / 2.6, grid.y / 3.2));
-             float pane = step(0.18, f.x) * step(f.x, 0.82)
-                        * step(0.22, f.y) * step(f.y, 0.78);
+             vec2 f = fract(vec2(grid.x / 7.0, grid.y / 5.0));
+             float pane = step(0.12, f.x) * step(f.x, 0.88)
+                        * step(0.18, f.y) * step(f.y, 0.74);
              // Ground floor stays dark; shopfronts at this zoom are noise.
              float aboveGround = step(3.4, vLocal.y + vScale.y * 0.5);
              vec3 tint = mix(uWindowCool, uWindowWarm, hash(cell.yx + vSeed));
-             totalEmissiveRadiance += tint * lit * pane * verticality * aboveGround * 1.5;
+             // Strong enough to clear the bloom threshold and the fog. This is
+             // the single thing that makes massing read as buildings.
+             totalEmissiveRadiance += tint * lit * pane * verticality * aboveGround * 14.0;
            }`,
         );
 
@@ -116,7 +129,7 @@ export function Buildings({
     };
     // Any change to the injected chunks needs a distinct cache key or three
     // silently reuses the previous program.
-    mat.customProgramCacheKey = () => "pravaah-building-windows-v1";
+    mat.customProgramCacheKey = () => "pravaah-building-windows-v3";
     return mat;
   }, []);
 

@@ -123,10 +123,10 @@ function Scene({
           it and a large one still has depth. */}
       <fogExp2 attach="fog" args={["#060A16", 1.6 / Math.max(60, radius)]} />
 
-      <ambientLight intensity={0.75} />
+      <ambientLight intensity={0.35} />
       <directionalLight
         position={[radius, radius * 2, -radius]}
-        intensity={0.5}
+        intensity={0.9}
         color="#8FA6FF"
       />
       <Environment preset="night" />
