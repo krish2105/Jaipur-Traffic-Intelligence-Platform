@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<additional>
+  <vType id="2W" length="1.8" width="0.6" maxSpeed="16.667" minGap="0.5" sigma="0.7" latAlignment="arbitrary" vClass="motorcycle" />
+  <vType id="AUTO" length="2.6" width="1.4" maxSpeed="12.500" minGap="0.8" sigma="0.6" latAlignment="arbitrary" vClass="passenger" />
+  <vType id="ERIK" length="2.7" width="1.2" maxSpeed="6.944" minGap="0.8" sigma="0.6" latAlignment="arbitrary" vClass="passenger" />
+  <vType id="CAR" length="4.0" width="1.7" maxSpeed="19.444" minGap="1.5" sigma="0.5" latAlignment="arbitrary" vClass="passenger" />
+  <vType id="LCV" length="6.0" width="2.2" maxSpeed="16.667" minGap="2.0" sigma="0.5" latAlignment="arbitrary" vClass="passenger" />
+  <vType id="BUS" length="10.5" width="2.5" maxSpeed="15.278" minGap="2.5" sigma="0.4" latAlignment="arbitrary" vClass="passenger" />
+  <vType id="TRK2" length="9.0" width="2.5" maxSpeed="15.278" minGap="2.5" sigma="0.4" latAlignment="arbitrary" vClass="passenger" />
+  <flow id="f_2W" type="2W" begin="0" end="2400" vehsPerHour="1708.0" departLane="random" departSpeed="max">
+    <route edges="link exit"/>
+  </flow>
+  <flow id="f_AUTO" type="AUTO" begin="0" end="2400" vehsPerHour="252.0" departLane="random" departSpeed="max">
+    <route edges="link exit"/>
+  </flow>
+  <flow id="f_CAR" type="CAR" begin="0" end="2400" vehsPerHour="672.0" departLane="random" departSpeed="max">
+    <route edges="link exit"/>
+  </flow>
+  <flow id="f_LCV" type="LCV" begin="0" end="2400" vehsPerHour="84.0" departLane="random" departSpeed="max">
+    <route edges="link exit"/>
+  </flow>
+  <flow id="f_BUS" type="BUS" begin="0" end="2400" vehsPerHour="56.0" departLane="random" departSpeed="max">
+    <route edges="link exit"/>
+  </flow>
+  <flow id="f_TRK2" type="TRK2" begin="0" end="2400" vehsPerHour="28.0" departLane="random" departSpeed="max">
+    <route edges="link exit"/>
+  </flow>
+</additional>

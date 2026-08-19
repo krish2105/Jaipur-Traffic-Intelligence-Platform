@@ -36,6 +36,12 @@ class TestUnderwoodInversion:
         assert estimate.density == pytest.approx(2 * fd.CRITICAL_DENSITY)
         assert estimate.saturation == pytest.approx(2.0)
 
+    def test_jam_density_sits_well_above_critical(self) -> None:
+        # A jam that is only 1.6x critical is not a jam, and would clamp inside
+        # the range the model is supposed to cover. This caught exactly that
+        # when critical density moved from 32 to 88 and jam stayed at 145.
+        assert fd.JAM_DENSITY > 2 * fd.CRITICAL_DENSITY
+
     def test_vehicles_scale_with_lanes_and_length(self) -> None:
         # Density is per lane per km, so a 4-lane 2 km link holds 8x a 1-lane 1 km.
         narrow = fd.density_from_speed(100 / math.e, 100.0, lanes=1, length_km=1.0)
@@ -134,8 +140,10 @@ class TestRegimes:
 
 class TestCriticalAccumulation:
     def test_it_is_geometry_times_critical_density(self) -> None:
-        # 10 links, 4 lanes, 1.2 km: 32 * 4 * 1.2 * 10 = 1536
-        assert fd.critical_accumulation([(4, 1.2)] * 10) == pytest.approx(1536.0)
+        # Derived from the constant rather than hard-coded, because the constant
+        # is measured and has already moved once: 32 to 88 after validation.
+        expected = fd.CRITICAL_DENSITY * 4 * 1.2 * 10
+        assert fd.critical_accumulation([(4, 1.2)] * 10) == pytest.approx(expected)
 
     def test_an_area_with_no_links_holds_nothing(self) -> None:
         assert fd.critical_accumulation([]) == 0.0

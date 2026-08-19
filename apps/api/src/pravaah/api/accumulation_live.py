@@ -19,6 +19,19 @@ carries a band, it is labelled `estimated`, and it is kept separate from the
 into a field that used to mean "a camera saw this", the platform's whole
 argument about probe products stops being true of itself.
 
+And it is withheld where it was measured to be wrong
+-----------------------------------------------------
+The first version of this shipped with the estimator's textbook constant and
+reported a count for every area. Validated against SUMO, that constant was wrong
+by nearly threefold, and even corrected the model is 65% wrong on lightly loaded
+roads, under-reading by about eighteen vehicles a link. No uncertainty band
+repairs that; the bias is structural.
+
+So a count appears only above 0.4 saturation, where the measured error is 2.8%.
+Below it the regime is reported and `vehicles_estimated` is null with a reason
+attached. The number shows up exactly where it is right, which is also the only
+place anyone would act on it.
+
 The threshold is the part that makes it actionable
 --------------------------------------------------
 An accumulation on its own is trivia. The Macroscopic Fundamental Diagram gives
@@ -124,11 +137,20 @@ def live(at: datetime | None = None, now: datetime | None = None) -> dict[str, A
         name = min(stations, key=lambda s: _haversine_km(point, (s[1], s[2])))[0]
         bucket = buckets.setdefault(
             name,
-            {"vehicles": 0.0, "low": 0.0, "high": 0.0, "links": [], "clamped": 0, "lane_km": 0.0},
+            {
+                "vehicles": 0.0,
+                "low": 0.0,
+                "high": 0.0,
+                "links": [],
+                "clamped": 0,
+                "lane_km": 0.0,
+                "reportable_links": 0,
+            },
         )
         bucket["vehicles"] += estimate.vehicles
         bucket["low"] += estimate.vehicles_low
         bucket["high"] += estimate.vehicles_high
+        bucket["reportable_links"] += 1 if estimate.reportable else 0
         bucket["lane_km"] += int(meta.get("lanes") or 2) * float(meta.get("length_km") or 0.0)
         bucket["links"].append(
             {
@@ -153,13 +175,27 @@ def live(at: datetime | None = None, now: datetime | None = None) -> dict[str, A
         )
         saturation = bucket["vehicles"] / critical if critical > 0 else 0.0
         worst = max(bucket["links"], key=lambda link: link["saturation"], default=None)
+        # Below the loading where the estimator was measured to work, the regime
+        # is reported and the count is not. Validation put the error at 65% down
+        # there, systematically under-reading, and a wrong count on screen is
+        # worse than an honest "lightly loaded".
+        reportable = saturation >= fd.MIN_REPORTABLE_SATURATION
         out.append(
             {
                 "area": name,
                 "kind": "thana_catchment",
-                "vehicles_estimated": round(bucket["vehicles"]),
-                "vehicles_low": round(bucket["low"]),
-                "vehicles_high": round(bucket["high"]),
+                "count_reportable": reportable,
+                "vehicles_estimated": round(bucket["vehicles"]) if reportable else None,
+                "vehicles_low": round(bucket["low"]) if reportable else None,
+                "vehicles_high": round(bucket["high"]) if reportable else None,
+                "withheld_reason": (
+                    None
+                    if reportable
+                    else (
+                        f"Below {fd.MIN_REPORTABLE_SATURATION} saturation the "
+                        "estimator was measured 65% wrong, so no count is given."
+                    )
+                ),
                 "critical_accumulation": round(critical),
                 "saturation": round(saturation, 2),
                 "regime": fd.regime_for(saturation),

@@ -1,0 +1,37 @@
+{
+  "scenario": "2-lane 1 km signalised arterial link, 61% two-wheelers",
+  "simulator": "SUMO 1.27.1",
+  "seeds": [
+    42,
+    7,
+    1337
+  ],
+  "runs": 54,
+  "free_flow_kmh": 39.2,
+  "speed_range_kmh": [
+    8.1,
+    39.2
+  ],
+  "vehicles_range": [
+    3.7,
+    279.3
+  ],
+  "speed_vehicle_correlation": -0.979,
+  "literature": {
+    "critical_density": 88.0,
+    "mae_vehicles": 16.1,
+    "mape_percent": 51.5,
+    "mape_busy_percent": 4.2,
+    "band_coverage": 0.63
+  },
+  "fitted": {
+    "critical_density": 88.1,
+    "mae_vehicles": 16.1,
+    "mape_percent": 51.5,
+    "mape_busy_percent": 4.2,
+    "band_coverage": 0.63
+  },
+  "band_rmse_for_95_percent_coverage": 60.0,
+  "usable_as_a_count": true,
+  "finding": "On a signalised link, mean speed is held down by the signal at every density, so it barely moves until saturation. A speed-density model cannot recover a vehicle count from it, whatever it is calibrated to. The measured spread here is 79% of speed across a 75x change in vehicles."
+}

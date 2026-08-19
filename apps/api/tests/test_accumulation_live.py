@@ -126,13 +126,16 @@ class TestAssignment:
 
 class TestCapacityIsLikeForLike:
     def test_critical_covers_only_the_links_that_contributed(self, wired) -> None:
-        # North is 4 lanes x 1 km = 4 lane-km -> 32 * 4 = 128 critical.
-        # South is 2 lanes x 2 km = 4 lane-km -> the same. Equal capacity from
-        # different geometry is the point: it is lane-km that holds vehicles.
+        # Both areas hold 4 lane-km: North as 4 lanes x 1 km, South as 2 x 2.
+        # Equal capacity from different geometry is the point — it is lane-km
+        # that holds vehicles, not lanes or length alone.
+        from pravaah.drishti import fundamental as fd
+
+        expected = round(fd.CRITICAL_DENSITY * 4)
         wired({"1": reading(20.0), "2": reading(20.0)})
         areas = {a["area"]: a for a in accumulation_live.live()["areas"]}
-        assert areas["North Thana"]["critical_accumulation"] == 128
-        assert areas["South Thana"]["critical_accumulation"] == 128
+        assert areas["North Thana"]["critical_accumulation"] == expected
+        assert areas["South Thana"]["critical_accumulation"] == expected
 
     def test_capacity_shrinks_when_fewer_links_report(self, wired) -> None:
         # If capacity were taken over the whole catchment regardless, dropping a
@@ -149,22 +152,37 @@ class TestCapacityIsLikeForLike:
 
 class TestTheNumbers:
     def test_slower_traffic_means_more_vehicles(self, wired) -> None:
-        wired({"1": reading(45.0)})
+        # Both below free flow enough to clear the reporting threshold.
+        wired({"1": reading(30.0)})
         light = accumulation_live.live()["areas"][0]["vehicles_estimated"]
         wired({"1": reading(12.0)})
         heavy = accumulation_live.live()["areas"][0]["vehicles_estimated"]
         assert heavy > light
 
-    def test_every_area_carries_a_band(self, wired) -> None:
+    def test_every_reported_area_carries_a_band(self, wired) -> None:
         wired({"1": reading(20.0)})
         area = accumulation_live.live()["areas"][0]
+        assert area["count_reportable"] is True
         assert area["vehicles_low"] <= area["vehicles_estimated"] <= area["vehicles_high"]
 
     def test_free_flow_speed_is_an_empty_area_not_a_missing_one(self, wired) -> None:
         wired({"1": reading(50.0)})
         area = accumulation_live.live()["areas"][0]
-        assert area["vehicles_estimated"] == 0
         assert area["regime"] == "free"
+        # Empty, and below the loading where the estimator was shown to work, so
+        # the regime stands and the count is withheld rather than read as zero.
+        assert area["count_reportable"] is False
+        assert area["vehicles_estimated"] is None
+
+    def test_a_lightly_loaded_area_gets_a_regime_but_no_count(self, wired) -> None:
+        # Validation: 65% error below 0.2 saturation, under-reading by about
+        # eighteen vehicles a link. A wrong count is worse than an honest gap.
+        wired({"1": reading(46.0)})
+        area = accumulation_live.live()["areas"][0]
+        assert area["count_reportable"] is False
+        assert area["vehicles_estimated"] is None
+        assert "65% wrong" in area["withheld_reason"]
+        assert area["regime"] in {"free", "accumulating", "saturated", "gridlock"}
 
     def test_areas_are_ordered_worst_first(self, wired) -> None:
         wired({"1": reading(10.0), "2": reading(48.0)})

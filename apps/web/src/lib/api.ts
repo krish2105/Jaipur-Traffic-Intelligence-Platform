@@ -462,9 +462,11 @@ export interface SourceReadiness {
 export interface AreaAccumulation {
   area: string;
   kind: string;
-  vehicles_estimated: number;
-  vehicles_low: number;
-  vehicles_high: number;
+  count_reportable: boolean;
+  vehicles_estimated: number | null;
+  vehicles_low: number | null;
+  vehicles_high: number | null;
+  withheld_reason: string | null;
   critical_accumulation: number;
   saturation: number;
   regime: "free" | "accumulating" | "saturated" | "gridlock";

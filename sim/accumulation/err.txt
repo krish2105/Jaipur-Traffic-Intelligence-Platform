@@ -1,0 +1,2 @@
+Warning: Environment variable SUMO_HOME is not set properly, disabling XML validation. Set 'auto' or 'always' for web lookups.
+Warning: Found root element 'additional' in file 'a.rou.xml' (expected 'routes').

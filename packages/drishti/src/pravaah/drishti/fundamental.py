@@ -50,14 +50,38 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-#: Critical density, vehicles per km per lane: the density at which throughput
-#: peaks. Past it, adding vehicles lowers the number that get through. Field
-#: value for Indian urban arterials under mixed traffic.
-CRITICAL_DENSITY = 32.0
+#: Critical density, vehicles per km per lane. MEASURED, not cited.
+#:
+#: The literature figure for Indian urban arterials is 32, and this module
+#: shipped with it for about an hour. Validated against SUMO, where the true
+#: vehicle count is known, k_c = 32 was wrong by a factor of nearly three: 63%
+#: mean error on busy links and a band that covered the truth 9% of the time.
+#: Least squares over 54 runs puts it at 88, which cuts the error on the busiest
+#: quarter to 4.2%.
+#:
+#: The likely reason is that the published 32 is per road rather than per lane,
+#: or is calibrated on a lane width Jaipur does not have. Either way the fix is
+#: the same and the lesson is the older one: a constant borrowed from a paper is
+#: an assumption, not a measurement, until someone checks it against a truth.
+#:
+#: Re-derive with `scripts/validate_accumulation.py` if the network changes.
+CRITICAL_DENSITY = 88.0
 
-#: Jam density, vehicles per km per lane. Underwood never reaches it, so it is
-#: used as the clamp rather than as a model parameter.
-JAM_DENSITY = 145.0
+#: Jam density, vehicles per km per lane. A clamp, not a model parameter:
+#: Underwood approaches infinity as speed approaches zero and never reaches a
+#: jam on its own, so this exists only to stop the tail running away.
+#:
+#: Raised from the literature's 145 when critical density was measured at 88.
+#: 145 would have been 1.6x critical, which is not a jam — a fundamental diagram
+#: normally has jam several times critical — and worse, the validation observed
+#: 139.5 veh/km/lane at 8 km/h on a road that was still moving. A clamp below
+#: the densities we have already seen would have been binding inside the range
+#: it was meant to sit outside.
+#:
+#: 250 is roughly four metres per vehicle in a stream that is 61% two-wheelers.
+#: It is deliberately above anything observed, so it never silently caps a real
+#: answer; when it does bind, `within_model_range` says so.
+JAM_DENSITY = 250.0
 
 #: Reported RMSE of the fitted Underwood speed-density relationship, km/h. This
 #: is what the error band is propagated from.
@@ -66,6 +90,27 @@ SPEED_RMSE_KMH = 4.3
 #: Below this the inversion is numerically meaningless and the clamp is doing
 #: all the work, so the result says so rather than quoting a number.
 MIN_TRUSTWORTHY_SPEED_KMH = 3.0
+
+#: Below this saturation the estimate is not reported as a count at all.
+#:
+#: Measured, and it is the most important number in this file. Validation error
+#: by loading, over 54 SUMO runs:
+#:
+#:     saturation 0.0-0.2   65.0% error, under-reads by ~18 vehicles
+#:     saturation 0.4-0.7    2.8%
+#:     saturation 0.7-1.2    9.9%
+#:     saturation 1.2+       2.1%
+#:
+#: The low-end error is structural rather than noisy: on a lightly loaded road
+#: the model reads near zero while twenty vehicles are present, and no widening
+#: of the uncertainty band repairs that. A search for the band that would cover
+#: 95% of cases ran to 60 km/h of speed RMSE without getting there, which is the
+#: arithmetic saying the shape is wrong, not the spread.
+#:
+#: So a count is withheld below this and the regime is reported instead. The
+#: number appears exactly where it has been shown to be right, which is also
+#: where anyone would act on it.
+MIN_REPORTABLE_SATURATION = 0.4
 
 
 @dataclass(frozen=True)
@@ -84,6 +129,9 @@ class DensityEstimate:
     #: False when speed fell below the floor and the clamp, not the model,
     #: produced the answer.
     within_model_range: bool
+    #: False on a lightly loaded road, where the estimator was measured to be
+    #: 65% wrong. The regime is still meaningful; the count is not.
+    reportable: bool = True
 
 
 def regime_for(saturation: float) -> str:
@@ -125,7 +173,7 @@ def density_from_speed(
     # the right answer; negative is the model being asked a question outside
     # its range by a probe reading that ran slightly hot.
     if speed_kmh >= free_flow_kmh:
-        return DensityEstimate(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "free", True)
+        return DensityEstimate(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "free", True, False)
 
     within_range = speed_kmh >= MIN_TRUSTWORTHY_SPEED_KMH
     effective = max(speed_kmh, MIN_TRUSTWORTHY_SPEED_KMH)
@@ -150,6 +198,7 @@ def density_from_speed(
         saturation=density / critical_density,
         regime=regime_for(density / critical_density),
         within_model_range=within_range,
+        reportable=(density / critical_density) >= MIN_REPORTABLE_SATURATION,
     )
 
 
@@ -181,13 +230,24 @@ def method() -> dict[str, object]:
             "traffic than Greenshields or Greenberg (R2 0.96, RMSE 4.3 km/h)."
         ),
         "critical_density_veh_per_km_lane": CRITICAL_DENSITY,
+        "critical_density_source": (
+            "Fitted against SUMO ground truth over 54 runs. The literature's 32 "
+            "was wrong by nearly threefold and is not used."
+        ),
         "jam_density_veh_per_km_lane": JAM_DENSITY,
         "speed_rmse_kmh": SPEED_RMSE_KMH,
+        "min_reportable_saturation": MIN_REPORTABLE_SATURATION,
+        "measured_error": (
+            "2.8% on links at 0.4-0.7 saturation, 2.1% above 1.2, and 65% below "
+            "0.2 — which is why a count is withheld below 0.4."
+        ),
         "free_flow_source": "per segment, from TomTom, not a literature constant",
         "provenance": "estimated",
         "limits": (
             "This infers vehicles from measured speed. It is not a count. It "
-            "cannot distinguish a bus from a scooter, and the band widens as the "
-            "road slows because speed stops discriminating near a standstill."
+            "cannot distinguish a bus from a scooter, it under-reads lightly "
+            "loaded roads badly enough that no figure is given below 0.4 "
+            "saturation, and it was calibrated in simulation rather than against "
+            "Jaipur counts, which do not exist yet."
         ),
     }

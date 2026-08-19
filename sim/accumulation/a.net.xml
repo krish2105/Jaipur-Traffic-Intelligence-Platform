@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-08-19T14:58:08.796672+05:30 by Eclipse SUMO netconvert 1.27.1
+<netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <node-files value="sim/accumulation/a.nod.xml"/>
+        <edge-files value="sim/accumulation/a.edg.xml"/>
+    </input>
+
+    <output>
+        <output-file value="sim/accumulation/a.net.xml"/>
+    </output>
+
+    <tls_building>
+        <tls.default-type value="static"/>
+    </tls_building>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+    </junctions>
+
+</netconvertConfiguration>
+-->
+
+<net version="1.20" junctionCornerDetail="5" limitTurnSpeed="5.50" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">
+
+    <location netOffset="0.00,0.00" convBoundary="0.00,0.00,1300.00,0.00" origBoundary="0.00,0.00,1300.00,0.00" projParameter="!"/>
+
+    <edge id=":sig_0" function="internal">
+        <lane id=":sig_0_0" index="0" speed="13.90" length="0.10" shape="1000.00,-4.80 1000.00,-4.80"/>
+        <lane id=":sig_0_1" index="1" speed="13.90" length="0.10" shape="1000.00,-1.60 1000.00,-1.60"/>
+    </edge>
+
+    <edge id="exit" from="sig" to="out" priority="-1">
+        <lane id="exit_0" index="0" speed="13.90" length="300.00" shape="1000.00,-4.80 1300.00,-4.80"/>
+        <lane id="exit_1" index="1" speed="13.90" length="300.00" shape="1000.00,-1.60 1300.00,-1.60"/>
+    </edge>
+    <edge id="link" from="in" to="sig" priority="-1">
+        <lane id="link_0" index="0" speed="13.90" length="1000.00" shape="0.00,-4.80 1000.00,-4.80"/>
+        <lane id="link_1" index="1" speed="13.90" length="1000.00" shape="0.00,-1.60 1000.00,-1.60"/>
+    </edge>
+
+    <tlLogic id="sig" type="static" programID="0" offset="0">
+        <phase duration="82" state="GG"/>
+        <phase duration="3"  state="yy"/>
+        <phase duration="5"  state="rr"/>
+    </tlLogic>
+
+    <junction id="in" type="dead_end" x="0.00" y="0.00" incLanes="" intLanes="" shape="0.00,0.00 0.00,-6.40"/>
+    <junction id="out" type="dead_end" x="1300.00" y="0.00" incLanes="exit_0 exit_1" intLanes="" shape="1300.00,-6.40 1300.00,0.00"/>
+    <junction id="sig" type="traffic_light" x="1000.00" y="0.00" incLanes="link_0 link_1" intLanes=":sig_0_0 :sig_0_1" shape="1000.00,0.00 1000.00,-6.40 1000.00,0.00">
+        <request index="0" response="00" foes="00" cont="0"/>
+        <request index="1" response="00" foes="00" cont="0"/>
+    </junction>
+
+    <connection from="link" to="exit" fromLane="0" toLane="0" via=":sig_0_0" tl="sig" linkIndex="0" dir="s" state="O"/>
+    <connection from="link" to="exit" fromLane="1" toLane="1" via=":sig_0_1" tl="sig" linkIndex="1" dir="s" state="O"/>
+
+    <connection from=":sig_0" to="exit" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":sig_0" to="exit" fromLane="1" toLane="1" dir="s" state="M"/>
+
+</net>

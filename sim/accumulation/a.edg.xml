@@ -1,0 +1,4 @@
+<edges>
+  <edge id="link" from="in" to="sig" numLanes="2" speed="13.9"/>
+  <edge id="exit" from="sig" to="out" numLanes="2" speed="13.9"/>
+</edges>

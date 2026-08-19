@@ -1,0 +1,10 @@
+<configuration>
+  <input>
+    <net-file value="a.net.xml"/>
+    <route-files value="a.rou.xml"/>
+    <additional-files value="tls.add.xml,edge.add.xml"/>
+  </input>
+  <time><begin value="0"/><end value="2400"/></time>
+  <processing><time-to-teleport value="-1"/></processing>
+  <random_number><seed value="1337"/></random_number>
+</configuration>

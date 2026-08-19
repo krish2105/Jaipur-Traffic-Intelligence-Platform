@@ -508,7 +508,9 @@ export function AccumulationPanel({ data }: { data: LiveAccumulation }) {
                   {area.area}
                 </span>
                 <span className="shrink-0 font-mono tabular-nums text-[13px] text-[var(--ink)]">
-                  {area.vehicles_estimated.toLocaleString("en-IN")}
+                  {area.count_reportable && area.vehicles_estimated !== null
+                    ? area.vehicles_estimated.toLocaleString("en-IN")
+                    : "—"}
                 </span>
               </div>
               {/* Against its own capacity, not against the other areas. */}
@@ -516,7 +518,9 @@ export function AccumulationPanel({ data }: { data: LiveAccumulation }) {
                 className="mt-1 h-1 w-full overflow-hidden rounded-full"
                 style={{ background: "var(--surface-3)" }}
                 role="img"
-                aria-label={`${area.area}: ${area.vehicles_estimated} of ${area.critical_accumulation} critical, ${word.en}`}
+                aria-label={`${area.area}: ${
+                  area.count_reportable ? area.vehicles_estimated : "count withheld"
+                } of ${area.critical_accumulation} critical, ${word.en}`}
               >
                 <div
                   className="h-full rounded-full"
@@ -524,8 +528,15 @@ export function AccumulationPanel({ data }: { data: LiveAccumulation }) {
                 />
               </div>
               <p className="mt-1 font-mono text-[10px] tabular-nums text-[var(--ink-faint)]">
-                {area.vehicles_low.toLocaleString("en-IN")}–
-                {area.vehicles_high.toLocaleString("en-IN")}
+                {/* A count only where the estimator was measured to be right.
+                    Below 0.4 saturation it is 65% wrong and under-reads, so the
+                    regime stands alone rather than a wrong number standing with
+                    it. */}
+                {area.count_reportable && area.vehicles_low !== null && area.vehicles_high !== null
+                  ? `${area.vehicles_low.toLocaleString("en-IN")}–${area.vehicles_high.toLocaleString("en-IN")}`
+                  : hi
+                    ? "हल्का भार — गिनती रोकी गई"
+                    : "lightly loaded, count withheld"}
                 {" · "}
                 {hi ? "क्रांतिक" : "critical"} {area.critical_accumulation.toLocaleString("en-IN")}
                 {" · "}
@@ -544,8 +555,8 @@ export function AccumulationPanel({ data }: { data: LiveAccumulation }) {
 
       <p className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] leading-relaxed text-[var(--ink-muted)]">
         {hi
-          ? "मापी गई गति से अनुमानित, गिना नहीं गया। बैंड मॉडल की अपनी त्रुटि है।"
-          : "Inferred from measured speed, not counted. The band is the model's own error."}
+          ? "मापी गई गति से अनुमानित, गिना नहीं गया। SUMO के विरुद्ध जाँचा: व्यस्त लिंक पर 2.8% त्रुटि, हल्के पर 65% — इसीलिए हल्के भार पर संख्या नहीं दी जाती।"
+          : "Inferred from measured speed, not counted. Validated against SUMO: 2.8% error on busy links, 65% on light ones, which is why no count is given below 0.4 saturation."}
       </p>
       {data.areas_total != null && (
         <p className="mt-1 text-[11px] leading-relaxed text-[var(--ink-faint)]">

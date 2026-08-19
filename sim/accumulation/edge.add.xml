@@ -1,0 +1,4 @@
+<additional>
+  <edgeData id="ed" file="edge.out.xml" begin="600" end="2400"
+            excludeEmpty="false"/>
+</additional>
