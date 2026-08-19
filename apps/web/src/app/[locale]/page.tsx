@@ -11,7 +11,10 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [summary, profile, incidents, policy, severity, allocation, severityModel] = await Promise.all([
+  const [
+    summary, profile, incidents, policy, severity, allocation, severityModel,
+    accumulation, scheme, cityData,
+  ] = await Promise.all([
     // `.catch()` here matches the other three calls below. Its absence was
     // the actual production bug: one unreachable call took the whole
     // Server Component down with an unhandled rejection (a bare 500, no
@@ -51,6 +54,12 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
     api.severity().catch(() => null),
     api.allocation().catch(() => null),
     api.severityModel().catch(() => null),
+    // The three findings the "what changed" section reads. Each degrades on its
+    // own; the section hides itself when all three are absent rather than
+    // rendering an empty grid.
+    api.liveAccumulation().catch(() => null),
+    api.schemes().catch(() => null),
+    api.cityData().catch(() => null),
   ]);
 
   return (
@@ -62,6 +71,9 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       severity={severity}
       allocation={allocation}
       severityModel={severityModel}
+      accumulation={accumulation}
+      scheme={scheme?.schemes?.[0] ?? null}
+      cityData={cityData}
     />
   );
 }

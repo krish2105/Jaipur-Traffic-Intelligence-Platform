@@ -4,6 +4,9 @@ import { useLocale } from "next-intl";
 import Link from "next/link";
 
 import type {
+  CityData,
+  LiveAccumulation,
+  Scheme,
   CountsSummary,
   DayProfile,
   EnforcementAllocation,
@@ -21,6 +24,7 @@ import { Counter, Magnetic, SplitText } from "./motion-primitives";
 import { SeveritySection } from "./severity-section";
 import { AskPanel } from "./ask-panel";
 import { SeverityModelPanel } from "./severity-model-panel";
+import { WhatChanged } from "./what-changed";
 
 /**
  * The landing page.
@@ -134,6 +138,9 @@ export function LandingView({
   severity,
   allocation,
   severityModel,
+  accumulation,
+  scheme,
+  cityData,
 }: {
   summary: CountsSummary;
   profile: DayProfile;
@@ -142,6 +149,9 @@ export function LandingView({
   severity: SeverityFinding | null;
   allocation: EnforcementAllocation | null;
   severityModel: SeverityModel | null;
+  accumulation: LiveAccumulation | null;
+  scheme: Scheme | null;
+  cityData: CityData | null;
 }) {
   const locale = useLocale() as Locale;
   const hi = locale === "hi";
@@ -280,6 +290,20 @@ export function LandingView({
       </section>
 
       {/* ── the shape of the day ────────────────────────────────────────── */}
+      {/* Placed before the method sections on purpose. An official who reads
+          only the first screen after the hero should get the three things that
+          changed this week, not the background they already know. */}
+      <Section
+        eyebrow={hi ? "क्या बदला" : "what changed"}
+        title={
+          hi
+            ? "तीन बातें जिन्होंने तर्क बदला।"
+            : "Three things that changed the argument."
+        }
+      >
+        <WhatChanged accumulation={accumulation} scheme={scheme} cityData={cityData} />
+      </Section>
+
       <Section
         eyebrow={hi ? "01 · दिन का आकार" : "01 · the shape of the day"}
         title={
