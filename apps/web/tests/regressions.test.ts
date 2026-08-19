@@ -333,3 +333,39 @@ describe("no clock may be rendered during hydration", () => {
     expect(code).not.toMatch(/nowMinutes \?\? 0/);
   });
 });
+
+describe("an ssr:false map must render the same thing on both first renders", () => {
+  /**
+   * `dynamic(..., { ssr: false })` renders its `loading` fallback on the server.
+   * When the chunk is already available the import resolves before hydration,
+   * so React's first client render is the real map where the server HTML holds
+   * an ellipsis — hydration error #418, several times per load, on every page
+   * carrying a map. React recovered by re-rendering the subtree, so nothing
+   * looked wrong and it lived in the console log for weeks.
+   *
+   * Diagnosed by correlation in ADR-063: the two map-bearing pages failed in
+   * the same two chunks, the two without a map were silent.
+   */
+  const source = readFileSync(
+    join(__dirname, "../src/components/map/corridor-map.loader.tsx"),
+    "utf8",
+  );
+
+  it("gates the dynamic import behind a mount check", () => {
+    expect(source).toContain("useSyncExternalStore");
+  });
+
+  it("reports not-mounted on the server, so both first renders agree", () => {
+    // The whole mechanism. If this snapshot ever returns true, the server and
+    // the client can disagree again and the error comes straight back.
+    expect(source).toMatch(/\(\)\s*=>\s*false,/);
+  });
+
+  it("renders the same fallback component in both paths", () => {
+    // Two different placeholders would be the same bug wearing a disguise:
+    // the server's markup still would not match the client's first render.
+    const code = source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
+    expect(code).toMatch(/loading:\s*Fallback/);
+    expect(code).toMatch(/if \(!mounted\) return <Fallback \/>;/);
+  });
+});
