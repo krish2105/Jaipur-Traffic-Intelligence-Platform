@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-08-19T17:26:18.033315+00:00",
+  "captured_at": "2026-08-19T19:04:06.158598+00:00",
   "provider": "TomTom Flow Segment Data v4",
   "measures": "speed and delay only \u2014 never volume, never composition",
   "window_ist": "06:00-22:00",
@@ -14,8 +14,8 @@
   "budget": {
     "monthly_limit": 20000,
     "month": "2026-08",
-    "calls_used": 175,
-    "calls_remaining": 19825,
+    "calls_used": 200,
+    "calls_remaining": 19800,
     "planned_monthly": 15750
   },
   "measured_segments": 25,
@@ -29,7 +29,7 @@
       "is_measured": true,
       "travel_time_s": 735,
       "free_flow_travel_time_s": 735,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.91666,75.81739->26.85677,75.79524",
       "shared_with_links": [
         145,
@@ -48,7 +48,7 @@
       "is_measured": true,
       "travel_time_s": 735,
       "free_flow_travel_time_s": 735,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.91666,75.81739->26.85677,75.79524",
       "shared_with_links": [
         145,
@@ -67,7 +67,7 @@
       "is_measured": true,
       "travel_time_s": 735,
       "free_flow_travel_time_s": 735,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.91666,75.81739->26.85677,75.79524",
       "shared_with_links": [
         145,
@@ -86,7 +86,7 @@
       "is_measured": true,
       "travel_time_s": 735,
       "free_flow_travel_time_s": 735,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.91666,75.81739->26.85677,75.79524",
       "shared_with_links": [
         145,
@@ -105,7 +105,7 @@
       "is_measured": true,
       "travel_time_s": 735,
       "free_flow_travel_time_s": 735,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.91666,75.81739->26.85677,75.79524",
       "shared_with_links": [
         145,
@@ -124,7 +124,7 @@
       "is_measured": true,
       "travel_time_s": 735,
       "free_flow_travel_time_s": 735,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.91666,75.81739->26.85677,75.79524",
       "shared_with_links": [
         145,
@@ -143,7 +143,7 @@
       "is_measured": true,
       "travel_time_s": 63,
       "free_flow_travel_time_s": 63,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.83871,75.79374->26.83865,75.79390",
       "shared_with_links": [
         516,
@@ -160,7 +160,7 @@
       "is_measured": true,
       "travel_time_s": 63,
       "free_flow_travel_time_s": 63,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.83871,75.79374->26.83865,75.79390",
       "shared_with_links": [
         516,
@@ -177,7 +177,7 @@
       "is_measured": true,
       "travel_time_s": 63,
       "free_flow_travel_time_s": 63,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.83871,75.79374->26.83865,75.79390",
       "shared_with_links": [
         516,
@@ -194,7 +194,7 @@
       "is_measured": true,
       "travel_time_s": 63,
       "free_flow_travel_time_s": 63,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.83871,75.79374->26.83865,75.79390",
       "shared_with_links": [
         516,
@@ -211,7 +211,7 @@
       "is_measured": true,
       "travel_time_s": 1402,
       "free_flow_travel_time_s": 1402,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.85677,75.79524->26.70594,75.89022",
       "shared_with_links": [
         223,
@@ -230,7 +230,7 @@
       "is_measured": true,
       "travel_time_s": 1402,
       "free_flow_travel_time_s": 1402,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.85677,75.79524->26.70594,75.89022",
       "shared_with_links": [
         223,
@@ -249,7 +249,7 @@
       "is_measured": true,
       "travel_time_s": 1402,
       "free_flow_travel_time_s": 1402,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.85677,75.79524->26.70594,75.89022",
       "shared_with_links": [
         223,
@@ -268,7 +268,7 @@
       "is_measured": true,
       "travel_time_s": 1402,
       "free_flow_travel_time_s": 1402,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.85677,75.79524->26.70594,75.89022",
       "shared_with_links": [
         223,
@@ -287,7 +287,7 @@
       "is_measured": true,
       "travel_time_s": 1402,
       "free_flow_travel_time_s": 1402,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.85677,75.79524->26.70594,75.89022",
       "shared_with_links": [
         223,
@@ -306,7 +306,7 @@
       "is_measured": true,
       "travel_time_s": 1402,
       "free_flow_travel_time_s": 1402,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.85677,75.79524->26.70594,75.89022",
       "shared_with_links": [
         223,
@@ -325,7 +325,7 @@
       "is_measured": true,
       "travel_time_s": 718,
       "free_flow_travel_time_s": 718,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.85831,75.79536->26.91670,75.81723",
       "shared_with_links": [
         311,
@@ -342,7 +342,7 @@
       "is_measured": true,
       "travel_time_s": 718,
       "free_flow_travel_time_s": 718,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.85831,75.79536->26.91670,75.81723",
       "shared_with_links": [
         311,
@@ -359,7 +359,7 @@
       "is_measured": true,
       "travel_time_s": 718,
       "free_flow_travel_time_s": 718,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.85831,75.79536->26.91670,75.81723",
       "shared_with_links": [
         311,
@@ -376,7 +376,7 @@
       "is_measured": true,
       "travel_time_s": 718,
       "free_flow_travel_time_s": 718,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.85831,75.79536->26.91670,75.81723",
       "shared_with_links": [
         311,
@@ -393,7 +393,7 @@
       "is_measured": true,
       "travel_time_s": 1265,
       "free_flow_travel_time_s": 1265,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -415,7 +415,7 @@
       "is_measured": true,
       "travel_time_s": 1265,
       "free_flow_travel_time_s": 1265,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -437,7 +437,7 @@
       "is_measured": true,
       "travel_time_s": 1265,
       "free_flow_travel_time_s": 1265,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -459,7 +459,7 @@
       "is_measured": true,
       "travel_time_s": 1265,
       "free_flow_travel_time_s": 1265,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -481,7 +481,7 @@
       "is_measured": true,
       "travel_time_s": 1265,
       "free_flow_travel_time_s": 1265,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -503,7 +503,7 @@
       "is_measured": true,
       "travel_time_s": 1265,
       "free_flow_travel_time_s": 1265,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -525,7 +525,7 @@
       "is_measured": true,
       "travel_time_s": 1265,
       "free_flow_travel_time_s": 1265,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -547,7 +547,7 @@
       "is_measured": true,
       "travel_time_s": 1265,
       "free_flow_travel_time_s": 1265,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -569,7 +569,7 @@
       "is_measured": true,
       "travel_time_s": 1265,
       "free_flow_travel_time_s": 1265,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -591,7 +591,7 @@
       "is_measured": true,
       "travel_time_s": 59,
       "free_flow_travel_time_s": 59,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.83821,75.79391->26.83829,75.79375",
       "shared_with_links": [
         501,
@@ -607,7 +607,7 @@
       "is_measured": true,
       "travel_time_s": 59,
       "free_flow_travel_time_s": 59,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.83821,75.79391->26.83829,75.79375",
       "shared_with_links": [
         501,
@@ -623,7 +623,7 @@
       "is_measured": true,
       "travel_time_s": 59,
       "free_flow_travel_time_s": 59,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.83821,75.79391->26.83829,75.79375",
       "shared_with_links": [
         501,
@@ -631,30 +631,30 @@
       ]
     },
     "261": {
-      "speed_kmh": 26.0,
+      "speed_kmh": 21.0,
       "free_flow_kmh": 26.0,
-      "congestion_index": 0.0,
-      "confidence": 1.0,
+      "congestion_index": 19.6,
+      "confidence": 0.99,
       "road_closure": false,
       "is_measured": true,
-      "travel_time_s": 168,
+      "travel_time_s": 209,
       "free_flow_travel_time_s": 168,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.84261,75.79358->26.85347,75.79467",
       "shared_with_links": [
         454
       ]
     },
     "454": {
-      "speed_kmh": 26.0,
+      "speed_kmh": 21.0,
       "free_flow_kmh": 26.0,
-      "congestion_index": 0.0,
-      "confidence": 1.0,
+      "congestion_index": 19.6,
+      "confidence": 0.99,
       "road_closure": false,
       "is_measured": true,
-      "travel_time_s": 168,
+      "travel_time_s": 209,
       "free_flow_travel_time_s": 168,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.84261,75.79358->26.85347,75.79467",
       "shared_with_links": [
         454
@@ -669,7 +669,7 @@
       "is_measured": true,
       "travel_time_s": 167,
       "free_flow_travel_time_s": 167,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.85348,75.79477->26.84267,75.79368",
       "shared_with_links": [
         452,
@@ -685,7 +685,7 @@
       "is_measured": true,
       "travel_time_s": 167,
       "free_flow_travel_time_s": 167,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.85348,75.79477->26.84267,75.79368",
       "shared_with_links": [
         452,
@@ -701,7 +701,7 @@
       "is_measured": true,
       "travel_time_s": 167,
       "free_flow_travel_time_s": 167,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.85348,75.79477->26.84267,75.79368",
       "shared_with_links": [
         452,
@@ -717,7 +717,7 @@
       "is_measured": true,
       "travel_time_s": 54,
       "free_flow_travel_time_s": 54,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.85831,75.79536->26.86251,75.79589",
       "shared_with_links": []
     },
@@ -730,7 +730,7 @@
       "is_measured": true,
       "travel_time_s": 267,
       "free_flow_travel_time_s": 267,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.83966,75.76782->26.83964,75.79850",
       "shared_with_links": []
     },
@@ -743,7 +743,7 @@
       "is_measured": true,
       "travel_time_s": 210,
       "free_flow_travel_time_s": 210,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.85475,75.82414->26.86109,75.80641",
       "shared_with_links": []
     },
@@ -756,7 +756,7 @@
       "is_measured": true,
       "travel_time_s": 284,
       "free_flow_travel_time_s": 284,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.84185,75.80150->26.86812,75.80832",
       "shared_with_links": [
         97,
@@ -776,7 +776,7 @@
       "is_measured": true,
       "travel_time_s": 284,
       "free_flow_travel_time_s": 284,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.84185,75.80150->26.86812,75.80832",
       "shared_with_links": [
         97,
@@ -796,7 +796,7 @@
       "is_measured": true,
       "travel_time_s": 284,
       "free_flow_travel_time_s": 284,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.84185,75.80150->26.86812,75.80832",
       "shared_with_links": [
         97,
@@ -816,7 +816,7 @@
       "is_measured": true,
       "travel_time_s": 284,
       "free_flow_travel_time_s": 284,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.84185,75.80150->26.86812,75.80832",
       "shared_with_links": [
         97,
@@ -836,7 +836,7 @@
       "is_measured": true,
       "travel_time_s": 284,
       "free_flow_travel_time_s": 284,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.84185,75.80150->26.86812,75.80832",
       "shared_with_links": [
         97,
@@ -856,7 +856,7 @@
       "is_measured": true,
       "travel_time_s": 284,
       "free_flow_travel_time_s": 284,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.84185,75.80150->26.86812,75.80832",
       "shared_with_links": [
         97,
@@ -876,7 +876,7 @@
       "is_measured": true,
       "travel_time_s": 284,
       "free_flow_travel_time_s": 284,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.84185,75.80150->26.86812,75.80832",
       "shared_with_links": [
         97,
@@ -896,7 +896,7 @@
       "is_measured": true,
       "travel_time_s": 554,
       "free_flow_travel_time_s": 554,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.91395,75.82004->26.86771,75.80833",
       "shared_with_links": [
         133,
@@ -912,7 +912,7 @@
       "is_measured": true,
       "travel_time_s": 554,
       "free_flow_travel_time_s": 554,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.91395,75.82004->26.86771,75.80833",
       "shared_with_links": [
         133,
@@ -928,7 +928,7 @@
       "is_measured": true,
       "travel_time_s": 554,
       "free_flow_travel_time_s": 554,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.91395,75.82004->26.86771,75.80833",
       "shared_with_links": [
         133,
@@ -944,7 +944,7 @@
       "is_measured": true,
       "travel_time_s": 534,
       "free_flow_travel_time_s": 534,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -966,7 +966,7 @@
       "is_measured": true,
       "travel_time_s": 534,
       "free_flow_travel_time_s": 534,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -988,7 +988,7 @@
       "is_measured": true,
       "travel_time_s": 534,
       "free_flow_travel_time_s": 534,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -1010,7 +1010,7 @@
       "is_measured": true,
       "travel_time_s": 534,
       "free_flow_travel_time_s": 534,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -1032,7 +1032,7 @@
       "is_measured": true,
       "travel_time_s": 534,
       "free_flow_travel_time_s": 534,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -1054,7 +1054,7 @@
       "is_measured": true,
       "travel_time_s": 534,
       "free_flow_travel_time_s": 534,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -1076,7 +1076,7 @@
       "is_measured": true,
       "travel_time_s": 534,
       "free_flow_travel_time_s": 534,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -1098,7 +1098,7 @@
       "is_measured": true,
       "travel_time_s": 534,
       "free_flow_travel_time_s": 534,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -1120,7 +1120,7 @@
       "is_measured": true,
       "travel_time_s": 534,
       "free_flow_travel_time_s": 534,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -1142,35 +1142,35 @@
       "is_measured": true,
       "travel_time_s": 241,
       "free_flow_travel_time_s": 241,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86771,75.80833->26.84185,75.80150",
       "shared_with_links": []
     },
     "352": {
-      "speed_kmh": 32.0,
-      "free_flow_kmh": 32.0,
-      "congestion_index": 0.0,
-      "confidence": 1.0,
+      "speed_kmh": 18.0,
+      "free_flow_kmh": 31.0,
+      "congestion_index": 42.2,
+      "confidence": 0.91,
       "road_closure": false,
       "is_measured": true,
-      "travel_time_s": 36,
-      "free_flow_travel_time_s": 36,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "travel_time_s": 64,
+      "free_flow_travel_time_s": 37,
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86514,75.80756->26.86776,75.80773",
       "shared_with_links": [
         439
       ]
     },
     "439": {
-      "speed_kmh": 32.0,
-      "free_flow_kmh": 32.0,
-      "congestion_index": 0.0,
-      "confidence": 1.0,
+      "speed_kmh": 18.0,
+      "free_flow_kmh": 31.0,
+      "congestion_index": 42.2,
+      "confidence": 0.91,
       "road_closure": false,
       "is_measured": true,
-      "travel_time_s": 36,
-      "free_flow_travel_time_s": 36,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "travel_time_s": 64,
+      "free_flow_travel_time_s": 37,
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86514,75.80756->26.86776,75.80773",
       "shared_with_links": [
         439
@@ -1185,7 +1185,7 @@
       "is_measured": true,
       "travel_time_s": 6,
       "free_flow_travel_time_s": 6,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86783,75.80787->26.86812,75.80832",
       "shared_with_links": []
     },
@@ -1198,7 +1198,7 @@
       "is_measured": true,
       "travel_time_s": 704,
       "free_flow_travel_time_s": 704,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.88908,75.73738->26.91634,75.79917",
       "shared_with_links": [
         190,
@@ -1217,7 +1217,7 @@
       "is_measured": true,
       "travel_time_s": 704,
       "free_flow_travel_time_s": 704,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.88908,75.73738->26.91634,75.79917",
       "shared_with_links": [
         190,
@@ -1236,7 +1236,7 @@
       "is_measured": true,
       "travel_time_s": 704,
       "free_flow_travel_time_s": 704,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.88908,75.73738->26.91634,75.79917",
       "shared_with_links": [
         190,
@@ -1255,7 +1255,7 @@
       "is_measured": true,
       "travel_time_s": 704,
       "free_flow_travel_time_s": 704,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.88908,75.73738->26.91634,75.79917",
       "shared_with_links": [
         190,
@@ -1274,7 +1274,7 @@
       "is_measured": true,
       "travel_time_s": 704,
       "free_flow_travel_time_s": 704,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.88908,75.73738->26.91634,75.79917",
       "shared_with_links": [
         190,
@@ -1293,7 +1293,7 @@
       "is_measured": true,
       "travel_time_s": 704,
       "free_flow_travel_time_s": 704,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.88908,75.73738->26.91634,75.79917",
       "shared_with_links": [
         190,
@@ -1312,7 +1312,7 @@
       "is_measured": true,
       "travel_time_s": 769,
       "free_flow_travel_time_s": 769,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.91783,75.80142->26.88832,75.73639",
       "shared_with_links": [
         232,
@@ -1329,7 +1329,7 @@
       "is_measured": true,
       "travel_time_s": 769,
       "free_flow_travel_time_s": 769,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.91783,75.80142->26.88832,75.73639",
       "shared_with_links": [
         232,
@@ -1346,7 +1346,7 @@
       "is_measured": true,
       "travel_time_s": 769,
       "free_flow_travel_time_s": 769,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.91783,75.80142->26.88832,75.73639",
       "shared_with_links": [
         232,
@@ -1363,7 +1363,7 @@
       "is_measured": true,
       "travel_time_s": 769,
       "free_flow_travel_time_s": 769,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.91783,75.80142->26.88832,75.73639",
       "shared_with_links": [
         232,
@@ -1372,15 +1372,15 @@
       ]
     },
     "236": {
-      "speed_kmh": 10.0,
-      "free_flow_kmh": 12.0,
-      "congestion_index": 20.0,
-      "confidence": 0.99,
+      "speed_kmh": 13.0,
+      "free_flow_kmh": 13.0,
+      "congestion_index": 0.0,
+      "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "travel_time_s": 25,
-      "free_flow_travel_time_s": 20,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "travel_time_s": 19,
+      "free_flow_travel_time_s": 19,
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.90326,75.77517->26.90267,75.77496",
       "shared_with_links": []
     },
@@ -1393,7 +1393,7 @@
       "is_measured": true,
       "travel_time_s": 270,
       "free_flow_travel_time_s": 270,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86247,75.79615->26.86635,75.82263",
       "shared_with_links": []
     },
@@ -1406,7 +1406,7 @@
       "is_measured": true,
       "travel_time_s": 601,
       "free_flow_travel_time_s": 601,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.87956,75.74360->26.86247,75.79615",
       "shared_with_links": [
         141,
@@ -1424,7 +1424,7 @@
       "is_measured": true,
       "travel_time_s": 601,
       "free_flow_travel_time_s": 601,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.87956,75.74360->26.86247,75.79615",
       "shared_with_links": [
         141,
@@ -1442,7 +1442,7 @@
       "is_measured": true,
       "travel_time_s": 601,
       "free_flow_travel_time_s": 601,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.87956,75.74360->26.86247,75.79615",
       "shared_with_links": [
         141,
@@ -1460,7 +1460,7 @@
       "is_measured": true,
       "travel_time_s": 601,
       "free_flow_travel_time_s": 601,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.87956,75.74360->26.86247,75.79615",
       "shared_with_links": [
         141,
@@ -1478,7 +1478,7 @@
       "is_measured": true,
       "travel_time_s": 601,
       "free_flow_travel_time_s": 601,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.87956,75.74360->26.86247,75.79615",
       "shared_with_links": [
         141,
@@ -1496,7 +1496,7 @@
       "is_measured": true,
       "travel_time_s": 38,
       "free_flow_travel_time_s": 38,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86251,75.79589->26.86513,75.79639",
       "shared_with_links": [
         140
@@ -1511,7 +1511,7 @@
       "is_measured": true,
       "travel_time_s": 38,
       "free_flow_travel_time_s": 38,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86251,75.79589->26.86513,75.79639",
       "shared_with_links": [
         140
@@ -1526,7 +1526,7 @@
       "is_measured": true,
       "travel_time_s": 265,
       "free_flow_travel_time_s": 265,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86635,75.82263->26.86239,75.79588",
       "shared_with_links": [
         353
@@ -1541,7 +1541,7 @@
       "is_measured": true,
       "travel_time_s": 265,
       "free_flow_travel_time_s": 265,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86635,75.82263->26.86239,75.79588",
       "shared_with_links": [
         353
@@ -1556,7 +1556,7 @@
       "is_measured": true,
       "travel_time_s": 864,
       "free_flow_travel_time_s": 864,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86239,75.79588->26.87840,75.71667",
       "shared_with_links": [
         138,
@@ -1575,7 +1575,7 @@
       "is_measured": true,
       "travel_time_s": 864,
       "free_flow_travel_time_s": 864,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86239,75.79588->26.87840,75.71667",
       "shared_with_links": [
         138,
@@ -1594,7 +1594,7 @@
       "is_measured": true,
       "travel_time_s": 864,
       "free_flow_travel_time_s": 864,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86239,75.79588->26.87840,75.71667",
       "shared_with_links": [
         138,
@@ -1613,7 +1613,7 @@
       "is_measured": true,
       "travel_time_s": 864,
       "free_flow_travel_time_s": 864,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86239,75.79588->26.87840,75.71667",
       "shared_with_links": [
         138,
@@ -1632,7 +1632,7 @@
       "is_measured": true,
       "travel_time_s": 864,
       "free_flow_travel_time_s": 864,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86239,75.79588->26.87840,75.71667",
       "shared_with_links": [
         138,
@@ -1651,7 +1651,7 @@
       "is_measured": true,
       "travel_time_s": 864,
       "free_flow_travel_time_s": 864,
-      "observed_at": "2026-08-19T17:26:18.033315+00:00",
+      "observed_at": "2026-08-19T19:04:06.158598+00:00",
       "segment_key": "26.86239,75.79588->26.87840,75.71667",
       "shared_with_links": [
         138,
