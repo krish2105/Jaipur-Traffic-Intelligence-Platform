@@ -343,9 +343,24 @@ enforcement side already works. We are pointing it at the right violations.</p>
 
 <p>One corridor. Ninety days. Paid.</p>
 
+<div class="box">
+<p><b>The ask got smaller while we were writing this.</b> India Urban Data
+Exchange is the Smart Cities Mission's data platform, and its API is approved by
+the Bureau of Indian Standards. Jaipur already publishes eleven things to it.
+Two of them are <b>Vehicle Classification Camera locations</b> and <b>ANPR
+camera locations</b>.</p>
+<p style="margin-bottom:0">So the cameras that count and classify vehicles are
+already installed, already on a national exchange, already described in a public
+catalogue we can read today without any permission at all. What we cannot do is
+read the data behind them. That needs one consumer token from the provider.
+Everything else on this page was built assuming Jaipur had no such cameras.</p>
+</div>
+
 <p>Three things from the department:</p>
 <ul>
-<li>A corridor, and access to the camera feeds already installed on it.</li>
+<li><b>A consumer token for the Jaipur IUDX instance</b>, or a corridor and
+access to the camera feeds already installed on it. The first is a form; the
+second is a meeting.</li>
 <li><b>FIR-level accident records</b>: date, hour, light condition, vehicles
 involved, outcome. About 3,000 rows a year. This is the single most valuable thing
 you can give us and it costs nothing to provide.</li>
@@ -355,6 +370,24 @@ you can give us and it costs nothing to provide.</li>
 <p>At ninety days you get a measured before-and-after on that corridor, every
 figure traceable to a source, and an enforcement recommendation your existing
 officers can act on next week.</p>
+
+<h3>Before you sign the next work order</h3>
+<p>JDA is about to spend <b>Rs 184.87 crore</b> on an elevated road on Gopalpura
+Bypass, one of the four corridors we already model, and another Rs 195 crore on
+two more. Nobody has set up the measurement that would say afterwards whether
+any of it worked. Once the road opens, the comparison is gone for good, because
+the thing you would compare against stopped existing.</p>
+
+<p>We have appraised the Gopalpura scheme in simulation. Through traffic saves
+between 161 and 167 seconds; local traffic, which stays at the same signals,
+saves between 27 and 65. Those are different numbers for different people and we
+report them apart, because a single average hides the question you will actually
+be asked. If the road attracts 30 percent more traffic, 93 percent of the saving
+still survives.</p>
+
+<p>That is a simulated difference on a simplified corridor, not a prediction,
+and we say so on the screen. Its value is not the forecast. Its value is that
+setting it up now is the only way to know later.</p>
 
 <div class="hin">
 <p style="margin-bottom:0"><b>Hinglish:</b> Humein sirf ek corridor chahiye,
@@ -400,7 +433,7 @@ showing you a selection.</p>
 <tr><td>Honesty of claims</td><td class="num">20 / 20</td>
     <td>Three of our own technical claims were tested and two were wrong. Both were corrected in the record rather than dropped quietly.</td></tr>
 <tr><td>Engineering quality</td><td class="num">19 / 20</td>
-    <td>252 automated tests across the platform, plus checks for security, colour contrast and accessibility that fail the build. Three of them stop the readiness panel claiming a source it does not have, does not point anywhere, or has a credential the supplier refuses.</td></tr>
+    <td>279 automated tests across the platform, plus checks for security, colour contrast and accessibility that fail the build. Three of them stop the readiness panel claiming a source it does not have, does not point anywhere, or has a credential the supplier refuses.</td></tr>
 <tr><td>Product completeness</td><td class="num">18 / 20</td>
     <td>Area screening built and live with the camera plan costed, and two more data sources now one free key away. Vehicle detection still needs training on Indian traffic.</td></tr>
 <tr><td>Interface</td><td class="num">10 / 10</td>
