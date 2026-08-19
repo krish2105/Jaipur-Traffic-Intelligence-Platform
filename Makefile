@@ -66,6 +66,9 @@ audit: ## Security scan — dependencies, secrets, SAST, plate leakage
 verify-security: ## Prove the DB-level security controls hold (docs/07 §8)
 	uv run python scripts/verify_security.py
 
+demo-refresh: ## Fresh probe reading -> snapshot -> deploy. Run before a demo.
+	bash scripts/demo_refresh.sh
+
 probe-discover: ## Map corridor links to TomTom segments. Once, ~90 calls.
 	uv run python scripts/fetch_probe_speeds.py --discover
 

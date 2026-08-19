@@ -501,7 +501,7 @@ showing you a selection.</p>
 <tr><td>Honesty of claims</td><td class="num">20 / 20</td>
     <td>Three of our own technical claims were tested and two were wrong. Both were corrected in the record rather than dropped quietly.</td></tr>
 <tr><td>Engineering quality</td><td class="num">19 / 20</td>
-    <td>285 automated tests, plus checks for security, colour contrast and accessibility that fail the build. Eighteen more run only against a live database and API. Several tests exist purely to stop the interface claiming a source it does not have.</td></tr>
+    <td>303 automated tests, all passing, plus checks for security, colour contrast and accessibility that fail the build. Eighteen of them read the seeded database and the running API rather than mocks, so they check the product and not a stand-in. Several tests exist purely to stop the interface claiming a source it does not have.</td></tr>
 <tr><td>Product completeness</td><td class="num">17 / 20</td>
     <td>The full chain from road network to recommendation works on four corridors. Sixteen of 22 areas have no measurement, and no vehicle anywhere has actually been counted.</td></tr>
 <tr><td>Interface</td><td class="num">10 / 10</td>
