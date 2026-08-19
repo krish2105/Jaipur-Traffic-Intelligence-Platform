@@ -22,7 +22,7 @@ cd "$(dirname "$0")/.."
 CHROME="${CHROME:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
 [ -x "$CHROME" ] || { echo "Chrome not found at: $CHROME  (override with CHROME=...)"; exit 1; }
 
-for name in pitch script; do
+for name in pitch script ask; do
   src="$PWD/docs/pitch/$name.html"
   out="$PWD/docs/pitch/$name.pdf"
   [ -f "$src" ] || { echo "missing $src"; exit 1; }
@@ -37,6 +37,13 @@ for name in pitch script; do
 
   pages=$(pdfinfo "$out" 2>/dev/null | awk '/^Pages/{print $2}')
   printf "  %-12s -> %s  (%s pages)\n" "$name.html" "$out" "${pages:-?}"
+
+  # ask.pdf is a leave-behind. A one-pager that quietly becomes two pages is
+  # not a one-pager, and nothing on screen would show it — so it is asserted.
+  if [ "$name" = "ask" ] && [ "${pages:-0}" != "1" ]; then
+    echo "  FAIL  ask.pdf is ${pages:-?} pages; it must be exactly 1. Trim ask.html."
+    exit 1
+  fi
 done
 
 # The check that would have caught the stale version.

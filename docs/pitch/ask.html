@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PRAVAAH — The ask</title>
+<!--
+  One page. It is a leave-behind, so it has to survive being read alone, by
+  someone who was not in the room, a week later. Everything that is argument
+  rather than ask lives in pitch.html; this page carries only what a signature
+  is needed for.
+
+  Styling is lifted from pitch.html deliberately — same tokens, same type — so
+  the two read as one pack. Sizes are a shade tighter because this must not
+  spill onto a second page: a one-pager that is two pages is not a one-pager.
+  scripts/build_pitch_pdfs.sh asserts the page count.
+-->
+<style>
+  @page { size: A4; margin: 14mm 15mm 12mm 15mm; }
+  :root { --rose:#B5485D; --mag:#A81E7A; --ink:#2A1119; --mut:#6E4A57;
+          --faint:#9A7C87; --rule:#E4CDD7; --paper:#FDF4F6; }
+  * { box-sizing:border-box; }
+  body { font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+         color:var(--ink); font-size:9pt; line-height:1.4; margin:0; }
+  h1 { font-size:22pt; line-height:1.05; margin:0 0 3pt; letter-spacing:-0.4pt; }
+  h2 { font-size:11pt; color:var(--mag); margin:11pt 0 4pt; letter-spacing:-0.2pt;
+       border-top:1.2pt solid var(--rule); padding-top:6pt; }
+  p { margin:0 0 5pt; }
+  .lede { font-size:10pt; color:var(--mut); margin-bottom:7pt; }
+  .tag { display:inline-block; background:var(--paper); border:0.7pt solid var(--rule);
+         color:var(--mag); padding:2pt 7pt; border-radius:9pt; font-size:7.5pt;
+         letter-spacing:0.8pt; text-transform:uppercase; }
+  table { width:100%; border-collapse:collapse; margin:5pt 0 6pt; font-size:8.5pt; }
+  th { text-align:left; color:var(--faint); font-weight:600; font-size:7.5pt;
+       text-transform:uppercase; letter-spacing:0.5pt;
+       border-bottom:1pt solid var(--rule); padding:3pt 5pt 3pt 0; }
+  td { padding:3.5pt 5pt 3.5pt 0; border-bottom:0.5pt solid var(--rule); vertical-align:top; }
+  td.n { font-family:"SF Mono", Menlo, monospace; color:var(--mag); width:13pt; }
+  .box { background:var(--paper); border-left:2.5pt solid var(--mag);
+         padding:7pt 10pt; margin:7pt 0; }
+  .warn { background:#FFF6F2; border-left:2.5pt solid #C2410C; padding:7pt 10pt; margin:7pt 0; }
+  .hin { background:#FBF2F6; border:0.7pt solid var(--rule); border-radius:5pt;
+         padding:7pt 10pt; margin:6pt 0; font-size:8.5pt; }
+  .hin b { color:var(--mag); }
+  .foot { color:var(--faint); font-size:7.5pt; margin-top:9pt;
+          border-top:0.7pt solid var(--rule); padding-top:5pt; }
+  ul { margin:0 0 5pt; padding-left:13pt; } li { margin-bottom:2pt; }
+  b { color:var(--ink); }
+</style>
+</head>
+<body>
+
+<span class="tag">Jaipur · Traffic decision intelligence</span>
+<h1>What we are asking for</h1>
+<p class="lede">One corridor. Ninety days. Read access to data the department
+already owns.</p>
+
+<div class="box">
+<p style="margin-bottom:0"><b>The whole ask in one sentence.</b> Give us read-only
+access to feeds you already operate, on one corridor, for ninety days — and at the
+end you get a measured result, every number carrying its source, and a written
+report that includes whatever did not work.</p>
+</div>
+
+<h2>The six asks, easiest first</h2>
+
+<table>
+<tr><th></th><th style="width:31%">What we need</th><th style="width:20%">Who signs</th><th>What it unlocks</th></tr>
+<tr><td class="n">1</td>
+    <td><b>An IUDX consumer token</b> for the Jaipur instance</td>
+    <td>Smart City / IUDX nodal officer</td>
+    <td>Jaipur already publishes its Vehicle Classification Camera and ANPR
+        locations to the national exchange, under an API approved by the Bureau of
+        Indian Standards. The locations are public; only read access is missing.</td></tr>
+<tr><td class="n">2</td>
+    <td><b>Read-only RTSP on six cameras</b>, ninety days</td>
+    <td>Abhay / ICCC</td>
+    <td>Vehicle counts and class mix — the number nobody in Jaipur has today.</td></tr>
+<tr><td class="n">3</td>
+    <td><b>FIR-level accident records</b>, about 3,000 rows a year</td>
+    <td>Traffic police</td>
+    <td>Severity modelling specific to Jaipur instead of state-wide averages.</td></tr>
+<tr><td class="n">4</td>
+    <td><b>The challan / violation feed</b></td>
+    <td>Traffic police</td>
+    <td>Enforcement reallocation computed on live data rather than published mix.</td></tr>
+<tr><td class="n">5</td>
+    <td><b>A named nodal officer</b></td>
+    <td>Department</td>
+    <td>Decisions instead of a queue — the ask that most often decides whether a
+        pilot finishes.</td></tr>
+<tr><td class="n">6</td>
+    <td><b>One named corridor</b></td>
+    <td>JDA / Police</td>
+    <td>Somewhere to measure. We propose one already modelled.</td></tr>
+</table>
+
+<div class="warn">
+<p style="margin-bottom:0"><b>What we are not asking for.</b> Cameras. Hardware.
+Infrastructure budget. Control of any signal. The hardware already exists — 253 of
+Jaipur's 423 junctions are being wired for ITMS right now, and those junctions are
+the boundary we would measure across. We want a data feed, not a purchase order.
+Signal output stays advisory and an officer approves it; that is a rule in the
+system, not a promise.</p>
+</div>
+
+<h2>What you get at ninety days</h2>
+<ul>
+<li>Measured vehicle counts and class mix on one corridor, <b>with published accuracy</b> — not a demo reel.</li>
+<li>A before-measurement on the Gopalpura Bypass elevated road, locked in <b>before the work order</b>, so the scheme can be judged afterwards.</li>
+<li>An enforcement reallocation with a lives-saved estimate, runnable by existing staff at no extra cost.</li>
+<li>Every figure carrying its source, in Hindi and English, working offline.</li>
+</ul>
+
+<h2>The metric we will be judged on — we are proposing it ourselves</h2>
+
+<table>
+<tr><th style="width:42%">Measure</th><th style="width:20%">Target</th><th>How it is reported</th></tr>
+<tr><td>Two-wheeler recall</td><td>≥ 93%</td>
+    <td rowspan="3">Reported whether or not it flatters us. This platform has
+    twice published a number that went against it, including one that was our own
+    defect.</td></tr>
+<tr><td>Count error against manual audit</td><td>≤ 10% MAPE</td></tr>
+<tr><td>Corridor travel-time reliability</td><td>measured, not modelled</td></tr>
+</table>
+
+<div class="hin">
+<p style="margin-bottom:0"><b>Sahab, seedhi baat.</b> Humein camera nahi chahiye,
+paisa nahi chahiye, aur signal ka control bilkul nahi chahiye. Jo data aapke paas
+pehle se hai, bas usko padhne ki ijaazat chahiye. Ek corridor, navve din. Uske baad
+naapa hua result hoga, har number ka source hoga, aur jo kaam nahi kiya wo bhi
+likha hoga.</p>
+</div>
+
+<p class="foot" style="margin-bottom:2pt">
+Live system, and every figure's source: <b>jaipur-traffic-intelligence-platfor-nine.vercel.app/api/v1</b>
+&nbsp;·&nbsp; Full pitch pack and ninety-day plan available on request
+</p>
+<p class="foot" style="border-top:0; margin-top:0; padding-top:0">
+Contact &nbsp;___________________________________&nbsp;&nbsp;&nbsp;
+Date &nbsp;______________________
+</p>
+
+</body>
+</html>
