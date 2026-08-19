@@ -73,6 +73,7 @@ function jaipurNowMinutes(): number {
 export const NAV = [
   { id: "dashboard", en: "Dashboard", hi: "डैशबोर्ड", cap: "read:traffic" },
   { id: "map", en: "Live map", hi: "लाइव मानचित्र", cap: "read:traffic" },
+  { id: "areas", en: "Areas", hi: "क्षेत्र", cap: "read:traffic" },
   { id: "counts", en: "Counts", hi: "गणना", cap: "read:traffic" },
   { id: "junctions", en: "Junctions", hi: "चौराहे", cap: "read:traffic" },
   { id: "edge", en: "Edge · CV", hi: "एज · CV", cap: "read:traffic" },

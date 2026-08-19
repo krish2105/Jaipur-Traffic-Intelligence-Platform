@@ -1,6 +1,7 @@
 "use client";
 
 import { CorpusSearch } from "./corpus-search";
+import { AreaScreeningPanel } from "./area-screening";
 import { useEffect, useState } from "react";
 
 import {
@@ -24,6 +25,7 @@ import {
   type SignalAdvisory,
   type WeeklyMatrix,
 } from "@/lib/api";
+import type { AreaScreening } from "@/lib/api";
 import type { SceneLink } from "@/components/city/city-view";
 import type { Locale } from "@/i18n/routing";
 import { formatCount } from "@/lib/format";
@@ -162,6 +164,9 @@ export function SectionView({
   if (section === "enforcement") {
     if (!can("read:enforcement")) return <Shell title={hi ? "प्रवर्तन" : "Enforcement"} subtitle=""><Denied hi={hi} /></Shell>;
     return <EnforcementSection hi={hi} locale={locale} canUnmask={can("unmask:plate")} canDefaulters={can("read:defaulters")} />;
+  }
+  if (section === "areas") {
+    return <AreasSection hi={hi} />;
   }
   if (section === "neeti") {
     return <NeetiSection hi={hi} locale={locale} />;
@@ -886,6 +891,26 @@ const SCENARIO_LABEL: Record<string, { en: string; hi: string }> = {
   low_emission_zone: { en: "Low-emission zone", hi: "कम-उत्सर्जन क्षेत्र" },
   congestion_charge: { en: "Congestion charge", hi: "भीड़ शुल्क" },
 };
+
+function AreasSection({ hi }: { hi: boolean }) {
+  const { data } = useLazy<AreaScreening>(() => api.areas(), true);
+  return (
+    <Shell
+      title={hi ? "क्षेत्र स्क्रीनिंग" : "Area screening"}
+      subtitle={
+        hi
+          ? "कौन सा इलाका कितना लदा है। सीमाएँ थानों के आसपास अनुमानित हैं, अधिसूचित नहीं — विभाग की अपनी शीट आते ही बदल जाएँगी।"
+          : "Which part of the city is loaded, and by how much. Boundaries are approximated around police stations, not gazetted, and swap out the day the department supplies its own."
+      }
+    >
+      {!data ? (
+        <Loading label={hi ? "क्षेत्र जोड़े जा रहे हैं" : "Aggregating areas"} />
+      ) : (
+        <AreaScreeningPanel data={data} hi={hi} />
+      )}
+    </Shell>
+  );
+}
 
 function NeetiSection({ hi, locale }: { hi: boolean; locale: Locale }) {
   const { data } = useLazy<PolicyScenarios>(() => api.policy(1), true);

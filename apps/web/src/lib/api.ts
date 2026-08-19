@@ -563,6 +563,48 @@ export interface SeverityModel {
   is_fitted: boolean;
 }
 
+/** One screening area: a thana catchment or a Commissionerate zone. */
+export interface Area {
+  name: string;
+  kind: "thana_catchment" | "commissionerate_zone";
+  station: { lon: number; lat: number } | null;
+  links: number;
+  links_modelled: number;
+  links_measured: number;
+  vehicles_per_hour: number;
+  pcu_per_hour: number;
+  /** null means not measured, which is not the same as zero. */
+  mean_congestion: number | null;
+  max_congestion: number | null;
+  worst_link: {
+    link_id: number | string;
+    name: string | null;
+    congestion_index: number;
+    speed_kmh: number;
+  } | null;
+  coverage: number;
+}
+
+export interface AreaScreening {
+  zones: Area[];
+  thanas: Area[];
+  cordon_plan: {
+    area: string;
+    cordon_links: number;
+    cameras_needed: number;
+    cumulative_cameras: number;
+  }[];
+  stations_total: number;
+  links_total: number;
+  boundary_basis: string;
+  cordon_note: string;
+  cordon_caveat?: string;
+  coverage_note: string;
+  vehicle_counts_available: boolean;
+  vehicle_count_note: string;
+  is_synthetic: boolean;
+}
+
 /**
  * The demo role, read from the session at call time.
  *
@@ -664,6 +706,7 @@ const query = (params: Record<string, string | number | undefined>) => {
 export const api = {
   corridors: () => get<Corridor[]>("/corridors"),
   severity: () => get<SeverityFinding>("/safety/severity"),
+  areas: () => get<AreaScreening>("/areas"),
   severityModel: () => get<SeverityModel>("/safety/severity-model"),
   allocation: () => get<EnforcementAllocation>("/enforcement/allocation"),
   // Routed through get() rather than fetched raw in the page, so the 3D scene
