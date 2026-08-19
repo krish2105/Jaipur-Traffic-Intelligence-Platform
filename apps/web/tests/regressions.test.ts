@@ -185,3 +185,34 @@ describe("snapshot", () => {
     expect(Object.keys(data).some((k) => k.startsWith("/audit"))).toBe(false);
   });
 });
+
+describe("a captured payload must not claim to be fresh forever", () => {
+  /**
+   * The snapshot froze `/probe/coverage` saying `is_fresh: true` and
+   * `age_minutes: 5.6`, and would have gone on saying it for as long as the
+   * build was deployed. A stale speed wearing a fresh label is the single thing
+   * the probe layer exists to prevent, so the mirror recomputes it per request.
+   */
+  const coverage = (snapshot as Record<string, unknown>)["/probe/coverage"] as
+    | Record<string, unknown>
+    | undefined;
+
+  it("captures the fields needed to re-derive its own age", () => {
+    expect(coverage).toBeDefined();
+    expect(typeof coverage?.captured_at).toBe("string");
+    expect(typeof coverage?.max_age_minutes).toBe("number");
+  });
+
+  it("has a capture time that parses", () => {
+    // Without this the route handler silently falls back to the frozen value.
+    expect(Number.isNaN(Date.parse(String(coverage?.captured_at)))).toBe(false);
+  });
+
+  it("goes stale once it is older than the window it declares", () => {
+    const maxAge = Number(coverage?.max_age_minutes);
+    const captured = Date.parse(String(coverage?.captured_at));
+    const wellPast = captured + (maxAge + 1) * 60000;
+    const ageMinutes = (wellPast - captured) / 60000;
+    expect(ageMinutes <= maxAge).toBe(false);
+  });
+});
