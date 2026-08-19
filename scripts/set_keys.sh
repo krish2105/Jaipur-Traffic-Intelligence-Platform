@@ -39,6 +39,39 @@ set_key () {
     echo "   kept"
     return
   fi
+
+  # Hidden input hides mistakes as well as secrets. Two of them are common
+  # enough to be worth checking, and both were seen on the first real run.
+
+  # 1. Cmd-V pressed more than once. The value is one string repeated, and the
+  #    supplier rejects it with a plain 401 that looks like a bad credential.
+  n=${#value}
+  for reps in 2 3 4; do
+    [ $((n % reps)) -eq 0 ] || continue
+    unit=$((n / reps))
+    [ "$unit" -ge 8 ] || continue
+    head_part=${value:0:$unit}
+    rebuilt=""; i=0
+    while [ "$i" -lt "$reps" ]; do rebuilt="${rebuilt}${head_part}"; i=$((i + 1)); done
+    if [ "$rebuilt" = "$value" ]; then
+      echo "   note: looked pasted ${reps}x (${n} chars = ${reps} x ${unit}). Kept the first ${unit}."
+      value="$head_part"
+      break
+    fi
+  done
+
+  # 2. The same thing pasted into two different prompts. A key and a resource id
+  #    are not interchangeable, and storing one as the other produces a timeout
+  #    rather than an error anyone can read.
+  while IFS='=' read -r other_var other_val; do
+    case "$other_var" in ""|\#*) continue ;; esac
+    [ "$other_var" = "$var" ] && continue
+    if [ -n "$other_val" ] && [ "$other_val" = "$value" ]; then
+      echo "   REFUSED: identical to ${other_var}. Two different things cannot"
+      echo "            share one value. Nothing written — check what you copied."
+      return
+    fi
+  done < "$file"
   # rewrite in place rather than appending, so re-running does not duplicate
   if grep -qE "^${var}=" "$file"; then
     tmp=$(mktemp)
