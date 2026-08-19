@@ -99,7 +99,12 @@ export const NAV = [
   { id: "provenance", en: "Provenance", hi: "स्रोत", cap: "read:traffic" },
 ] as const satisfies readonly { id: string; en: string; hi: string; cap: Capability }[];
 
-const RAIL = { key: "pravaah-rail", initial: 340, min: 260, max: 640 };
+//: 340 gave a single 320 px column on a 1600 px screen: 79% of the display was
+//: map and the panels were a five-screen scroll beside it. 560 puts two columns
+//: in the rail by default and still leaves the map the larger half on anything
+//: from a 1366 px laptop upward. It stays draggable and the choice is
+//: remembered, so anyone who wants the old proportions has them in one drag.
+const RAIL = { key: "pravaah-rail", initial: 560, min: 260, max: 640 };
 
 /**
  * Operations console.
@@ -475,27 +480,75 @@ export function ConsoleShell({
           onDoubleClick={railReset}
         />
 
+        {/* The rail, grouped and gridded.
+         *
+         * It was fifteen panels in one column, 5,355 px of scroll on a 1600 px
+         * screen, with the answer to the question this platform is most often
+         * asked sitting tenth. Order was the whole problem: nothing about the
+         * layout said which of the fifteen mattered, so it read as a list of
+         * everything we happened to build.
+         *
+         * Three changes. Measured first, so a reader meets the live evidence
+         * before the seeded demonstration. Grouped under headings, so the rail
+         * has a shape instead of a length. And two columns once the rail is
+         * dragged wide enough to hold them, via a container query rather than a
+         * viewport one — what matters is how wide this rail is, not how wide the
+         * screen is, and the user sets the first of those with the split handle.
+         */}
         <aside
           aria-label={hi ? "संकेतक" : "Indicators"}
-          className="min-h-0 shrink-0 space-y-2.5 bg-[var(--ground)] p-2.5
+          className="@container/rail min-h-0 shrink-0 bg-[var(--ground)] p-2.5
                      lg:w-[var(--split)] lg:overflow-y-auto"
         >
-          <CountsPanel summary={summary} profile={profile} nowMinutes={jaipurNowMinutes()} />
-          <CompositionPanel summary={summary} />
-          <ForecastPanel forecast={forecast} />
-          <QualityPanel summary={summary} cameras={cameras} />
-          <IncidentPanel data={incidents} />
-          <BlackSpotPanel data={blackspots} />
-          <HeatmapPanel data={weekly} />
-          <SignalPanel data={signals} />
-          <WeatherPanel data={weather} />
-          <AirPanel />
-          {accumulation && <AccumulationPanel data={accumulation} />}
-          <ReadinessPanel data={readiness} />
-          {probeCoverage && <ProbePanel data={probeCoverage} />}
-          {reliability && <ReliabilityPanel data={reliability} />}
-          {scheme && <SchemePanel data={scheme} />}
-          {cityData && <CityDataPanel data={cityData} />}
+          <RailGroup
+            title={hi ? "अभी मापा गया" : "Measured right now"}
+            note={hi ? "कोई मॉडल नहीं, कोई बीज नहीं" : "no model, no seed"}
+          >
+            {/* Full width whatever the column count. It is the headline answer
+                and a bento with no largest cell is just a grid. */}
+            {accumulation && (
+              <div className="@[540px]/rail:col-span-2">
+                <AccumulationPanel data={accumulation} />
+              </div>
+            )}
+            {probeCoverage && <ProbePanel data={probeCoverage} />}
+            {reliability && <ReliabilityPanel data={reliability} />}
+            <WeatherPanel data={weather} />
+            <AirPanel />
+          </RailGroup>
+
+          <RailGroup
+            title={hi ? "निर्णय" : "Decisions"}
+            note={hi ? "सलाहकार — अधिकारी अनुमोदन करता है" : "advisory; an officer approves"}
+          >
+            {scheme && (
+              <div className="@[540px]/rail:col-span-2">
+                <SchemePanel data={scheme} />
+              </div>
+            )}
+            <SignalPanel data={signals} />
+            <BlackSpotPanel data={blackspots} />
+          </RailGroup>
+
+          <RailGroup
+            title={hi ? "बीजित प्रदर्शन" : "Seeded demonstration"}
+            note={hi ? "सिंथेटिक, हर जगह अंकित" : "synthetic, badged everywhere"}
+          >
+            <CountsPanel summary={summary} profile={profile} nowMinutes={jaipurNowMinutes()} />
+            <CompositionPanel summary={summary} />
+            <ForecastPanel forecast={forecast} />
+            <QualityPanel summary={summary} cameras={cameras} />
+            <IncidentPanel data={incidents} />
+            <HeatmapPanel data={weekly} />
+          </RailGroup>
+
+          <RailGroup
+            title={hi ? "स्रोत" : "Provenance"}
+            note={hi ? "क्या जुड़ा है, क्या नहीं" : "what is connected, and what is not"}
+          >
+            <ReadinessPanel data={readiness} />
+            {cityData && <CityDataPanel data={cityData} />}
+          </RailGroup>
         </aside>
       </div>
 
@@ -541,6 +594,44 @@ export function ConsoleShell({
 }
 
 /** The 2D surface. Designed, not a stub — ADR-015. */
+/**
+ * One band of the panel rail.
+ *
+ * The heading is doing real work rather than decorating: it separates what is
+ * measured from what is seeded, which is the distinction this whole product
+ * rests on and which fifteen visually identical panels erased.
+ */
+function RailGroup({
+  title,
+  note,
+  children,
+}: {
+  title: string;
+  note: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="mb-4 last:mb-0">
+      <header className="flex items-baseline justify-between gap-2 px-1 pb-1.5">
+        <h2
+          className="uppercase tracking-[0.14em] text-[var(--ink-muted)]"
+          style={{ fontSize: "calc(var(--d-label) * 0.9)" }}
+        >
+          {title}
+        </h2>
+        <p
+          className="shrink-0 truncate text-[var(--ink-faint)]"
+          style={{ fontSize: "calc(var(--d-label) * 0.82)" }}
+        >
+          {note}
+        </p>
+      </header>
+      {/* One column until the rail itself is wide enough for two. */}
+      <div className="grid grid-cols-1 gap-2.5 @[540px]/rail:grid-cols-2">{children}</div>
+    </section>
+  );
+}
+
 export function MapFallback({ links, locale }: { links: SceneLink[]; locale: Locale }) {
   const hi = locale === "hi";
   return (
