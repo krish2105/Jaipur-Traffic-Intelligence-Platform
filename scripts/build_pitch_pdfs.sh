@@ -16,6 +16,11 @@
 # The originals were produced by headless Chrome (Skia/PDF m151), and the @page
 # rule in the HTML already sets A4 and the margins, so Chrome is the tool that
 # reproduces them rather than a second renderer with its own opinions.
+#
+# One wrinkle: Chrome stamps a fresh creation date into every PDF, so rebuilding
+# dirties all three files in git even when not a word changed. If `git status`
+# shows a PDF modified after a run, check whether the *text* changed before
+# committing it:  pdftotext docs/pitch/pitch.pdf - | md5
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
