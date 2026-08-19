@@ -109,7 +109,7 @@ async def source_readiness(settings: SettingsDep) -> dict[str, Any]:
         """
         return bool(os.environ.get(name, "").strip())
 
-    def runs_live(adapter: object) -> bool:
+    async def runs_live(adapter: object) -> bool:
         """Whether a source can genuinely run live: credential AND adapter.
 
         This used to be `have(KEY)` alone, and that was a lie waiting to be
@@ -118,12 +118,36 @@ async def source_readiness(settings: SettingsDep) -> dict[str, Any]:
         a green badge that is wrong is far worse than an honest amber one, and
         this panel is the first thing a department engineer reads.
 
-        The check is delegated to the adapter's own `available()` so the badge
-        can only go green when there is code behind it. A source whose adapter
-        does not exist cannot be imported, and cannot claim to be live.
+        Two questions, and both must be yes. `available()` asks whether a key
+        and the code to use it both exist. `verified()` asks whether the upstream
+        actually accepts that key, which is what stops a typo'd or expired
+        credential showing green while every reading quietly falls back to
+        modelled. The result is cached in the adapter, so this costs one call
+        per source per ten minutes rather than one per render.
         """
         checker = getattr(adapter, "available", None)
-        return bool(checker and checker())
+        if not (checker and checker()):
+            return False
+        prove = getattr(adapter, "verified", None)
+        return bool(await prove()) if prove else True
+
+    tomtom_live = await runs_live(tomtom)
+    vahan_live = await runs_live(vahan)
+
+    # A key that is present but refused is its own state, and saying so is the
+    # difference between "you have not given us this yet" and "what you gave us
+    # does not work" — two very different conversations to have with a
+    # department.
+    tomtom_needs = (
+        "TOMTOM_API_KEY"
+        if not tomtom.available()
+        else "TOMTOM_API_KEY present but refused by TomTom"
+    )
+    vahan_needs = (
+        "DATA_GOV_IN_API_KEY"
+        if not vahan.available()
+        else "DATA_GOV_IN_API_KEY present but refused by data.gov.in"
+    )
 
     sources: list[dict[str, str | None]] = [
         {
@@ -146,9 +170,9 @@ async def source_readiness(settings: SettingsDep) -> dict[str, Any]:
             "id": "tomtom",
             "name": "Probe speeds",
             "provider": "TomTom Traffic",
-            "mode": "live" if runs_live(tomtom) else "replay",
+            "mode": "live" if tomtom_live else "replay",
             "detail": "Measures delay, never volume — the gap PRAVAAH fills",
-            "needs": None if runs_live(tomtom) else "TOMTOM_API_KEY",
+            "needs": None if tomtom_live else tomtom_needs,
         },
         {
             "id": "openaq",
@@ -174,9 +198,9 @@ async def source_readiness(settings: SettingsDep) -> dict[str, Any]:
             "id": "vahan",
             "name": "Vehicle registrations",
             "provider": "VAHAN",
-            "mode": "live" if runs_live(vahan) else "replay",
+            "mode": "live" if vahan_live else "replay",
             "detail": "Cross-checks measured class mix against the registered fleet",
-            "needs": None if runs_live(vahan) else "DATA_GOV_IN_API_KEY",
+            "needs": None if vahan_live else vahan_needs,
         },
         {
             "id": "challan",

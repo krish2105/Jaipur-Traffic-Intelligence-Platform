@@ -47,6 +47,8 @@ echo "PRAVAAH — API keys. Nothing is echoed; both files are gitignored."
 
 set_key TOMTOM_API_KEY      "TomTom Traffic (free, no card, 2,500/day)" \
         "https://developer.tomtom.com/user/register" "$ROOT_ENV"
+set_key DATA_GOV_IN_API_KEY "VAHAN fleet via data.gov.in (free, no card)" \
+        "https://data.gov.in/user/register" "$ROOT_ENV"
 set_key OPENAQ_API_KEY      "OpenAQ air quality (free)" \
         "https://explore.openaq.org/register" "$ROOT_ENV"
 set_key GOOGLE_MAPS_API_KEY "Google Map Tiles API (billing required)" \
@@ -67,7 +69,7 @@ fi
 
 echo
 echo "── which keys are set ──"
-for v in TOMTOM_API_KEY OPENAQ_API_KEY GOOGLE_MAPS_API_KEY; do
+for v in TOMTOM_API_KEY DATA_GOV_IN_API_KEY OPENAQ_API_KEY GOOGLE_MAPS_API_KEY; do
   n=$(grep -E "^${v}=" "$ROOT_ENV" 2>/dev/null | head -1 | cut -d= -f2- | wc -c | tr -d ' ')
   if [ "${n:-1}" -gt 1 ]; then echo "   set     ${v}"; else echo "   missing ${v}"; fi
 done

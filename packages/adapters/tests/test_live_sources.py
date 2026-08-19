@@ -112,3 +112,52 @@ class TestDegradation:
     ) -> None:
         monkeypatch.delenv("DATA_GOV_IN_API_KEY", raising=False)
         assert await vahan.fleet("Jaipur") is None
+
+
+class TestVerification:
+    """A key that upstream refuses must not turn a badge green.
+
+    `available()` says a credential and code both exist. `verified()` says the
+    upstream actually accepts it. Only the second is safe to show as live: a
+    typo'd or expired key would otherwise report live while every reading fell
+    back to modelled, which is the same lie the adapter check was built to stop,
+    one level deeper.
+    """
+
+    @pytest.mark.asyncio
+    async def test_no_key_is_never_verified(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.delenv("TOMTOM_API_KEY", raising=False)
+        monkeypatch.delenv("DATA_GOV_IN_API_KEY", raising=False)
+        tomtom._REACHABLE = None
+        vahan._REACHABLE = None
+        assert await tomtom.verified() is False
+        assert await vahan.verified() is False
+
+    @pytest.mark.asyncio
+    async def test_refused_key_is_available_but_not_verified(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("TOMTOM_API_KEY", "definitely-not-a-real-key")
+        tomtom._REACHABLE = None
+        # available() is true — there IS a key and there IS code.
+        assert tomtom.available() is True
+        # verified() is false, because the upstream will not take it.
+        assert await tomtom.verified() is False
+
+    @pytest.mark.asyncio
+    async def test_failures_are_cached(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        # An upstream refusing us should not be re-asked on every console render.
+        monkeypatch.setenv("TOMTOM_API_KEY", "nope")
+        tomtom._REACHABLE = None
+        first = await tomtom.verified()
+        calls = {"n": 0}
+
+        async def counting(_client: object) -> bool:
+            calls["n"] += 1
+            return True
+
+        monkeypatch.setattr(tomtom, "_probe", counting)
+        second = await tomtom.verified()
+        assert first is False
+        assert second is False, "cached failure should be reused"
+        assert calls["n"] == 0, "probe should not run again inside the TTL"

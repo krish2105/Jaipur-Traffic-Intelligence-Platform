@@ -28,6 +28,7 @@ for a corridor of this size. Batch accordingly rather than polling per render.
 from __future__ import annotations
 
 import os
+import time
 from dataclasses import dataclass
 
 import httpx
@@ -90,6 +91,43 @@ def available() -> bool:
     no longer turn a badge green.
     """
     return api_key() is not None
+
+
+
+
+#: Reachability is cached: the readiness panel is polled on every console
+#: render, and a live upstream call per render would be both slow and a good way
+#: to burn a 2,500/day free tier before lunch.
+_CHECKED_AT: float = 0.0
+_REACHABLE: bool | None = None
+_TTL_SECONDS = 600
+
+
+async def verified(*, client: httpx.AsyncClient | None = None) -> bool:
+    """Whether the credential is not just present but actually accepted.
+
+    `available()` answers "is there a key and code to use it". This answers "does
+    the upstream take that key", which is the difference between a green badge
+    that is true and one that is merely optimistic. A typo'd or expired key would
+    otherwise show live while every reading quietly fell back to modelled.
+
+    Cached for ten minutes, and failures are cached too: an upstream that is
+    refusing us should not be re-asked on every render.
+    """
+    global _CHECKED_AT, _REACHABLE
+    if not available():
+        return False
+    now = time.monotonic()
+    if _REACHABLE is not None and (now - _CHECKED_AT) < _TTL_SECONDS:
+        return _REACHABLE
+    _CHECKED_AT = now
+    _REACHABLE = await _probe(client)
+    return _REACHABLE
+
+
+async def _probe(client: httpx.AsyncClient | None) -> bool:
+    """One real call against central Jaipur. Cheap, and conclusive."""
+    return await flow_at(26.9124, 75.7873, client=client) is not None
 
 
 async def flow_at(
