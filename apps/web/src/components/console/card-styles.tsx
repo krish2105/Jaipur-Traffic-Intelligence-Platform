@@ -40,7 +40,8 @@ export function CountsCard({
   style: CardStyle;
   summary: CountsSummary;
   profile: DayProfile;
-  nowMinutes: number;
+  /** Null before mount, so the marker is absent rather than at midnight. */
+  nowMinutes: number | null;
 }) {
   const locale = useLocale() as Locale;
   const q = summary.data_quality;

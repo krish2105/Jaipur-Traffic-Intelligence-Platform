@@ -282,3 +282,54 @@ describe("an animated figure must never be able to settle on zero", () => {
     expect(effect).toMatch(/count\.set\(0\)/);
   });
 });
+
+describe("no clock may be rendered during hydration", () => {
+  /**
+   * The console header formatted `new Date()` into text. shell.tsx is a client
+   * component, but Next.js server-renders those too, so the server wrote one
+   * minute into the HTML and the browser hydrated wanting another. React threw
+   * hydration error #418, discarded the server markup for that subtree and
+   * re-rendered it.
+   *
+   * Intermittent by nature — it needs the minute to roll over between render
+   * and hydration — so it is invisible in a screenshot and likeliest on a slow
+   * connection. It was found in a console log, not by looking at the page.
+   *
+   * The same value positioned the "now" marker on the day-profile chart, which
+   * could therefore be drawn in one place on the server and another after
+   * hydration.
+   */
+  const files = [
+    "../src/components/console/shell.tsx",
+    "../src/components/console/card-gallery.tsx",
+  ];
+
+  for (const file of files) {
+    const source = readFileSync(join(__dirname, file), "utf8");
+
+    it(`${file.split("/").pop()} does not construct a date during render`, () => {
+      // A server component may do this — the value is serialised into the RSC
+      // payload and hydration matches. A client component may not.
+      expect(source).toContain('"use client"');
+      expect(source).not.toMatch(/new Date\(\)/);
+    });
+  }
+
+  it("the clock comes from an external store, not an effect", () => {
+    const hook = readFileSync(join(__dirname, "../src/lib/use-client-now.ts"), "utf8");
+    expect(hook).toContain("useSyncExternalStore");
+    // Null on the server is the whole mechanism: both renders agree because
+    // neither has a time.
+    expect(hook).toMatch(/getServerSnapshot\(\): number \| null \{\s*return null;/);
+  });
+
+  it("the now marker is absent before mount, not drawn at midnight", () => {
+    const chart = readFileSync(join(__dirname, "../src/components/charts/day-profile.tsx"), "utf8");
+    // Comments stripped first. The comment above the guard explains why
+    // `nowMinutes ?? 0` was wrong, and an assertion that the file does not
+    // contain that string was failing on the explanation of why it does not.
+    const code = chart.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
+    expect(code).toMatch(/nowMinutes !== null &&/);
+    expect(code).not.toMatch(/nowMinutes \?\? 0/);
+  });
+});

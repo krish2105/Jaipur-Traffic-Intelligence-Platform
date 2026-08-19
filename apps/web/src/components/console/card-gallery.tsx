@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { jaipurMinutes, useClientNow } from "@/lib/use-client-now";
+
 import type { CountsSummary, DayProfile } from "@/lib/api";
 import { CARD_STYLES, CountsCard, type CardStyle } from "./card-styles";
 
@@ -13,18 +15,6 @@ const DENSITIES: { id: Density; label: string; note: string }[] = [
   { id: "projector", label: "Projector", note: "read from 6 m" },
 ];
 
-function jaipurNowMinutes(): number {
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Asia/Kolkata",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).formatToParts(new Date());
-  return (
-    Number(parts.find((p) => p.type === "hour")?.value ?? 0) * 60 +
-    Number(parts.find((p) => p.type === "minute")?.value ?? 0)
-  );
-}
 
 export function CardStyleGallery({
   summary,
@@ -34,7 +24,10 @@ export function CardStyleGallery({
   profile: DayProfile;
 }) {
   const [density, setDensity] = useState<Density>("auto");
-  const now = jaipurNowMinutes();
+  // Same rule as the console header: a time computed during render is a
+  // different time on the server than in the browser, and React calls that
+  // a hydration failure.
+  const now = jaipurMinutes(useClientNow());
 
   return (
     <main

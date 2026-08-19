@@ -29,7 +29,8 @@ export function DayProfileChart({
   height,
 }: {
   points: ProfilePoint[];
-  nowMinutes: number;
+  /** Null until the browser has mounted; the marker is simply absent. */
+  nowMinutes: number | null;
   height?: number;
 }) {
   const data = useMemo(
@@ -70,12 +71,17 @@ export function DayProfileChart({
             fill="url(#pravaah-day)"
             isAnimationActive={false}
           />
-          <ReferenceLine
-            x={nowMinutes / 60}
-            stroke="var(--accent)"
-            strokeWidth={1.5}
-            ifOverflow="extendDomain"
-          />
+          {/* Omitted rather than defaulted. `nowMinutes ?? 0` used to draw the
+              marker at midnight for the first frame, which is a confident line
+              pointing at the wrong hour — worse than no line. */}
+          {nowMinutes !== null && (
+            <ReferenceLine
+              x={nowMinutes / 60}
+              stroke="var(--accent)"
+              strokeWidth={1.5}
+              ifOverflow="extendDomain"
+            />
+          )}
           <ReferenceLine
             x={peak.t}
             stroke="var(--congestion-critical)"

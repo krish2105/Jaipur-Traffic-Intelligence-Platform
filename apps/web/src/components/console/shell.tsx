@@ -30,6 +30,7 @@ import { boundsOf, centroidOf, projectLine } from "@/lib/geo";
 import { RAMP_NIGHT } from "@/components/city/ramp";
 import { currentScene, serverScene, setTheme, subscribeScene } from "@/lib/theme";
 import { useSplit } from "@/lib/resizable";
+import { jaipurMinutes, useClientNow } from "@/lib/use-client-now";
 import { can, useSession, type Capability } from "@/lib/rbac";
 import type { Locale } from "@/i18n/routing";
 import { ModeDot } from "./primitives";
@@ -58,20 +59,6 @@ import {
   WeatherPanel,
   AirPanel,
 } from "./panels";
-
-/** Minutes since local midnight in Jaipur — where the brass marker sits. */
-function jaipurNowMinutes(): number {
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Asia/Kolkata",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).formatToParts(new Date());
-  return (
-    Number(parts.find((p) => p.type === "hour")?.value ?? 0) * 60 +
-    Number(parts.find((p) => p.type === "minute")?.value ?? 0)
-  );
-}
 
 /**
  * Sections, each gated by the capability that makes it meaningful.
@@ -178,6 +165,9 @@ export function ConsoleShell({
     onKeyDown: railKeys,
     reset: railReset,
   } = useSplit(RAIL);
+
+  // Null on the server and on the first client render, so the two agree.
+  const now = useClientNow();
 
   // A signed-out visitor still sees the console at viewer capability. Locking
   // the demo behind a login would make the one screen an official actually
@@ -345,16 +335,24 @@ export function ConsoleShell({
           </a>
           <ThemeToggle />
           <RoleBadge locale={locale} />
+          {/* Empty until mounted. The server cannot know what time it will be
+              when the browser hydrates, and writing its guess into the HTML is
+              what threw hydration error #418 on every load where the minute
+              happened to roll over in between. The width is reserved so the
+              header does not jump when the time arrives. */}
           <span
-            className="hidden font-mono tabular-nums text-[var(--ink-muted)] xl:inline"
+            className="hidden min-w-[11ch] text-right font-mono tabular-nums
+                       text-[var(--ink-muted)] xl:inline"
             style={{ fontSize: "var(--d-support)" }}
+            suppressHydrationWarning
           >
-            {new Intl.DateTimeFormat(hi ? "hi-IN" : "en-IN", {
-              timeZone: "Asia/Kolkata",
-              dateStyle: "medium",
-              timeStyle: "short",
-            }).format(new Date())}{" "}
-            IST
+            {now
+              ? `${new Intl.DateTimeFormat(hi ? "hi-IN" : "en-IN", {
+                  timeZone: "Asia/Kolkata",
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                }).format(new Date(now))} IST`
+              : ""}
           </span>
         </div>
       </header>
@@ -534,7 +532,7 @@ export function ConsoleShell({
             title={hi ? "बीजित प्रदर्शन" : "Seeded demonstration"}
             note={hi ? "सिंथेटिक, हर जगह अंकित" : "synthetic, badged everywhere"}
           >
-            <CountsPanel summary={summary} profile={profile} nowMinutes={jaipurNowMinutes()} />
+            <CountsPanel summary={summary} profile={profile} nowMinutes={jaipurMinutes(now)} />
             <CompositionPanel summary={summary} />
             <ForecastPanel forecast={forecast} />
             <QualityPanel summary={summary} cameras={cameras} />

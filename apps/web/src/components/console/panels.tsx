@@ -51,7 +51,7 @@ export function CountsPanel({
 }: {
   summary: CountsSummary;
   profile?: DayProfile;
-  nowMinutes?: number;
+  nowMinutes?: number | null;
 }) {
   const locale = useLocale() as Locale;
   const t = translator(locale);
@@ -116,7 +116,7 @@ export function CountsPanel({
       </div>
       {profile && profile.points.length > 0 && (
         <div className="mt-4">
-          <DayProfileChart points={profile.points} nowMinutes={nowMinutes ?? 0} />
+          <DayProfileChart points={profile.points} nowMinutes={nowMinutes ?? null} />
         </div>
       )}
       {current.peak_hour && (
