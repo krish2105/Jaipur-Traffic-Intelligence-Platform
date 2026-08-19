@@ -459,6 +459,50 @@ export interface SourceReadiness {
   note: string;
 }
 
+export interface AreaAccumulation {
+  area: string;
+  kind: string;
+  vehicles_estimated: number;
+  vehicles_low: number;
+  vehicles_high: number;
+  critical_accumulation: number;
+  saturation: number;
+  regime: "free" | "accumulating" | "saturated" | "gridlock";
+  links_estimated: number;
+  lane_km_seen: number;
+  links_clamped: number;
+  worst_link: { link_id: number; name: string; saturation: number; speed_kmh: number } | null;
+  gates: { cordon_links: number; note: string } | null;
+}
+
+export interface LiveAccumulation {
+  areas: AreaAccumulation[];
+  available: boolean;
+  reason?: string;
+  observed_at?: string | null;
+  areas_with_estimate?: number;
+  areas_total?: number;
+  coverage_note?: string;
+  provenance: string;
+  is_synthetic: boolean;
+  method: Record<string, string | number>;
+}
+
+/**
+ * Colour for a saturation regime.
+ *
+ * Not `congestionVar`: that maps a 0-100 congestion index, and saturation is a
+ * ratio against critical accumulation where 1.0 is the meaningful boundary, not
+ * 50. Reusing the wrong scale would put an area past its tipping point in the
+ * same colour as one running comfortably.
+ */
+export function regimeVar(regime: AreaAccumulation["regime"]): string {
+  if (regime === "free") return "var(--congestion-free)";
+  if (regime === "accumulating") return "var(--congestion-light)";
+  if (regime === "saturated") return "var(--congestion-severe)";
+  return "var(--congestion-critical)";
+}
+
 export interface ReliabilityRow {
   corridor_id?: number;
   link_id?: number;
@@ -911,6 +955,7 @@ export const api = {
   readiness: () => get<SourceReadiness>("/meta/sources"),
   probeCoverage: () => get<ProbeCoverage>("/probe/coverage"),
   reliability: () => get<Reliability>("/reliability/corridors"),
+  liveAccumulation: () => get<LiveAccumulation>("/areas/accumulation/live"),
   weather: () => get<WeatherNow>("/meta/weather"),
   air: () => get<AirQuality>("/meta/air"),
   published: () => get<PublishedFigures>("/meta/published"),

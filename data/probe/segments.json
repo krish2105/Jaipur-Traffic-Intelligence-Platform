@@ -1,5 +1,5 @@
 {
-  "discovered_at": "2026-08-19T08:51:20.497309+00:00",
+  "discovered_at": "2026-08-19T09:12:03.937537+00:00",
   "links": 90,
   "distinct_segments": 25,
   "unmatched_links": [],
@@ -11,630 +11,810 @@
       "corridor_id": 1,
       "lat": 26.876364,
       "lon": 75.797992,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.6132
     },
     "117": {
       "name": "Tonk Road Flyover Ramp",
       "corridor_id": 1,
       "lat": 26.841134,
       "lon": 75.793691,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 2,
+      "length_km": 0.3383
     },
     "142": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.83741,
       "lon": 75.793906,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.2757
     },
     "145": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.869198,
       "lon": 75.796991,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.9603
     },
     "154": {
       "name": "Tonk Road Flyover",
       "corridor_id": 1,
       "lat": 26.876375,
       "lon": 75.797909,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.6152
     },
     "204": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.832574,
       "lon": 75.793879,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.6871
     },
     "223": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.829679,
       "lon": 75.794176,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 1.2748
     },
     "224": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.835755,
       "lon": 75.793878,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.0736
     },
     "225": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.837357,
       "lon": 75.793785,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.2857
     },
     "226": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.83587,
       "lon": 75.793761,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.0439
     },
     "251": {
       "name": "Tonk Road Flyover",
       "corridor_id": 1,
       "lat": 26.818679,
       "lon": 75.797193,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.6371
     },
     "252": {
       "name": "Tonk Road Flyover",
       "corridor_id": 1,
       "lat": 26.818712,
       "lon": 75.797051,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.6596
     },
     "258": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.841084,
       "lon": 75.793671,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.359
     },
     "259": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.855811,
       "lon": 75.7951,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.2178
     },
     "260": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.855919,
       "lon": 75.794964,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.5263
     },
     "261": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.84622,
       "lon": 75.793593,
-      "free_flow_kmh": 35.0
+      "free_flow_kmh": 35.0,
+      "lanes": 2,
+      "length_km": 0.7857
     },
     "262": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.849559,
       "lon": 75.79405,
-      "free_flow_kmh": 35.0
+      "free_flow_kmh": 35.0,
+      "lanes": 2,
+      "length_km": 0.038
     },
     "311": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.869198,
       "lon": 75.796865,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.9601
     },
     "368": {
       "name": "Tonk Road Flyover",
       "corridor_id": 1,
       "lat": 26.879124,
       "lon": 75.798923,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.0256
     },
     "422": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.85412,
       "lon": 75.794839,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.1603
     },
     "424": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.858452,
       "lon": 75.79536,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.0406
     },
     "425": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.857682,
       "lon": 75.795363,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.2003
     },
     "437": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.838868,
       "lon": 75.793741,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.0493
     },
     "452": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.851664,
       "lon": 75.794537,
-      "free_flow_kmh": 35.0
+      "free_flow_kmh": 35.0,
+      "lanes": 2,
+      "length_km": 0.3945
     },
     "454": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.851653,
       "lon": 75.794316,
-      "free_flow_kmh": 35.0
+      "free_flow_kmh": 35.0,
+      "lanes": 2,
+      "length_km": 0.4304
     },
     "479": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.838967,
       "lon": 75.793868,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.0696
     },
     "501": {
       "name": "Tonk Road Flyover Ramp",
       "corridor_id": 1,
       "lat": 26.835596,
       "lon": 75.794179,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.5624
     },
     "502": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.839278,
       "lon": 75.793733,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.0415
     },
     "516": {
       "name": "Tonk Road Flyover Ramp",
       "corridor_id": 1,
       "lat": 26.839906,
       "lon": 75.793937,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 2,
+      "length_km": 0.0866
     },
     "517": {
       "name": "Tonk Road Flyover Ramp",
       "corridor_id": 1,
       "lat": 26.839102,
       "lon": 75.793963,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 2,
+      "length_km": 0.0918
     },
     "518": {
       "name": "Tonk Road Flyover Ramp",
       "corridor_id": 1,
       "lat": 26.839181,
       "lon": 75.793658,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 2,
+      "length_km": 0.1002
     },
     "519": {
       "name": "Tonk Road Flyover Ramp",
       "corridor_id": 1,
       "lat": 26.838088,
       "lon": 75.794008,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.0369
     },
     "520": {
       "name": "Tonk Road Flyover",
       "corridor_id": 1,
       "lat": 26.821336,
       "lon": 75.795592,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.0406
     },
     "541": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.826776,
       "lon": 75.794216,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.5996
     },
     "593": {
       "name": "Tonk Road",
       "corridor_id": 1,
       "lat": 26.846025,
       "lon": 75.793757,
-      "free_flow_kmh": 35.0
+      "free_flow_kmh": 35.0,
+      "lanes": 2,
+      "length_km": 0.7476
     },
     "49": {
       "name": "JLN Marg Flyover",
       "corridor_id": 2,
       "lat": 26.861079,
       "lon": 75.806396,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 0.0632
     },
     "51": {
       "name": "JLN Marg Flyover",
       "corridor_id": 2,
       "lat": 26.857992,
       "lon": 75.805582,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.5457
     },
     "92": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.895423,
       "lon": 75.815365,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.7593
     },
     "97": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.863304,
       "lon": 75.806942,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 0.442
     },
     "98": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.873292,
       "lon": 75.80952,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 0.4693
     },
     "130": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.888497,
       "lon": 75.813423,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.8027
     },
     "133": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.879779,
       "lon": 75.81129,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 1.0188
     },
     "146": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.860879,
       "lon": 75.806422,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 0.0951
     },
     "147": {
       "name": "JLN Marg Flyover",
       "corridor_id": 2,
       "lat": 26.858566,
       "lon": 75.805831,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.4048
     },
     "227": {
       "name": "JLN Marg Flyover",
       "corridor_id": 2,
       "lat": 26.856297,
       "lon": 75.805235,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.1119
     },
     "298": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.895457,
       "lon": 75.815241,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.7538
     },
     "299": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.888458,
       "lon": 75.813545,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.7991
     },
     "335": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.873341,
       "lon": 75.809646,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 0.4448
     },
     "336": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.879824,
       "lon": 75.811174,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 1.0152
     },
     "352": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.866922,
       "lon": 75.807867,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 0.1916
     },
     "354": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.863252,
       "lon": 75.807067,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 0.4462
     },
     "355": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.868178,
       "lon": 75.808197,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 0.0943
     },
     "356": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.870874,
       "lon": 75.808884,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 0.0813
     },
     "357": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.869266,
       "lon": 75.808607,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 0.348
     },
     "358": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.871093,
       "lon": 75.80906,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 0.0668
     },
     "439": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.865665,
       "lon": 75.807541,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 0.0945
     },
     "440": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.866472,
       "lon": 75.807905,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 0.2867
     },
     "488": {
       "name": "JLN Marg",
       "corridor_id": 2,
       "lat": 26.869554,
       "lon": 75.808552,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 0.2187
     },
     "507": {
       "name": "JLN Marg Flyover",
       "corridor_id": 2,
       "lat": 26.860593,
       "lon": 75.806279,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 6,
+      "length_km": 0.047
     },
     "72": {
       "name": "Ajmer Road",
       "corridor_id": 3,
       "lat": 26.914557,
       "lon": 75.793988,
-      "free_flow_kmh": 60.0
+      "free_flow_kmh": 60.0,
+      "lanes": 2,
+      "length_km": 0.0996
     },
     "190": {
       "name": "Ajmer Road",
       "corridor_id": 3,
       "lat": 26.90115,
       "lon": 75.770807,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 2,
+      "length_km": 0.847
     },
     "191": {
       "name": "Ajmer Road",
       "corridor_id": 3,
       "lat": 26.909019,
       "lon": 75.780032,
-      "free_flow_kmh": 60.0
+      "free_flow_kmh": 60.0,
+      "lanes": 2,
+      "length_km": 1.6467
     },
     "192": {
       "name": "Ajmer Road",
       "corridor_id": 3,
       "lat": 26.909065,
       "lon": 75.780618,
-      "free_flow_kmh": 60.0
+      "free_flow_kmh": 60.0,
+      "lanes": 2,
+      "length_km": 1.5428
     },
     "232": {
       "name": "Ajmer Road",
       "corridor_id": 3,
       "lat": 26.915803,
       "lon": 75.798022,
-      "free_flow_kmh": 60.0
+      "free_flow_kmh": 60.0,
+      "lanes": 3,
+      "length_km": 0.5728
     },
     "236": {
       "name": "Ajmer Road",
       "corridor_id": 3,
       "lat": 26.903223,
       "lon": 75.77521,
-      "free_flow_kmh": 60.0
+      "free_flow_kmh": 60.0,
+      "lanes": 2,
+      "length_km": 0.1713
     },
     "237": {
       "name": "Ajmer Road",
       "corridor_id": 3,
       "lat": 26.903114,
       "lon": 75.774763,
-      "free_flow_kmh": 60.0
+      "free_flow_kmh": 60.0,
+      "lanes": 2,
+      "length_km": 0.0529
     },
     "241": {
       "name": "Ajmer Road",
       "corridor_id": 3,
       "lat": 26.915528,
       "lon": 75.797124,
-      "free_flow_kmh": 60.0
+      "free_flow_kmh": 60.0,
+      "lanes": 2,
+      "length_km": 0.3847
     },
     "266": {
       "name": "Ajmer Road",
       "corridor_id": 3,
       "lat": 26.901343,
       "lon": 75.771674,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 2,
+      "length_km": 0.6548
     },
     "367": {
       "name": "Ajmer Road",
       "corridor_id": 3,
       "lat": 26.914606,
       "lon": 75.794415,
-      "free_flow_kmh": 60.0
+      "free_flow_kmh": 60.0,
+      "lanes": 3,
+      "length_km": 0.1917
     },
     "487": {
       "name": "Ajmer Road",
       "corridor_id": 3,
       "lat": 26.914824,
       "lon": 75.794881,
-      "free_flow_kmh": 60.0
+      "free_flow_kmh": 60.0,
+      "lanes": 2,
+      "length_km": 0.0873
     },
     "48": {
       "name": "Gopalpura Bypass Road",
       "corridor_id": 4,
       "lat": 26.867972,
       "lon": 75.805645,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.4883
     },
     "58": {
       "name": "Gopalpura Bypass Flyover",
       "corridor_id": 4,
       "lat": 26.864414,
       "lon": 75.788148,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.4292
     },
     "96": {
       "name": "Gopalpura Flyover",
       "corridor_id": 4,
       "lat": 26.862526,
       "lon": 75.795909,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.4748
     },
     "134": {
       "name": "Gopalpura Bypass Road",
       "corridor_id": 4,
       "lat": 26.867862,
       "lon": 75.805512,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.4371
     },
     "136": {
       "name": "Gopalpura Bypass",
       "corridor_id": 4,
       "lat": 26.872954,
       "lon": 75.777117,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 1.6456
     },
     "138": {
       "name": "Gopalpura Bypass Flyover",
       "corridor_id": 4,
       "lat": 26.864357,
       "lon": 75.788048,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.4336
     },
     "140": {
       "name": "Gopalpura Flyover",
       "corridor_id": 4,
       "lat": 26.864772,
       "lon": 75.796264,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.028
     },
     "141": {
       "name": "Gopalpura Flyover",
       "corridor_id": 4,
       "lat": 26.862501,
       "lon": 75.796011,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.4743
     },
     "144": {
       "name": "Gopalpura Flyover",
       "corridor_id": 4,
       "lat": 26.859584,
       "lon": 75.795631,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.1767
     },
     "152": {
       "name": "Gopalpura Bypass",
       "corridor_id": 4,
       "lat": 26.873319,
       "lon": 75.776963,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 1.7292
     },
     "279": {
       "name": "Gopalpura Flyover",
       "corridor_id": 4,
       "lat": 26.86476,
       "lon": 75.796363,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.0311
     },
     "310": {
       "name": "Gopalpura Flyover",
       "corridor_id": 4,
       "lat": 26.859719,
       "lon": 75.795561,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.1512
     },
     "353": {
       "name": "Gopalpura Bypass Road",
       "corridor_id": 4,
       "lat": 26.867732,
       "lon": 75.807963,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.0517
     },
     "386": {
       "name": "Gopalpura Bypass",
       "corridor_id": 4,
       "lat": 26.878292,
       "lon": 75.770922,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.0795
     },
     "457": {
       "name": "Gopalpura Bypass Flyover",
       "corridor_id": 4,
       "lat": 26.866154,
       "lon": 75.78571,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.1984
     },
     "465": {
       "name": "Gopalpura Bypass Flyover",
       "corridor_id": 4,
       "lat": 26.866223,
       "lon": 75.785802,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.2066
     },
     "466": {
       "name": "Gopalpura Bypass",
       "corridor_id": 4,
       "lat": 26.867913,
       "lon": 75.784486,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.2112
     },
     "467": {
       "name": "Gopalpura Bypass",
       "corridor_id": 4,
       "lat": 26.867803,
       "lon": 75.784401,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.2204
     },
     "508": {
       "name": "Gopalpura Flyover",
       "corridor_id": 4,
       "lat": 26.858838,
       "lon": 75.795428,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 4,
+      "length_km": 0.0459
     },
     "509": {
       "name": "Gopalpura Bypass Flyover",
       "corridor_id": 4,
       "lat": 26.863749,
       "lon": 75.790311,
-      "free_flow_kmh": 50.0
+      "free_flow_kmh": 50.0,
+      "lanes": 3,
+      "length_km": 0.0251
     }
   },
   "link_to_segment": {

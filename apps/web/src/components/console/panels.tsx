@@ -9,6 +9,8 @@ import type {
   Forecast,
   DayProfile,
   SignalAdvisory,
+  AreaAccumulation,
+  LiveAccumulation,
   ProbeCoverage,
   Reliability,
   ReliabilityRow,
@@ -17,7 +19,7 @@ import type {
   WeeklyMatrix,
   IncidentTimeline,
 } from "@/lib/api";
-import { congestionBandKey, congestionVar } from "@/lib/api";
+import { congestionBandKey, congestionVar, regimeVar } from "@/lib/api";
 import { formatCompact, formatCount, formatPercent } from "@/lib/format";
 import { translator } from "@/lib/strings";
 import { useChanged, usePoll } from "@/lib/live";
@@ -436,6 +438,121 @@ export function ReadinessPanel({ data }: { data: SourceReadiness }) {
             .filter((s) => s.needs)
             .map((s) => s.needs)
             .join(" · ")}
+        </p>
+      )}
+    </Panel>
+  );
+}
+
+const REGIME_WORD: Record<AreaAccumulation["regime"], { en: string; hi: string }> = {
+  free: { en: "free", hi: "मुक्त" },
+  accumulating: { en: "filling", hi: "भर रहा" },
+  saturated: { en: "past critical", hi: "क्रांतिक से ऊपर" },
+  gridlock: { en: "gridlock", hi: "जाम" },
+};
+
+/**
+ * How many vehicles are inside each area, right now.
+ *
+ * The question this project has been asked more than any other, and the one the
+ * platform answered with a zero until today because a count needs a camera.
+ * These are inferred from measured speeds, so the word ESTIMATED sits at the top
+ * of the panel and the band sits under every number. Neither is decoration: the
+ * distinction between this and a camera count is the whole reason anyone should
+ * believe the rest of the console.
+ *
+ * The bar is drawn against critical accumulation rather than against the largest
+ * area, because the number that matters is not which area has the most vehicles
+ * but which is past the point where adding more reduces throughput. An empty
+ * six-lane arterial and a jammed lane both matter relative to their own capacity.
+ */
+export function AccumulationPanel({ data }: { data: LiveAccumulation }) {
+  const hi = (useLocale() as Locale) === "hi";
+  if (!data.available || data.areas.length === 0) {
+    return (
+      <Panel title={hi ? "क्षेत्र में वाहन" : "Vehicles in area"}>
+        <p className="text-[11px] leading-relaxed text-[var(--ink-muted)]">
+          {data.reason ??
+            (hi
+              ? "कोई ताज़ा प्रोब स्वीप नहीं। पुराना संचय बिलकुल न होने से बुरा है।"
+              : "No fresh probe sweep. A stale accumulation is worse than none.")}
+        </p>
+      </Panel>
+    );
+  }
+
+  return (
+    <Panel
+      title={hi ? "क्षेत्र में वाहन" : "Vehicles in area"}
+      emphasis
+      aside={
+        <span
+          className="rounded px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider"
+          style={{ background: "var(--surface-3)", color: "var(--accent)" }}
+        >
+          {hi ? "अनुमानित" : "estimated"}
+        </span>
+      }
+    >
+      <ul className="space-y-3">
+        {data.areas.map((area) => {
+          const word = REGIME_WORD[area.regime];
+          const pct = Math.min(100, area.saturation * 100);
+          return (
+            <li key={area.area}>
+              <div className="flex items-baseline gap-2">
+                <span
+                  className="min-w-0 flex-1 truncate text-[12px] text-[var(--ink)]"
+                  title={area.area}
+                >
+                  {area.area}
+                </span>
+                <span className="shrink-0 font-mono tabular-nums text-[13px] text-[var(--ink)]">
+                  {area.vehicles_estimated.toLocaleString("en-IN")}
+                </span>
+              </div>
+              {/* Against its own capacity, not against the other areas. */}
+              <div
+                className="mt-1 h-1 w-full overflow-hidden rounded-full"
+                style={{ background: "var(--surface-3)" }}
+                role="img"
+                aria-label={`${area.area}: ${area.vehicles_estimated} of ${area.critical_accumulation} critical, ${word.en}`}
+              >
+                <div
+                  className="h-full rounded-full"
+                  style={{ width: `${pct}%`, background: regimeVar(area.regime) }}
+                />
+              </div>
+              <p className="mt-1 font-mono text-[10px] tabular-nums text-[var(--ink-faint)]">
+                {area.vehicles_low.toLocaleString("en-IN")}–
+                {area.vehicles_high.toLocaleString("en-IN")}
+                {" · "}
+                {hi ? "क्रांतिक" : "critical"} {area.critical_accumulation.toLocaleString("en-IN")}
+                {" · "}
+                <span style={{ color: regimeVar(area.regime) }}>{hi ? word.hi : word.en}</span>
+                {area.links_clamped > 0 && (
+                  <span className="text-[var(--congestion-moderate)]">
+                    {" · "}
+                    {area.links_clamped} {hi ? "क्लैंप" : "clamped"}
+                  </span>
+                )}
+              </p>
+            </li>
+          );
+        })}
+      </ul>
+
+      <p className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] leading-relaxed text-[var(--ink-muted)]">
+        {hi
+          ? "मापी गई गति से अनुमानित, गिना नहीं गया। बैंड मॉडल की अपनी त्रुटि है।"
+          : "Inferred from measured speed, not counted. The band is the model's own error."}
+      </p>
+      {data.areas_total != null && (
+        <p className="mt-1 text-[11px] leading-relaxed text-[var(--ink-faint)]">
+          {data.areas_with_estimate}/{data.areas_total}{" "}
+          {hi
+            ? "क्षेत्रों में नमूना लिंक है। बाकी अमापित हैं — खाली नहीं।"
+            : "areas contain a sampled link. The rest are unmeasured, which is not clear."}
         </p>
       )}
     </Panel>

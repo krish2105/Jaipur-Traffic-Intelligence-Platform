@@ -22,7 +22,7 @@ from pravaah.adapters.published import (
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .. import probe, reliability
+from .. import accumulation_live, probe, reliability
 from ..allocator import allocate
 from ..deps import SessionDep
 from ..kpis import kpi_board
@@ -590,6 +590,23 @@ async def probe_coverage() -> dict[str, Any]:
     surprises somebody with a bill.
     """
     return probe.coverage()
+
+
+@router.get("/areas/accumulation/live")
+async def areas_accumulation_live() -> dict[str, Any]:
+    """How many vehicles are inside each area right now, estimated from speed.
+
+    The question this platform has been asked more than any other. The answer is
+    an estimate with a band on it, never a count, and it is labelled that way in
+    the payload so no screen can quietly promote it.
+
+    The number that makes it useful is `saturation`: accumulation against the
+    critical accumulation of the same links. Below 1.0 an area absorbs more
+    traffic. Above it, every further vehicle lowers how many get through, which
+    is the point at which holding inflow at the boundary starts to help rather
+    than merely to punish.
+    """
+    return accumulation_live.live()
 
 
 @router.get("/reliability/corridors")

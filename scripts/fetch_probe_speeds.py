@@ -139,7 +139,12 @@ async def corridor_links() -> list[dict[str, Any]]:
                     text("""
                     SELECT l.link_id, l.name_en, l.corridor_id,
                            ST_AsGeoJSON(l.geom)::json AS geometry,
-                           COALESCE(l.free_flow_speed_kmh, 30) AS free_flow_kmh
+                           COALESCE(l.free_flow_speed_kmh, 30) AS free_flow_kmh,
+                           COALESCE(l.lanes, 2) AS lanes,
+                           -- Geography cast so the answer is metres on the
+                           -- ellipsoid rather than degrees, which is what the
+                           -- density estimator multiplies by.
+                           ST_Length(l.geom::geography) / 1000.0 AS length_km
                     FROM road_links l
                     WHERE l.corridor_id IS NOT NULL
                     ORDER BY l.corridor_id, l.link_id
@@ -163,6 +168,12 @@ async def corridor_links() -> list[dict[str, Any]]:
                 "lat": round(lat, 6),
                 "lon": round(lon, 6),
                 "free_flow_kmh": float(r.free_flow_kmh),
+                # Carried so accumulation can be estimated from the cache alone.
+                # Vehicles on a link are density x lanes x length, and fetching
+                # those two from Postgres per request would re-couple the read
+                # path to a database this pipeline was deliberately freed from.
+                "lanes": int(r.lanes),
+                "length_km": round(float(r.length_km), 4),
             }
         )
     return out
@@ -309,11 +320,16 @@ async def discover(links: list[dict[str, Any]], used: int) -> int:
             # that is what --discover is for.
             "link_points": {
                 str(x["link_id"]): {
-                    "name": x["name"],
-                    "corridor_id": x["corridor_id"],
-                    "lat": x["lat"],
-                    "lon": x["lon"],
-                    "free_flow_kmh": x["free_flow_kmh"],
+                    k: x[k]
+                    for k in (
+                        "name",
+                        "corridor_id",
+                        "lat",
+                        "lon",
+                        "free_flow_kmh",
+                        "lanes",
+                        "length_km",
+                    )
                 }
                 for x in links
             },
