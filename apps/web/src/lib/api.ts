@@ -459,7 +459,68 @@ export interface SourceReadiness {
   note: string;
 }
 
-export interface AreaAccumulation {
+export interface SchemeGroup {
+  without_s: number;
+  with_s: number;
+  saved_s: number;
+  ci_low_s: number;
+  ci_high_s: number;
+  significant: boolean;
+}
+
+export interface Scheme {
+  scheme: {
+    id: string;
+    name: string;
+    authority: string;
+    cost_crore: number;
+    length_km: number;
+    lanes_each_way: number;
+    corridor_id: number;
+  };
+  seeds: number[];
+  junctions_bypassed: number;
+  results: { through_share: number; groups: Record<string, SchemeGroup> }[];
+  induced_demand: {
+    through_share: number;
+    steps: { extra_demand: number; saved_s: number; share_of_original_saving: number }[];
+    note: string;
+  };
+  limits: string;
+  is_synthetic: boolean;
+}
+
+export interface CityDataResource {
+  id: string;
+  label: string;
+  description: string;
+  access_policy: string | null;
+  needs_token: boolean;
+  fields: string[];
+  wanted_by_pravaah: boolean;
+}
+
+export interface CityData {
+  instance: string;
+  exchange: string;
+  standard: string;
+  catalogue_reachable: boolean;
+  resources: CityDataResource[];
+  we_have_a_token: boolean;
+  needs: string | null;
+  note: string;
+}
+
+/**
+ * One area's live, estimated accumulation.
+ *
+ * Named apart from `AreaAccumulation` below, which is the synthetic cordon
+ * model over a seeded day. Both were briefly called the same thing, and because
+ * TypeScript merges interfaces by name rather than complaining, the merged type
+ * claimed every field of both and `tsc` stayed silent while describing two
+ * runtime shapes that each had half of them.
+ */
+export interface LiveAreaAccumulation {
   area: string;
   kind: string;
   count_reportable: boolean;
@@ -478,7 +539,7 @@ export interface AreaAccumulation {
 }
 
 export interface LiveAccumulation {
-  areas: AreaAccumulation[];
+  areas: LiveAreaAccumulation[];
   available: boolean;
   reason?: string;
   observed_at?: string | null;
@@ -498,7 +559,7 @@ export interface LiveAccumulation {
  * 50. Reusing the wrong scale would put an area past its tipping point in the
  * same colour as one running comfortably.
  */
-export function regimeVar(regime: AreaAccumulation["regime"]): string {
+export function regimeVar(regime: LiveAreaAccumulation["regime"]): string {
   if (regime === "free") return "var(--congestion-free)";
   if (regime === "accumulating") return "var(--congestion-light)";
   if (regime === "saturated") return "var(--congestion-severe)";
@@ -958,6 +1019,8 @@ export const api = {
   probeCoverage: () => get<ProbeCoverage>("/probe/coverage"),
   reliability: () => get<Reliability>("/reliability/corridors"),
   liveAccumulation: () => get<LiveAccumulation>("/areas/accumulation/live"),
+  schemes: () => get<{ schemes: Scheme[] }>("/schemes"),
+  cityData: () => get<CityData>("/meta/city-data"),
   weather: () => get<WeatherNow>("/meta/weather"),
   air: () => get<AirQuality>("/meta/air"),
   published: () => get<PublishedFigures>("/meta/published"),

@@ -19,7 +19,7 @@ export default async function ConsolePage({
   const [
     live,
     corridors, summary, cameras, forecast, scene, buildings, blackspots, signals,
-    readiness, weather, profile, weekly, incidents, probeCoverage, reliability, accumulation,
+    readiness, weather, profile, weekly, incidents, probeCoverage, reliability, accumulation, schemes, cityData,
   ] =
     await Promise.all([
     apiIsLive(),
@@ -73,6 +73,8 @@ export default async function ConsolePage({
       // The headline answer. Null when no sweep is fresh, and the panel
       // says so rather than showing an area list that is quietly stale.
       api.liveAccumulation().catch(() => null),
+      api.schemes().catch(() => null),
+      api.cityData().catch(() => null),
     ]);
 
   // The panel cannot detect this itself — a snapshot response is a
@@ -98,6 +100,8 @@ export default async function ConsolePage({
       probeCoverage={probeCoverage}
       reliability={reliability}
       accumulation={accumulation}
+      scheme={schemes?.schemes?.[0] ?? null}
+      cityData={cityData}
     />
   );
 }

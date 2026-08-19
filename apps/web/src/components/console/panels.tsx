@@ -9,7 +9,9 @@ import type {
   Forecast,
   DayProfile,
   SignalAdvisory,
-  AreaAccumulation,
+  CityData,
+  LiveAreaAccumulation,
+  Scheme,
   LiveAccumulation,
   ProbeCoverage,
   Reliability,
@@ -444,7 +446,172 @@ export function ReadinessPanel({ data }: { data: SourceReadiness }) {
   );
 }
 
-const REGIME_WORD: Record<AreaAccumulation["regime"], { en: string; hi: string }> = {
+/**
+ * A capital scheme appraised before the money is committed.
+ *
+ * JDA is spending Rs 184.87 crore on an elevated road on a corridor this
+ * platform already models. The panel leads with the trade rather than the
+ * headline: a flyover carries through traffic over the junctions and leaves
+ * local traffic at the same signals, so those two numbers sit side by side. A
+ * mean over both would hide the question a councillor gets asked.
+ *
+ * The induced-demand row is here because it is the standard criticism of urban
+ * grade separation and the standard omission from the appraisals that justify
+ * them. Better to put it on screen ourselves than to be shown it across a table.
+ */
+export function SchemePanel({ data }: { data: Scheme }) {
+  const hi = (useLocale() as Locale) === "hi";
+  const rows = data.results ?? [];
+  if (rows.length === 0) return null;
+  // Lowest and highest through share. Both guaranteed present by the length
+  // check above, but narrowed explicitly rather than asserted.
+  const worst = rows[0];
+  const best = rows[rows.length - 1];
+  if (!worst || !best) return null;
+
+  return (
+    <Panel
+      title={hi ? "योजना मूल्यांकन" : "Scheme appraisal"}
+      aside={
+        <span className="font-mono text-[10px] tabular-nums text-[var(--ink-muted)]">
+          ₹{data.scheme.cost_crore} {hi ? "करोड़" : "cr"}
+        </span>
+      }
+    >
+      <p className="text-[12px] leading-relaxed text-[var(--ink)]">
+        {data.scheme.name}
+        <span className="text-[var(--ink-faint)]">
+          {" · "}
+          {data.scheme.length_km} km · {data.junctions_bypassed}{" "}
+          {hi ? "चौराहे बायपास" : "junctions bypassed"}
+        </span>
+      </p>
+
+      <div className="mt-3 overflow-x-auto">
+        <table className="w-full min-w-[300px]" style={{ fontSize: "11px" }}>
+          <thead>
+            <tr className="text-[var(--ink-faint)]">
+              <th className="py-1 text-left font-normal">{hi ? "थ्रू हिस्सा" : "through share"}</th>
+              <th className="py-1 text-right font-normal">{hi ? "थ्रू" : "through"}</th>
+              <th className="py-1 text-right font-normal">{hi ? "स्थानीय" : "local"}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.through_share} className="border-t border-[var(--rule)]">
+                <td className="py-1 font-mono tabular-nums text-[var(--ink-muted)]">
+                  {(row.through_share * 100).toFixed(0)}%
+                </td>
+                {(["through", "local"] as const).map((group) => {
+                  const g = row.groups[group];
+                  return (
+                    <td
+                      key={group}
+                      className="py-1 text-right font-mono tabular-nums"
+                      style={{ color: g?.significant ? "var(--accent)" : "var(--ink-faint)" }}
+                      title={
+                        g?.significant
+                          ? `95% interval ${g.ci_low_s} to ${g.ci_high_s} seconds`
+                          : "inside seed noise"
+                      }
+                    >
+                      {g ? (g.significant ? `−${g.saved_s.toFixed(0)}s` : "noise") : "—"}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <p className="mt-2 text-[11px] leading-relaxed text-[var(--ink-muted)]">
+        {hi
+          ? `थ्रू यातायात ${worst.groups.through?.saved_s.toFixed(0)}–${best.groups.through?.saved_s.toFixed(0)} सेकंड बचाता है; स्थानीय ${worst.groups.local?.saved_s.toFixed(0)}–${best.groups.local?.saved_s.toFixed(0)}।`
+          : `Through traffic saves ${best.groups.through?.saved_s.toFixed(0)}–${worst.groups.through?.saved_s.toFixed(0)} seconds; local traffic ${worst.groups.local?.saved_s.toFixed(0)}–${best.groups.local?.saved_s.toFixed(0)}.`}
+      </p>
+
+      {data.induced_demand?.steps?.length > 0 && (
+        <p className="mt-2 text-[11px] leading-relaxed text-[var(--ink-faint)]">
+          {hi ? "प्रेरित माँग: " : "Induced demand: "}
+          {data.induced_demand.steps
+            .filter((s) => s.extra_demand > 0)
+            .map(
+              (s) =>
+                `+${(s.extra_demand * 100).toFixed(0)}% → ${(s.share_of_original_saving * 100).toFixed(0)}%`,
+            )
+            .join(", ")}{" "}
+          {hi ? "बचत बची रहती है" : "of the saving survives"}
+        </p>
+      )}
+
+      <p className="mt-2 border-t border-[var(--rule)] pt-2 text-[11px] leading-relaxed text-[var(--ink-muted)]">
+        {hi
+          ? "सिमुलेशन में अंतर, निर्मित सड़क की भविष्यवाणी नहीं। रैंप कतार और मर्ज व्यवहार शामिल नहीं।"
+          : "A simulated difference, not a prediction of the built road. Ramp queueing and merge behaviour are absent."}
+      </p>
+    </Panel>
+  );
+}
+
+/**
+ * What Jaipur already publishes to the national data exchange.
+ *
+ * This panel exists to shrink the ask. The platform has spent weeks saying
+ * vehicle counts need cameras Jaipur does not have; the catalogue says Jaipur
+ * runs Vehicle Classification Cameras and publishes their locations under an
+ * API approved by the Bureau of Indian Standards. What is missing is a token.
+ *
+ * Read live with no credential, so this is a fact on screen rather than a
+ * proposal in a slide.
+ */
+export function CityDataPanel({ data }: { data: CityData }) {
+  const hi = (useLocale() as Locale) === "hi";
+  if (!data.catalogue_reachable || data.resources.length === 0) return null;
+  const wanted = data.resources.filter((r) => r.wanted_by_pravaah);
+
+  return (
+    <Panel
+      title={hi ? "जयपुर का अपना डेटा" : "Jaipur's own data"}
+      aside={
+        <span className="font-mono text-[10px] tabular-nums text-[var(--ink-muted)]">
+          {data.resources.length} {hi ? "संसाधन" : "published"}
+        </span>
+      }
+    >
+      <ul className="space-y-1.5">
+        {data.resources.map((r) => (
+          <li key={r.id} className="flex items-baseline gap-2 text-[12px]">
+            <ModeDot live={!r.needs_token} title={r.needs_token ? "token needed" : "open"} />
+            <span
+              className="min-w-0 flex-1 truncate"
+              style={{ color: r.wanted_by_pravaah ? "var(--accent)" : "var(--ink-muted)" }}
+              title={r.description}
+            >
+              {r.label}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      {wanted.length > 0 && (
+        <p className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] leading-relaxed text-[var(--ink)]">
+          {hi
+            ? "जयपुर पहले से वाहन वर्गीकरण कैमरे चलाता है और उनकी लोकेशन प्रकाशित करता है। कैमरे नहीं चाहिए — केवल पढ़ने की अनुमति चाहिए।"
+            : "Jaipur already runs Vehicle Classification Cameras and publishes their locations. We are not asking for cameras, only for read access."}
+        </p>
+      )}
+      <p className="mt-2 text-[11px] leading-relaxed text-[var(--ink-faint)]">
+        {data.standard}
+      </p>
+      {data.needs && (
+        <p className="mt-2 text-[11px] leading-relaxed text-[var(--accent)]">{data.needs}</p>
+      )}
+    </Panel>
+  );
+}
+
+const REGIME_WORD: Record<LiveAreaAccumulation["regime"], { en: string; hi: string }> = {
   free: { en: "free", hi: "मुक्त" },
   accumulating: { en: "filling", hi: "भर रहा" },
   saturated: { en: "past critical", hi: "क्रांतिक से ऊपर" },
