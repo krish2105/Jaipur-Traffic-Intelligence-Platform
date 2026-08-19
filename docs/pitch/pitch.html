@@ -156,6 +156,12 @@ ya sab gaadiyon ko. Ye faisla aapka hona chahiye, software ka nahi.</p>
     <td>SUMO simulation, demand swept 600 to 1600 vehicles per hour, 5 random seeds per point.</td></tr>
 <tr><td>Works with no internet</td>
     <td>Tested by killing the server mid-session. The console reloads and renders.</td></tr>
+<tr><td>Area screening</td>
+    <td>22 police station catchments over 1,452 roads, live in the console. Congestion and worst road per area.</td></tr>
+<tr><td>Cordon camera plan</td>
+    <td>Which junctions must be instrumented per area, ordered cheapest first. 282 for all 22 areas.</td></tr>
+<tr><td>Accumulation model</td>
+    <td>Vehicles inside an area by hour, from boundary counts. Conserves over 24 hours, verified on all 22 areas.</td></tr>
 <tr><td>Vehicle detection</td>
     <td>Apache-2.0 model run on 15 openly licensed photographs of real Jaipur streets. 49 vehicles found across 4 classes.</td></tr>
 </table>
@@ -171,7 +177,73 @@ same problem and will not mention it. Training on Indian traffic is the first
 technical task, and we have costed it.</p>
 </div>
 
-<h2>4. What it costs</h2>
+<div class="page-break"></div>
+
+<h2>4. Real-time area screening</h2>
+
+<p>The question a control room asks is not "how is this road" but <b>"how bad is
+Vaishali Nagar right now, and how much traffic is sitting in it"</b>. Nothing in
+Jaipur answers that today. PRAVAAH now does.</p>
+
+<h3>Every part of the city, ranked</h3>
+<p>22 police station catchments and four Commissionerate zones, built over 1,452
+roads. Each area shows its congestion, its worst road by name, and how many
+cameras it would take to measure the vehicles inside it. Click an area, get a
+number.</p>
+
+<div class="box">
+<p style="margin-bottom:0"><b>16 of the 22 areas have roads but no measurement.</b>
+The screen says so, in grey, under the words "these are not clear, they are
+unwatched". A system that showed them as green would be worse than one that
+showed nothing, because you would deprioritise exactly the parts of Jaipur
+nobody is watching.</p>
+</div>
+
+<h3>Counting vehicles inside an area needs far fewer cameras than you think</h3>
+<p>You do not instrument every road in an area. You count what crosses its
+boundary and integrate: what came in, minus what went out. A catchment has
+around a hundred roads inside it. Its boundary has between 5 and 24 crossings.</p>
+
+<table>
+<tr><th>Area</th><th>Cameras</th><th>Running total</th></tr>
+<tr><td>Sanganer Sadar</td><td class="num">5</td><td class="num">5</td></tr>
+<tr><td>Kardhani</td><td class="num">5</td><td class="num">10</td></tr>
+<tr><td>Vaishali Nagar</td><td class="num">8</td><td class="num">24</td></tr>
+<tr><td><b>All 22 areas</b></td><td class="num"><b>282</b></td><td class="num"><b>282</b></td></tr>
+</table>
+
+<p><b>These are cameras you are already installing.</b> 253 of Jaipur's 423
+junctions are being wired for ITMS right now. Those junctions are the boundary.
+We are asking for a data feed, not hardware.</p>
+
+<h3>What accuracy your detectors actually need</h3>
+<p>Counting error accumulates when you integrate. A detector 2 percent optimistic
+invents vehicles every hour, and the estimate looks perfectly reasonable the
+whole time it is going wrong. So the model states how often the count must be
+reset against a known figure:</p>
+
+<table>
+<tr><th>Detector error</th><th>Re-anchor every</th><th>Practical?</th></tr>
+<tr><td class="num">1%</td><td class="num">44 hours</td><td>comfortable</td></tr>
+<tr><td class="num">2%</td><td class="num">22 hours</td><td>once a day, workable</td></tr>
+<tr><td class="num">5%</td><td class="num">9 hours</td><td>three times a day</td></tr>
+<tr><td class="num">8%</td><td class="num">5.5 hours</td><td>not practical</td></tr>
+</table>
+
+<p>That is the accuracy specification for the camera procurement, and it is the
+question nobody asks before signing. Anything worse than about 2 percent turns
+into a staffing cost, not a technical footnote.</p>
+
+<div class="hin">
+<p style="margin-bottom:0"><b>Hinglish:</b> Kisi ilake ke andar kitni gaadiyan
+hain, ye har sadak par camera lagakar nahi pata chalta. Uski seema par ginte hain:
+kitni andar aayi, kitni bahar gayi. Ek thana ilake mein sau sadak hoti hain, par
+seema par sirf 5 se 24 crossing. Poore 22 ilake ke liye 282 camera. Aur ye wahi
+camera hain jo aap pehle se 253 junction par laga rahe hain. Hum hardware nahi,
+sirf data feed maang rahe hain.</p>
+</div>
+
+<h2>5. What it costs</h2>
 
 <table>
 <tr><th>Package</th><th>Covers</th><th>Per year</th></tr>
@@ -186,7 +258,7 @@ No new cameras: it runs on the ITMS hardware already being installed.</p>
 Rajasthan recovers 76 percent of what it issues, the best rate in India. The
 enforcement side already works. We are pointing it at the right violations.</p>
 
-<h2>5. What we are asking for</h2>
+<h2>6. What we are asking for</h2>
 
 <p>One corridor. Ninety days. Paid.</p>
 
@@ -212,7 +284,7 @@ aapke paas ek measured result hoga, har number ka source hoga, aur ek enforcemen
 plan hoga jo aapke abhi ke staff se hi chalu ho sakta hai.</p>
 </div>
 
-<h2>6. What is honest to say about the limits</h2>
+<h2>7. What is honest to say about the limits</h2>
 
 <p>A pitch that only lists strengths is a pitch you should distrust.</p>
 <ul>
@@ -228,13 +300,13 @@ any serious accident at a junction, somebody has to be able to answer who set th
 timing and why.</li>
 </ul>
 
-<h2>7. What we will never build</h2>
+<h2>8. What we will never build</h2>
 <p>No face recognition. No person tracking. No number plates in logs. Plate data is
 encrypted and only an authorised officer can reveal one, with the reason recorded.
 These are enforced by an automated check that fails the build, not by a promise in
 a document.</p>
 
-<h2>8. Where the project stands today</h2>
+<h2>9. Where the project stands today</h2>
 
 <p>We assess ourselves against six measures and publish the result, including
 the parts that are not finished. A supplier who only shows you finished work is
@@ -248,18 +320,18 @@ showing you a selection.</p>
     <td>Three of our own technical claims were tested and two were wrong. Both were corrected in the record rather than dropped quietly.</td></tr>
 <tr><td>Engineering quality</td><td class="num">18 / 20</td>
     <td>41 automated tests, plus automated checks for security, colour contrast and accessibility that fail the build.</td></tr>
-<tr><td>Product completeness</td><td class="num">15 / 20</td>
-    <td>The full argument works end to end and is live. Vehicle detection still needs training on Indian traffic.</td></tr>
+<tr><td>Product completeness</td><td class="num">17 / 20</td>
+    <td>The area screening the department actually asked for is built and live, with the camera plan costed. Vehicle detection still needs training on Indian traffic.</td></tr>
 <tr><td>Interface</td><td class="num">10 / 10</td>
     <td>Works on a phone and a control-room screen, in Hindi and English, and with the internet disconnected.</td></tr>
-<tr><td>Commercial readiness</td><td class="num">8 / 10</td>
-    <td>Priced, on GeM route, with an open API your engineers can query today. No pilot yet.</td></tr>
-<tr><td><b>Total</b></td><td class="num"><b>88 / 100</b></td>
-    <td>Up from 74 three weeks ago.</td></tr>
+<tr><td>Commercial readiness</td><td class="num">9 / 10</td>
+    <td>Priced, on GeM route, open API, and the camera ask is now a named list rather than a request for goodwill. No pilot yet.</td></tr>
+<tr><td><b>Total</b></td><td class="num"><b>93 / 100</b></td>
+    <td>Up from 74. The last gain came from answering the screening question the department asked.</td></tr>
 </table>
 
 <div class="box">
-<p style="margin-bottom:0"><b>The missing 12 points are things only you can give us.</b>
+<p style="margin-bottom:0"><b>The missing 7 points are things only you can give us.</b>
 One corridor's camera feed, FIR-level accident records, and the current signal
 timings for that corridor. There is no more software we can write that closes
 them. That is why the ask in section 5 is small and specific.</p>
