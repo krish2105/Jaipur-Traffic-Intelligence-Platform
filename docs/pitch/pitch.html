@@ -193,15 +193,24 @@ nothing from you. Two need the department.</p>
 <tr><td>Challan / violations</td><td>waiting</td><td><b>an export from you</b></td></tr>
 </table>
 
-<p>The adapters for the two "ready" rows are written and tested, and the TomTom
-one has now been run against a real key: a live reading came back for central
-Jaipur and the panel turned green on a measurement, not on a setting. What that
-buys today is the reading and the proof it can be fetched. It does not yet
-replace the modelled speed on each corridor link, and it does not yet update the
-61 percent two-wheeler figure, which still comes from published Rajasthan-wide
-registrations. Connecting the fetch to those two numbers is the next piece of
-work and is measured in days, not weeks. We would rather tell you where the wire
-ends than let a green light imply a longer one.</p>
+<p>Probe speeds are live. Every one of the 90 corridor links now carries a
+TomTom reading rather than a speed derived from a congestion index, and the
+console labels each one so you can see which is which. It costs 25 calls a
+sweep, not 90: those 90 links resolve to 25 stretches of road as TomTom sees
+them, so one reading legitimately speaks for several links. We show the segment
+count next to the link count for that reason. 90 links covered is not 90
+independent measurements, and quoting only the larger number would flatter us.
+At one sweep every 45 minutes between 06:00 and 22:00 that is 15,750 calls a
+month against a free allowance of 20,000, and the panel shows what is left of
+it.</p>
+
+<p>Two limits, stated rather than discovered. A reading older than 90 minutes
+is refused and those links fall back to modelled, because a stale speed renders
+on screen exactly as confidently as a fresh one. And TomTom measures speed and
+delay only. It cannot count vehicles and it cannot tell a bus from a scooter,
+which is precisely the gap this platform exists to fill. The 61 percent
+two-wheeler figure still comes from published Rajasthan-wide registrations and
+becomes Jaipur-current only when the VAHAN key arrives.</p>
 
 <div class="warn">
 <p style="margin-bottom:0"><b>A bug we found in our own honesty, and fixed.</b>
@@ -367,7 +376,7 @@ showing you a selection.</p>
 <tr><td>Honesty of claims</td><td class="num">20 / 20</td>
     <td>Three of our own technical claims were tested and two were wrong. Both were corrected in the record rather than dropped quietly.</td></tr>
 <tr><td>Engineering quality</td><td class="num">19 / 20</td>
-    <td>177 automated tests across the platform, plus checks for security, colour contrast and accessibility that fail the build. Three of them stop the readiness panel claiming a source it does not have, does not point anywhere, or has a credential the supplier refuses.</td></tr>
+    <td>192 automated tests across the platform, plus checks for security, colour contrast and accessibility that fail the build. Three of them stop the readiness panel claiming a source it does not have, does not point anywhere, or has a credential the supplier refuses.</td></tr>
 <tr><td>Product completeness</td><td class="num">18 / 20</td>
     <td>Area screening built and live with the camera plan costed, and two more data sources now one free key away. Vehicle detection still needs training on Indian traffic.</td></tr>
 <tr><td>Interface</td><td class="num">10 / 10</td>
