@@ -90,11 +90,23 @@ export function Counter({
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-15% 0px" });
   const reduce = useReducedMotion();
-  const count = useMotionValue(reduce ? to : 0);
+  // Starts at the answer, not at zero.
+  //
+  // It started at zero and counted up when the observer fired, which meant that
+  // whenever the observer did not fire the figure stayed at zero forever. That
+  // shipped: the landing page's headline read "0 vehicles counted today" beside
+  // an endpoint returning 416,514, and "0" on a page arguing that this platform
+  // measures traffic is about the worst number it could have chosen.
+  //
+  // Now the true value renders immediately and the animation drops to zero only
+  // once it is actually about to run. If it never runs, the number is simply
+  // correct, which is the only acceptable failure mode for a figure.
+  const count = useMotionValue(to);
   const text = useTransform(count, (v) => formatCount(Math.round(v), locale));
 
   useEffect(() => {
     if (!inView || reduce) return;
+    count.set(0);
     const controls = animate(count, to, { duration: 1.5, ease: [0.16, 1, 0.3, 1] });
     return () => controls.stop();
   }, [inView, to, count, reduce]);

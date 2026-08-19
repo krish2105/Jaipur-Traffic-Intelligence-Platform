@@ -253,3 +253,32 @@ describe("retrieval reaches past the exact words", () => {
     expect(index.expansion_note ?? "").toMatch(/not meaning/i);
   });
 });
+
+describe("an animated figure must never be able to settle on zero", () => {
+  /**
+   * The landing hero read "0 vehicles counted today" on the deployment while
+   * the endpoint behind it returned 416,514. The counter initialised its motion
+   * value to zero and only reached the real number if an IntersectionObserver
+   * fired; when it did not, zero was the final answer.
+   *
+   * Zero is the worst possible wrong number here. It does not read as "loading",
+   * it reads as "this system measures nothing", on the page whose whole argument
+   * is that it measures something.
+   */
+  const source = readFileSync(
+    join(__dirname, "../src/components/landing/motion-primitives.tsx"),
+    "utf8",
+  );
+
+  it("initialises the counter to its target, not to zero", () => {
+    expect(source).toMatch(/useMotionValue\(to\)/);
+    expect(source).not.toMatch(/useMotionValue\(reduce \? to : 0\)/);
+  });
+
+  it("only drops to zero once the animation is about to run", () => {
+    // The set(0) must live inside the effect that starts the animation, so a
+    // counter that never animates is never zeroed.
+    const effect = source.slice(source.indexOf("useEffect(() => {"));
+    expect(effect).toMatch(/count\.set\(0\)/);
+  });
+});
