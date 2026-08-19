@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-08-19T08:29:08.429737+00:00",
+  "captured_at": "2026-08-19T08:51:22.535622+00:00",
   "provider": "TomTom Flow Segment Data v4",
   "measures": "speed and delay only \u2014 never volume, never composition",
   "window_ist": "06:00-22:00",
@@ -14,20 +14,20 @@
   "budget": {
     "monthly_limit": 20000,
     "month": "2026-08",
-    "calls_used": 25,
-    "calls_remaining": 19975,
+    "calls_used": 75,
+    "calls_remaining": 19925,
     "planned_monthly": 15750
   },
   "measured_segments": 25,
   "links": {
     "52": {
-      "speed_kmh": 26.0,
-      "free_flow_kmh": 36.0,
-      "congestion_index": 27.8,
+      "speed_kmh": 25.0,
+      "free_flow_kmh": 35.0,
+      "congestion_index": 28.6,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.91666,75.81739->26.85677,75.79524",
       "shared_with_links": [
         145,
@@ -38,13 +38,13 @@
       ]
     },
     "145": {
-      "speed_kmh": 26.0,
-      "free_flow_kmh": 36.0,
-      "congestion_index": 27.8,
+      "speed_kmh": 25.0,
+      "free_flow_kmh": 35.0,
+      "congestion_index": 28.6,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.91666,75.81739->26.85677,75.79524",
       "shared_with_links": [
         145,
@@ -55,13 +55,13 @@
       ]
     },
     "368": {
-      "speed_kmh": 26.0,
-      "free_flow_kmh": 36.0,
-      "congestion_index": 27.8,
+      "speed_kmh": 25.0,
+      "free_flow_kmh": 35.0,
+      "congestion_index": 28.6,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.91666,75.81739->26.85677,75.79524",
       "shared_with_links": [
         145,
@@ -72,13 +72,13 @@
       ]
     },
     "425": {
-      "speed_kmh": 26.0,
-      "free_flow_kmh": 36.0,
-      "congestion_index": 27.8,
+      "speed_kmh": 25.0,
+      "free_flow_kmh": 35.0,
+      "congestion_index": 28.6,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.91666,75.81739->26.85677,75.79524",
       "shared_with_links": [
         145,
@@ -89,13 +89,13 @@
       ]
     },
     "144": {
-      "speed_kmh": 26.0,
-      "free_flow_kmh": 36.0,
-      "congestion_index": 27.8,
+      "speed_kmh": 25.0,
+      "free_flow_kmh": 35.0,
+      "congestion_index": 28.6,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.91666,75.81739->26.85677,75.79524",
       "shared_with_links": [
         145,
@@ -106,13 +106,13 @@
       ]
     },
     "279": {
-      "speed_kmh": 26.0,
-      "free_flow_kmh": 36.0,
-      "congestion_index": 27.8,
+      "speed_kmh": 25.0,
+      "free_flow_kmh": 35.0,
+      "congestion_index": 28.6,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.91666,75.81739->26.85677,75.79524",
       "shared_with_links": [
         145,
@@ -129,7 +129,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.83871,75.79374->26.83865,75.79390",
       "shared_with_links": [
         516,
@@ -144,7 +144,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.83871,75.79374->26.83865,75.79390",
       "shared_with_links": [
         516,
@@ -159,7 +159,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.83871,75.79374->26.83865,75.79390",
       "shared_with_links": [
         516,
@@ -174,7 +174,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.83871,75.79374->26.83865,75.79390",
       "shared_with_links": [
         516,
@@ -189,7 +189,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.85677,75.79524->26.70594,75.89022",
       "shared_with_links": [
         223,
@@ -206,7 +206,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.85677,75.79524->26.70594,75.89022",
       "shared_with_links": [
         223,
@@ -223,7 +223,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.85677,75.79524->26.70594,75.89022",
       "shared_with_links": [
         223,
@@ -240,7 +240,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.85677,75.79524->26.70594,75.89022",
       "shared_with_links": [
         223,
@@ -257,7 +257,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.85677,75.79524->26.70594,75.89022",
       "shared_with_links": [
         223,
@@ -274,7 +274,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.85677,75.79524->26.70594,75.89022",
       "shared_with_links": [
         223,
@@ -285,13 +285,13 @@
       ]
     },
     "154": {
-      "speed_kmh": 24.0,
+      "speed_kmh": 23.0,
       "free_flow_kmh": 35.0,
-      "congestion_index": 31.4,
+      "congestion_index": 34.3,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.85831,75.79536->26.91670,75.81723",
       "shared_with_links": [
         311,
@@ -300,13 +300,13 @@
       ]
     },
     "311": {
-      "speed_kmh": 24.0,
+      "speed_kmh": 23.0,
       "free_flow_kmh": 35.0,
-      "congestion_index": 31.4,
+      "congestion_index": 34.3,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.85831,75.79536->26.91670,75.81723",
       "shared_with_links": [
         311,
@@ -315,13 +315,13 @@
       ]
     },
     "310": {
-      "speed_kmh": 24.0,
+      "speed_kmh": 23.0,
       "free_flow_kmh": 35.0,
-      "congestion_index": 31.4,
+      "congestion_index": 34.3,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.85831,75.79536->26.91670,75.81723",
       "shared_with_links": [
         311,
@@ -330,13 +330,13 @@
       ]
     },
     "508": {
-      "speed_kmh": 24.0,
+      "speed_kmh": 23.0,
       "free_flow_kmh": 35.0,
-      "congestion_index": 31.4,
+      "congestion_index": 34.3,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.85831,75.79536->26.91670,75.81723",
       "shared_with_links": [
         311,
@@ -345,13 +345,13 @@
       ]
     },
     "204": {
-      "speed_kmh": 40.0,
+      "speed_kmh": 41.0,
       "free_flow_kmh": 48.0,
-      "congestion_index": 16.7,
+      "congestion_index": 14.6,
       "confidence": 0.98,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -365,13 +365,13 @@
       ]
     },
     "225": {
-      "speed_kmh": 40.0,
+      "speed_kmh": 41.0,
       "free_flow_kmh": 48.0,
-      "congestion_index": 16.7,
+      "congestion_index": 14.6,
       "confidence": 0.98,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -385,13 +385,13 @@
       ]
     },
     "252": {
-      "speed_kmh": 40.0,
+      "speed_kmh": 41.0,
       "free_flow_kmh": 48.0,
-      "congestion_index": 16.7,
+      "congestion_index": 14.6,
       "confidence": 0.98,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -405,13 +405,13 @@
       ]
     },
     "258": {
-      "speed_kmh": 40.0,
+      "speed_kmh": 41.0,
       "free_flow_kmh": 48.0,
-      "congestion_index": 16.7,
+      "congestion_index": 14.6,
       "confidence": 0.98,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -425,13 +425,13 @@
       ]
     },
     "260": {
-      "speed_kmh": 40.0,
+      "speed_kmh": 41.0,
       "free_flow_kmh": 48.0,
-      "congestion_index": 16.7,
+      "congestion_index": 14.6,
       "confidence": 0.98,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -445,13 +445,13 @@
       ]
     },
     "437": {
-      "speed_kmh": 40.0,
+      "speed_kmh": 41.0,
       "free_flow_kmh": 48.0,
-      "congestion_index": 16.7,
+      "congestion_index": 14.6,
       "confidence": 0.98,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -465,13 +465,13 @@
       ]
     },
     "502": {
-      "speed_kmh": 40.0,
+      "speed_kmh": 41.0,
       "free_flow_kmh": 48.0,
-      "congestion_index": 16.7,
+      "congestion_index": 14.6,
       "confidence": 0.98,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -485,13 +485,13 @@
       ]
     },
     "520": {
-      "speed_kmh": 40.0,
+      "speed_kmh": 41.0,
       "free_flow_kmh": 48.0,
-      "congestion_index": 16.7,
+      "congestion_index": 14.6,
       "confidence": 0.98,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -505,13 +505,13 @@
       ]
     },
     "541": {
-      "speed_kmh": 40.0,
+      "speed_kmh": 41.0,
       "free_flow_kmh": 48.0,
-      "congestion_index": 16.7,
+      "congestion_index": 14.6,
       "confidence": 0.98,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.73042,75.87281->26.85831,75.79536",
       "shared_with_links": [
         225,
@@ -531,7 +531,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.83821,75.79391->26.83829,75.79375",
       "shared_with_links": [
         501,
@@ -545,7 +545,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.83821,75.79391->26.83829,75.79375",
       "shared_with_links": [
         501,
@@ -559,7 +559,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.83821,75.79391->26.83829,75.79375",
       "shared_with_links": [
         501,
@@ -573,7 +573,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.84261,75.79358->26.85347,75.79467",
       "shared_with_links": [
         454
@@ -586,20 +586,20 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.84261,75.79358->26.85347,75.79467",
       "shared_with_links": [
         454
       ]
     },
     "262": {
-      "speed_kmh": 20.0,
+      "speed_kmh": 26.0,
       "free_flow_kmh": 26.0,
-      "congestion_index": 23.4,
+      "congestion_index": 0.0,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.85348,75.79477->26.84267,75.79368",
       "shared_with_links": [
         452,
@@ -607,13 +607,13 @@
       ]
     },
     "452": {
-      "speed_kmh": 20.0,
+      "speed_kmh": 26.0,
       "free_flow_kmh": 26.0,
-      "congestion_index": 23.4,
+      "congestion_index": 0.0,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.85348,75.79477->26.84267,75.79368",
       "shared_with_links": [
         452,
@@ -621,13 +621,13 @@
       ]
     },
     "593": {
-      "speed_kmh": 20.0,
+      "speed_kmh": 26.0,
       "free_flow_kmh": 26.0,
-      "congestion_index": 23.4,
+      "congestion_index": 0.0,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.85348,75.79477->26.84267,75.79368",
       "shared_with_links": [
         452,
@@ -635,13 +635,13 @@
       ]
     },
     "424": {
-      "speed_kmh": 31.0,
-      "free_flow_kmh": 31.0,
-      "congestion_index": 0.0,
+      "speed_kmh": 26.0,
+      "free_flow_kmh": 32.0,
+      "congestion_index": 18.5,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.85831,75.79536->26.86251,75.79589",
       "shared_with_links": []
     },
@@ -652,29 +652,29 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.83966,75.76782->26.83964,75.79850",
       "shared_with_links": []
     },
     "49": {
-      "speed_kmh": 29.0,
-      "free_flow_kmh": 36.0,
-      "congestion_index": 19.4,
+      "speed_kmh": 37.0,
+      "free_flow_kmh": 37.0,
+      "congestion_index": 0.0,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.85475,75.82414->26.86109,75.80641",
       "shared_with_links": []
     },
     "51": {
-      "speed_kmh": 34.0,
-      "free_flow_kmh": 37.0,
-      "congestion_index": 8.2,
+      "speed_kmh": 35.0,
+      "free_flow_kmh": 38.0,
+      "congestion_index": 8.1,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.84185,75.80150->26.86812,75.80832",
       "shared_with_links": [
         97,
@@ -686,13 +686,13 @@
       ]
     },
     "97": {
-      "speed_kmh": 34.0,
-      "free_flow_kmh": 37.0,
-      "congestion_index": 8.2,
+      "speed_kmh": 35.0,
+      "free_flow_kmh": 38.0,
+      "congestion_index": 8.1,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.84185,75.80150->26.86812,75.80832",
       "shared_with_links": [
         97,
@@ -704,13 +704,13 @@
       ]
     },
     "147": {
-      "speed_kmh": 34.0,
-      "free_flow_kmh": 37.0,
-      "congestion_index": 8.2,
+      "speed_kmh": 35.0,
+      "free_flow_kmh": 38.0,
+      "congestion_index": 8.1,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.84185,75.80150->26.86812,75.80832",
       "shared_with_links": [
         97,
@@ -722,13 +722,13 @@
       ]
     },
     "227": {
-      "speed_kmh": 34.0,
-      "free_flow_kmh": 37.0,
-      "congestion_index": 8.2,
+      "speed_kmh": 35.0,
+      "free_flow_kmh": 38.0,
+      "congestion_index": 8.1,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.84185,75.80150->26.86812,75.80832",
       "shared_with_links": [
         97,
@@ -740,13 +740,13 @@
       ]
     },
     "354": {
-      "speed_kmh": 34.0,
-      "free_flow_kmh": 37.0,
-      "congestion_index": 8.2,
+      "speed_kmh": 35.0,
+      "free_flow_kmh": 38.0,
+      "congestion_index": 8.1,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.84185,75.80150->26.86812,75.80832",
       "shared_with_links": [
         97,
@@ -758,13 +758,13 @@
       ]
     },
     "440": {
-      "speed_kmh": 34.0,
-      "free_flow_kmh": 37.0,
-      "congestion_index": 8.2,
+      "speed_kmh": 35.0,
+      "free_flow_kmh": 38.0,
+      "congestion_index": 8.1,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.84185,75.80150->26.86812,75.80832",
       "shared_with_links": [
         97,
@@ -776,13 +776,13 @@
       ]
     },
     "507": {
-      "speed_kmh": 34.0,
-      "free_flow_kmh": 37.0,
-      "congestion_index": 8.2,
+      "speed_kmh": 35.0,
+      "free_flow_kmh": 38.0,
+      "congestion_index": 8.1,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.84185,75.80150->26.86812,75.80832",
       "shared_with_links": [
         97,
@@ -794,13 +794,13 @@
       ]
     },
     "92": {
-      "speed_kmh": 25.0,
-      "free_flow_kmh": 36.0,
-      "congestion_index": 30.5,
+      "speed_kmh": 27.0,
+      "free_flow_kmh": 37.0,
+      "congestion_index": 27.0,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.91395,75.82004->26.86771,75.80833",
       "shared_with_links": [
         133,
@@ -808,13 +808,13 @@
       ]
     },
     "133": {
-      "speed_kmh": 25.0,
-      "free_flow_kmh": 36.0,
-      "congestion_index": 30.5,
+      "speed_kmh": 27.0,
+      "free_flow_kmh": 37.0,
+      "congestion_index": 27.0,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.91395,75.82004->26.86771,75.80833",
       "shared_with_links": [
         133,
@@ -822,13 +822,13 @@
       ]
     },
     "335": {
-      "speed_kmh": 25.0,
-      "free_flow_kmh": 36.0,
-      "congestion_index": 30.5,
+      "speed_kmh": 27.0,
+      "free_flow_kmh": 37.0,
+      "congestion_index": 27.0,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.91395,75.82004->26.86771,75.80833",
       "shared_with_links": [
         133,
@@ -836,13 +836,13 @@
       ]
     },
     "98": {
-      "speed_kmh": 27.0,
+      "speed_kmh": 29.0,
       "free_flow_kmh": 37.0,
-      "congestion_index": 27.1,
+      "congestion_index": 21.6,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -856,13 +856,13 @@
       ]
     },
     "130": {
-      "speed_kmh": 27.0,
+      "speed_kmh": 29.0,
       "free_flow_kmh": 37.0,
-      "congestion_index": 27.1,
+      "congestion_index": 21.6,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -876,13 +876,13 @@
       ]
     },
     "298": {
-      "speed_kmh": 27.0,
+      "speed_kmh": 29.0,
       "free_flow_kmh": 37.0,
-      "congestion_index": 27.1,
+      "congestion_index": 21.6,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -896,13 +896,13 @@
       ]
     },
     "299": {
-      "speed_kmh": 27.0,
+      "speed_kmh": 29.0,
       "free_flow_kmh": 37.0,
-      "congestion_index": 27.1,
+      "congestion_index": 21.6,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -916,13 +916,13 @@
       ]
     },
     "336": {
-      "speed_kmh": 27.0,
+      "speed_kmh": 29.0,
       "free_flow_kmh": 37.0,
-      "congestion_index": 27.1,
+      "congestion_index": 21.6,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -936,13 +936,13 @@
       ]
     },
     "356": {
-      "speed_kmh": 27.0,
+      "speed_kmh": 29.0,
       "free_flow_kmh": 37.0,
-      "congestion_index": 27.1,
+      "congestion_index": 21.6,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -956,13 +956,13 @@
       ]
     },
     "357": {
-      "speed_kmh": 27.0,
+      "speed_kmh": 29.0,
       "free_flow_kmh": 37.0,
-      "congestion_index": 27.1,
+      "congestion_index": 21.6,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -976,13 +976,13 @@
       ]
     },
     "358": {
-      "speed_kmh": 27.0,
+      "speed_kmh": 29.0,
       "free_flow_kmh": 37.0,
-      "congestion_index": 27.1,
+      "congestion_index": 21.6,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -996,13 +996,13 @@
       ]
     },
     "488": {
-      "speed_kmh": 27.0,
+      "speed_kmh": 29.0,
       "free_flow_kmh": 37.0,
-      "congestion_index": 27.1,
+      "congestion_index": 21.6,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86812,75.80832->26.91395,75.82004",
       "shared_with_links": [
         130,
@@ -1022,7 +1022,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86771,75.80833->26.84185,75.80150",
       "shared_with_links": []
     },
@@ -1033,7 +1033,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86514,75.80756->26.86776,75.80773",
       "shared_with_links": [
         439
@@ -1046,7 +1046,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86514,75.80756->26.86776,75.80773",
       "shared_with_links": [
         439
@@ -1059,18 +1059,18 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86783,75.80787->26.86812,75.80832",
       "shared_with_links": []
     },
     "72": {
       "speed_kmh": 28.0,
-      "free_flow_kmh": 36.0,
-      "congestion_index": 22.2,
+      "free_flow_kmh": 37.0,
+      "congestion_index": 24.3,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.88908,75.73738->26.91634,75.79917",
       "shared_with_links": [
         190,
@@ -1082,12 +1082,12 @@
     },
     "190": {
       "speed_kmh": 28.0,
-      "free_flow_kmh": 36.0,
-      "congestion_index": 22.2,
+      "free_flow_kmh": 37.0,
+      "congestion_index": 24.3,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.88908,75.73738->26.91634,75.79917",
       "shared_with_links": [
         190,
@@ -1099,12 +1099,12 @@
     },
     "191": {
       "speed_kmh": 28.0,
-      "free_flow_kmh": 36.0,
-      "congestion_index": 22.2,
+      "free_flow_kmh": 37.0,
+      "congestion_index": 24.3,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.88908,75.73738->26.91634,75.79917",
       "shared_with_links": [
         190,
@@ -1116,12 +1116,12 @@
     },
     "237": {
       "speed_kmh": 28.0,
-      "free_flow_kmh": 36.0,
-      "congestion_index": 22.2,
+      "free_flow_kmh": 37.0,
+      "congestion_index": 24.3,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.88908,75.73738->26.91634,75.79917",
       "shared_with_links": [
         190,
@@ -1133,12 +1133,12 @@
     },
     "241": {
       "speed_kmh": 28.0,
-      "free_flow_kmh": 36.0,
-      "congestion_index": 22.2,
+      "free_flow_kmh": 37.0,
+      "congestion_index": 24.3,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.88908,75.73738->26.91634,75.79917",
       "shared_with_links": [
         190,
@@ -1150,12 +1150,12 @@
     },
     "487": {
       "speed_kmh": 28.0,
-      "free_flow_kmh": 36.0,
-      "congestion_index": 22.2,
+      "free_flow_kmh": 37.0,
+      "congestion_index": 24.3,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.88908,75.73738->26.91634,75.79917",
       "shared_with_links": [
         190,
@@ -1166,13 +1166,13 @@
       ]
     },
     "192": {
-      "speed_kmh": 24.0,
-      "free_flow_kmh": 35.0,
-      "congestion_index": 31.5,
+      "speed_kmh": 25.0,
+      "free_flow_kmh": 34.0,
+      "congestion_index": 26.5,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.91783,75.80142->26.88832,75.73639",
       "shared_with_links": [
         232,
@@ -1181,13 +1181,13 @@
       ]
     },
     "232": {
-      "speed_kmh": 24.0,
-      "free_flow_kmh": 35.0,
-      "congestion_index": 31.5,
+      "speed_kmh": 25.0,
+      "free_flow_kmh": 34.0,
+      "congestion_index": 26.5,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.91783,75.80142->26.88832,75.73639",
       "shared_with_links": [
         232,
@@ -1196,13 +1196,13 @@
       ]
     },
     "266": {
-      "speed_kmh": 24.0,
-      "free_flow_kmh": 35.0,
-      "congestion_index": 31.5,
+      "speed_kmh": 25.0,
+      "free_flow_kmh": 34.0,
+      "congestion_index": 26.5,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.91783,75.80142->26.88832,75.73639",
       "shared_with_links": [
         232,
@@ -1211,13 +1211,13 @@
       ]
     },
     "367": {
-      "speed_kmh": 24.0,
-      "free_flow_kmh": 35.0,
-      "congestion_index": 31.5,
+      "speed_kmh": 25.0,
+      "free_flow_kmh": 34.0,
+      "congestion_index": 26.5,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.91783,75.80142->26.88832,75.73639",
       "shared_with_links": [
         232,
@@ -1226,24 +1226,24 @@
       ]
     },
     "236": {
-      "speed_kmh": 5.0,
+      "speed_kmh": 4.0,
       "free_flow_kmh": 12.0,
-      "congestion_index": 60.0,
+      "congestion_index": 67.7,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.90326,75.77517->26.90267,75.77496",
       "shared_with_links": []
     },
     "48": {
-      "speed_kmh": 32.0,
+      "speed_kmh": 35.0,
       "free_flow_kmh": 39.0,
-      "congestion_index": 18.2,
+      "congestion_index": 10.3,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86247,75.79615->26.86635,75.82263",
       "shared_with_links": []
     },
@@ -1254,7 +1254,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.87956,75.74360->26.86247,75.79615",
       "shared_with_links": [
         141,
@@ -1270,7 +1270,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.87956,75.74360->26.86247,75.79615",
       "shared_with_links": [
         141,
@@ -1286,7 +1286,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.87956,75.74360->26.86247,75.79615",
       "shared_with_links": [
         141,
@@ -1302,7 +1302,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.87956,75.74360->26.86247,75.79615",
       "shared_with_links": [
         141,
@@ -1318,7 +1318,7 @@
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.87956,75.74360->26.86247,75.79615",
       "shared_with_links": [
         141,
@@ -1328,65 +1328,65 @@
       ]
     },
     "96": {
-      "speed_kmh": 20.0,
-      "free_flow_kmh": 27.0,
-      "congestion_index": 26.4,
+      "speed_kmh": 15.0,
+      "free_flow_kmh": 26.0,
+      "congestion_index": 42.3,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86251,75.79589->26.86513,75.79639",
       "shared_with_links": [
         140
       ]
     },
     "140": {
-      "speed_kmh": 20.0,
-      "free_flow_kmh": 27.0,
-      "congestion_index": 26.4,
+      "speed_kmh": 15.0,
+      "free_flow_kmh": 26.0,
+      "congestion_index": 42.3,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86251,75.79589->26.86513,75.79639",
       "shared_with_links": [
         140
       ]
     },
     "134": {
-      "speed_kmh": 31.0,
-      "free_flow_kmh": 41.0,
-      "congestion_index": 24.5,
+      "speed_kmh": 27.0,
+      "free_flow_kmh": 40.0,
+      "congestion_index": 32.7,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86635,75.82263->26.86239,75.79588",
       "shared_with_links": [
         353
       ]
     },
     "353": {
-      "speed_kmh": 31.0,
-      "free_flow_kmh": 41.0,
-      "congestion_index": 24.5,
+      "speed_kmh": 27.0,
+      "free_flow_kmh": 40.0,
+      "congestion_index": 32.7,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86635,75.82263->26.86239,75.79588",
       "shared_with_links": [
         353
       ]
     },
     "136": {
-      "speed_kmh": 32.0,
-      "free_flow_kmh": 39.0,
-      "congestion_index": 17.9,
+      "speed_kmh": 31.0,
+      "free_flow_kmh": 37.0,
+      "congestion_index": 16.2,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86239,75.79588->26.87840,75.71667",
       "shared_with_links": [
         138,
@@ -1397,13 +1397,13 @@
       ]
     },
     "138": {
-      "speed_kmh": 32.0,
-      "free_flow_kmh": 39.0,
-      "congestion_index": 17.9,
+      "speed_kmh": 31.0,
+      "free_flow_kmh": 37.0,
+      "congestion_index": 16.2,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86239,75.79588->26.87840,75.71667",
       "shared_with_links": [
         138,
@@ -1414,13 +1414,13 @@
       ]
     },
     "152": {
-      "speed_kmh": 32.0,
-      "free_flow_kmh": 39.0,
-      "congestion_index": 17.9,
+      "speed_kmh": 31.0,
+      "free_flow_kmh": 37.0,
+      "congestion_index": 16.2,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86239,75.79588->26.87840,75.71667",
       "shared_with_links": [
         138,
@@ -1431,13 +1431,13 @@
       ]
     },
     "386": {
-      "speed_kmh": 32.0,
-      "free_flow_kmh": 39.0,
-      "congestion_index": 17.9,
+      "speed_kmh": 31.0,
+      "free_flow_kmh": 37.0,
+      "congestion_index": 16.2,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86239,75.79588->26.87840,75.71667",
       "shared_with_links": [
         138,
@@ -1448,13 +1448,13 @@
       ]
     },
     "457": {
-      "speed_kmh": 32.0,
-      "free_flow_kmh": 39.0,
-      "congestion_index": 17.9,
+      "speed_kmh": 31.0,
+      "free_flow_kmh": 37.0,
+      "congestion_index": 16.2,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86239,75.79588->26.87840,75.71667",
       "shared_with_links": [
         138,
@@ -1465,13 +1465,13 @@
       ]
     },
     "467": {
-      "speed_kmh": 32.0,
-      "free_flow_kmh": 39.0,
-      "congestion_index": 17.9,
+      "speed_kmh": 31.0,
+      "free_flow_kmh": 37.0,
+      "congestion_index": 16.2,
       "confidence": 1.0,
       "road_closure": false,
       "is_measured": true,
-      "observed_at": "2026-08-19T08:29:08.429737+00:00",
+      "observed_at": "2026-08-19T08:51:22.535622+00:00",
       "segment_key": "26.86239,75.79588->26.87840,75.71667",
       "shared_with_links": [
         138,

@@ -42,6 +42,10 @@ Below 0.7 confidence TomTom is largely reporting its own historical model for
 that segment. Those come back `is_measured: false` and the API leaves the link
 modelled rather than dressing a model as a measurement.
 
+Discovery is the only step that touches Postgres. It caches each link's
+midpoint alongside the segment it matched, so an ordinary sweep needs nothing
+but the API key and can therefore run on a schedule anywhere.
+
     uv run python scripts/fetch_probe_speeds.py --discover  # once, 90 calls
     uv run python scripts/fetch_probe_speeds.py             # a sweep
     uv run python scripts/fetch_probe_speeds.py --dry-run   # selection only
@@ -262,6 +266,22 @@ async def discover(links: list[dict[str, Any]], used: int) -> int:
                 "each segment once and applies the reading to every link on it, "
                 "so coverage counts segments and never double-counts a reading."
             ),
+            # Everything a sweep needs, so a sweep never has to open Postgres.
+            # Without this the only machine that can refresh probe speeds is one
+            # with the seeded database on it, which rules out running this on a
+            # schedule and leaves the deployment going stale 90 minutes after
+            # every push. Geometry only changes when the road network does, and
+            # that is what --discover is for.
+            "link_points": {
+                str(x["link_id"]): {
+                    "name": x["name"],
+                    "corridor_id": x["corridor_id"],
+                    "lat": x["lat"],
+                    "lon": x["lon"],
+                    "free_flow_kmh": x["free_flow_kmh"],
+                }
+                for x in links
+            },
             "link_to_segment": mapping,
         },
     )
@@ -292,16 +312,25 @@ async def main() -> int:
     used = spend_so_far(previous, month)
     print(f"  month {month}   used {used:,} of {tomtom.FREE_TIER_MONTHLY:,}")
 
-    links = await corridor_links()
-    links_by_id = {str(x["link_id"]): x for x in links}
-
     if args.discover:
         if not tomtom.available():
             print("  SKIP  no TOMTOM_API_KEY")
             return 0
-        return await discover(links, used)
+        return await discover(await corridor_links(), used)
 
-    mapping = _read(MAP).get("link_to_segment") or {}
+    cached = _read(MAP)
+    points = cached.get("link_points") or {}
+    if points:
+        links = [{"link_id": int(k), **v} for k, v in points.items()]
+    else:
+        # A segment map from before link_points existed. Re-discovering would
+        # cost 90 calls to learn what is already on disk, so fall back to the
+        # database this once and say so.
+        print("  note: segment map predates the cached geometry, reading Postgres")
+        links = await corridor_links()
+    links_by_id = {str(x["link_id"]): x for x in links}
+
+    mapping = cached.get("link_to_segment") or {}
     if not mapping:
         print("  no segment map. Run --discover once first.")
         return 1
