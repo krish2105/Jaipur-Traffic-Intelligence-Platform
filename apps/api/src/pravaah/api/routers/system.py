@@ -7,6 +7,7 @@ from typing import Any
 
 import httpx
 from fastapi import APIRouter
+from pravaah.adapters import tomtom, vahan
 from pravaah.adapters.air import (
     CPCB_NO2_24H,
     CPCB_PM10_24H,
@@ -102,8 +103,27 @@ async def source_readiness(settings: SettingsDep) -> dict[str, Any]:
     """
 
     def have(name: str) -> bool:
-        """A credential is present, so this source can run live."""
+        """A credential is present.
+
+        Necessary and NOT sufficient. See `runs_live` below.
+        """
         return bool(os.environ.get(name, "").strip())
+
+    def runs_live(adapter: object) -> bool:
+        """Whether a source can genuinely run live: credential AND adapter.
+
+        This used to be `have(KEY)` alone, and that was a lie waiting to be
+        told. There was no TomTom adapter and no VAHAN adapter, so setting
+        either key would have turned the row green while changing nothing —
+        a green badge that is wrong is far worse than an honest amber one, and
+        this panel is the first thing a department engineer reads.
+
+        The check is delegated to the adapter's own `available()` so the badge
+        can only go green when there is code behind it. A source whose adapter
+        does not exist cannot be imported, and cannot claim to be live.
+        """
+        checker = getattr(adapter, "available", None)
+        return bool(checker and checker())
 
     sources: list[dict[str, str | None]] = [
         {
@@ -126,9 +146,9 @@ async def source_readiness(settings: SettingsDep) -> dict[str, Any]:
             "id": "tomtom",
             "name": "Probe speeds",
             "provider": "TomTom Traffic",
-            "mode": "live" if have("TOMTOM_API_KEY") else "replay",
+            "mode": "live" if runs_live(tomtom) else "replay",
             "detail": "Measures delay, never volume — the gap PRAVAAH fills",
-            "needs": None if have("TOMTOM_API_KEY") else "TOMTOM_API_KEY",
+            "needs": None if runs_live(tomtom) else "TOMTOM_API_KEY",
         },
         {
             "id": "openaq",
@@ -154,9 +174,9 @@ async def source_readiness(settings: SettingsDep) -> dict[str, Any]:
             "id": "vahan",
             "name": "Vehicle registrations",
             "provider": "VAHAN",
-            "mode": "replay",
+            "mode": "live" if runs_live(vahan) else "replay",
             "detail": "Cross-checks measured class mix against the registered fleet",
-            "needs": "DATA_GOV_IN_API_KEY",
+            "needs": None if runs_live(vahan) else "DATA_GOV_IN_API_KEY",
         },
         {
             "id": "challan",
