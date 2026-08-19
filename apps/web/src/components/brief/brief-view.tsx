@@ -13,7 +13,6 @@ import type {
   SourceReadiness,
 } from "@/lib/api";
 import type { Locale } from "@/i18n/routing";
-import { Counter } from "@/components/landing/motion-primitives";
 
 /**
  * The pitch, as a page that reads its own numbers.
@@ -59,6 +58,14 @@ function Figure({
   const locale = useLocale() as Locale;
   return (
     <div>
+      {/* Printed, not counted up.
+       *
+       * The animated Counter was here first and it stalled in testing: the page
+       * settled showing "0 / 8" when the answer was "4 / 8", with the tab
+       * visible and reduced-motion off. On a page whose entire premise is that
+       * its numbers can be checked, a figure that can freeze part-way is worse
+       * than no animation at all. This is the one place on the site where the
+       * number matters more than the flourish. */}
       <p
         className="font-display tabular-nums leading-none"
         style={{
@@ -66,7 +73,7 @@ function Figure({
           color: accent ? "var(--accent)" : "var(--ink)",
         }}
       >
-        <Counter to={value} locale={locale} />
+        {value.toLocaleString(locale === "hi" ? "hi-IN" : "en-IN")}
         {unit && <span style={{ fontSize: "0.4em" }}> {unit}</span>}
       </p>
       <p className="mt-1 text-[13px] leading-snug text-[var(--ink-muted)]">{label}</p>
@@ -88,10 +95,17 @@ function Section({
 }) {
   const reduce = useReducedMotion();
   return (
+    // Transform only, never opacity.
+    //
+    // The first version faded in from opacity 0 and was caught settled at 0.23
+    // — an animation that started and did not finish leaves the whole briefing
+    // unreadable. Animating position alone means a stalled or absent animation
+    // costs a small offset and nothing else, which is what progressive
+    // enhancement is supposed to mean.
     <motion.section
       className="border-t border-[var(--rule)] py-12 sm:py-16"
-      initial={reduce ? false : { opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={reduce ? false : { y: 14 }}
+      whileInView={{ y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
