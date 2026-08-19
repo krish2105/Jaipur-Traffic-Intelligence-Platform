@@ -116,6 +116,62 @@ def zone_of(lon: float, lat: float) -> str:
     return "Jaipur West"
 
 
+def fetch_network() -> list[dict]:
+    """Jaipur's arterial road network, from OpenStreetMap.
+
+    The four modelled corridors are all in the south and west, so before this
+    only two of the four zones had any road in them and sixteen of twenty-two
+    thana catchments were empty. That made the cordon plan a floor rather than
+    an estimate: an area with no roads in it needs no cameras, which is true and
+    useless.
+
+    Trunk, primary and secondary only. Residential streets would triple the
+    geometry and add nothing, because a cordon is crossed on arterials: nobody
+    routes through a colony lane to avoid a count.
+
+    Geometry is reduced to start, middle and end. Area assignment needs the
+    midpoint and cordon detection needs the two ends, so carrying every vertex
+    of 1,362 ways would be megabytes for no extra answer.
+
+    These links carry NO congestion and no flow. They exist to make the boundary
+    geometry real. Measurement stays where it is measured, and `measured` marks
+    the difference on every record.
+    """
+    query = (
+        f'[out:json][timeout:180];'
+        f'way["highway"~"^(trunk|primary|secondary)$"]({BBOX});'
+        f'out geom;'
+    )
+    request = urllib.request.Request(
+        "https://overpass-api.de/api/interpreter",
+        data=urllib.parse.urlencode({"data": query}).encode(),
+        headers=UA,
+    )
+    with urllib.request.urlopen(request, timeout=240) as response:  # noqa: S310
+        data = json.loads(response.read())
+
+    out: list[dict] = []
+    for el in data.get("elements", []):
+        geom = el.get("geometry") or []
+        if len(geom) < 2:
+            continue
+        pts = [geom[0], geom[len(geom) // 2], geom[-1]]
+        tags = el.get("tags", {})
+        out.append(
+            {
+                "link_id": f"osm-{el['id']}",
+                "name": {"en": tags.get("name") or tags.get("ref") or "unnamed arterial"},
+                "coordinates": [[p["lon"], p["lat"]] for p in pts],
+                "lanes": int(tags["lanes"]) if str(tags.get("lanes", "")).isdigit() else 2,
+                "highway": tags.get("highway"),
+                "congestion_index": None,
+                "flow": 0,
+                "measured": False,
+            }
+        )
+    return out
+
+
 def fetch_links() -> list[dict]:
     """Every modelled link, from the live read API."""
     corridors = json.loads(_get(f"{API}/corridors"))
@@ -166,21 +222,33 @@ def pcu_of(link: dict) -> float:
 
 def summarise(name: str, kind: str, members: list[dict], station: dict | None) -> dict:
     measured = [x for x in members if float(x.get("flow") or 0) > 0]
-    congestion = [float(x.get("congestion_index") or 0) for x in members]
+    congestion = [
+        float(x["congestion_index"])
+        for x in members
+        if x.get("congestion_index") is not None
+    ]
     vehicles = sum(float(x.get("flow") or 0) for x in members)
     pcu = sum(pcu_of(x) for x in members)
-    worst = max(members, key=lambda x: float(x.get("congestion_index") or 0), default=None)
+    scored = [x for x in members if x.get("congestion_index") is not None]
+    worst = max(scored, key=lambda x: float(x["congestion_index"]), default=None)
 
     return {
         "name": name,
         "kind": kind,
         "station": {"lon": station["lon"], "lat": station["lat"]} if station else None,
         "links": len(members),
+        "links_modelled": len(scored),
         "links_measured": len(measured),
         "vehicles_per_hour": round(vehicles),
         "pcu_per_hour": round(pcu),
-        "mean_congestion": round(sum(congestion) / len(congestion), 1) if congestion else 0.0,
-        "max_congestion": round(max(congestion), 1) if congestion else 0.0,
+        # null, not 0.0. An area with no modelled link has no congestion
+        # reading, and 0.0 reads as "free flowing" — the opposite of unknown.
+        # Jaipur North and East are exactly this case: real road network, no
+        # measurement on it yet, and the panel must not imply they are clear.
+        "mean_congestion": (
+            round(sum(congestion) / len(congestion), 1) if congestion else None
+        ),
+        "max_congestion": round(max(congestion), 1) if congestion else None,
         "worst_link": (
             {
                 "link_id": worst.get("link_id"),
@@ -192,7 +260,7 @@ def summarise(name: str, kind: str, members: list[dict], station: dict | None) -
             else None
         ),
         # A mean over links with no counts behind them is a mean over models.
-        "coverage": round(len(measured) / len(members), 2) if members else 0.0,
+        "coverage": round(len(scored) / len(members), 2) if members else 0.0,
     }
 
 
@@ -239,8 +307,15 @@ def cordon(links: list[dict], stations: list[dict]) -> dict[str, list[dict]]:
 
 def main() -> None:
     stations = fetch_stations()
-    links = fetch_links()
-    print(f"{len(stations)} named police stations, {len(links)} links\n")
+    modelled = fetch_links()
+    for link in modelled:
+        link["measured"] = True
+    network = fetch_network()
+    links = modelled + network
+    print(
+        f"{len(stations)} named police stations, {len(modelled)} modelled links, "
+        f"{len(network)} arterial links from OSM\n"
+    )
 
     # Nearest-station assignment. This is the Voronoi cell without the geometry:
     # a link belongs to the area whose station is closest to its midpoint.
@@ -260,7 +335,11 @@ def main() -> None:
         for name, members in by_station.items()
         if members
     ]
-    thanas.sort(key=lambda a: a["mean_congestion"], reverse=True)
+    # -1 for unmeasured, so they sort last instead of raising on None.
+    def rank(a: dict) -> float:
+        return a["mean_congestion"] if a["mean_congestion"] is not None else -1.0
+
+    thanas.sort(key=rank, reverse=True)
 
     # Zones, from the same assignment rolled up by bearing.
     by_zone: dict[str, list[dict]] = {}
@@ -268,7 +347,7 @@ def main() -> None:
         s = station_index[name]
         by_zone.setdefault(zone_of(s["lon"], s["lat"]), []).extend(members)
     zones = [summarise(z, "commissionerate_zone", m, None) for z, m in by_zone.items() if m]
-    zones.sort(key=lambda a: a["mean_congestion"], reverse=True)
+    zones.sort(key=rank, reverse=True)
 
     crossings = cordon(links, stations)
     # Cheapest first: an area with four boundary crossings is four cameras away
@@ -342,12 +421,17 @@ def main() -> None:
 
     print(f"{'ZONE':<16}{'links':>7}{'veh/h':>9}{'PCU/h':>9}{'cong':>7}{'cover':>7}")
     for z in zones:
+        cong = z["mean_congestion"]
         print(f"{z['name']:<16}{z['links']:>7}{z['vehicles_per_hour']:>9}"
-              f"{z['pcu_per_hour']:>9}{z['mean_congestion']:>7}{z['coverage']:>7}")
+              f"{z['pcu_per_hour']:>9}{(cong if cong is not None else '-'):>7}{z['coverage']:>7}")
     print("\ntop thana catchments by congestion:")
     for t in thanas[:6]:
-        print(f"  {t['name'][:30]:<32}{t['mean_congestion']:>6}  {t['vehicles_per_hour']:>7} veh/h"
-              f"  worst: {(t['worst_link'] or {}).get('name','-')}")
+        cong = t["mean_congestion"] or "-"
+        worst = (t["worst_link"] or {}).get("name", "-")
+        print(
+            f"  {t['name'][:30]:<32}{cong:>6}  "
+            f"{t['vehicles_per_hour']:>7} veh/h  worst: {worst}"
+        )
     print("\ncordon plan, cheapest area first:")
     print(f"  {'area':<34}{'cameras':>8}{'cumulative':>12}")
     for row in plan[:8]:

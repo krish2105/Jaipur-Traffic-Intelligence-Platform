@@ -1,145 +1,1336 @@
 {
   "cordon_plan": [
     {
-      "area": "Sanganer Police Station",
-      "cordon_links": 2,
-      "cameras_needed": 2,
-      "unlocks": "Sanganer Police Station",
+      "area": "Sanganer Sadar Police Station",
+      "cordon_links": 5,
+      "cameras_needed": 5,
+      "unlocks": "Sanganer Sadar Police Station",
       "links": [
         {
-          "link_id": 261,
-          "name": "Tonk Road",
+          "link_id": "osm-28810589",
+          "name": "Diggi Malpura Rd",
           "between": [
-            "Bajaj Nagar Police Station",
-            "Sanganer Police Station"
+            "Sanganer Police Station",
+            "Sanganer Sadar Police Station"
           ],
           "lanes": 2,
-          "congestion_index": 11.3
+          "congestion_index": 0.0
         },
         {
-          "link_id": 593,
-          "name": "Tonk Road",
+          "link_id": "osm-375205097",
+          "name": "NH52",
           "between": [
-            "Bajaj Nagar Police Station",
-            "Sanganer Police Station"
+            "Sanganer Police Station",
+            "Sanganer Sadar Police Station"
           ],
-          "lanes": 2,
-          "congestion_index": 11.1
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-862954952",
+          "name": "NH52",
+          "between": [
+            "Sanganer Police Station",
+            "Sanganer Sadar Police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1544997545",
+          "name": "Mahal Road",
+          "between": [
+            "Sanganer Police Station",
+            "Sanganer Sadar Police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1544997546",
+          "name": "Mahal Road",
+          "between": [
+            "Sanganer Police Station",
+            "Sanganer Sadar Police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
         }
       ],
-      "cumulative_cameras": 2
+      "cumulative_cameras": 5
     },
     {
-      "area": "Police Station",
-      "cordon_links": 2,
-      "cameras_needed": 2,
-      "unlocks": "Police Station",
+      "area": "Kardhani Police Station",
+      "cordon_links": 5,
+      "cameras_needed": 5,
+      "unlocks": "Kardhani Police Station",
       "links": [
         {
-          "link_id": 191,
-          "name": "Ajmer Road",
+          "link_id": "osm-28869808",
+          "name": "SH2C;90",
           "between": [
-            "Police Station",
-            "Sodala Thana"
+            "Kalwad pulia police station.",
+            "Kardhani Police Station"
           ],
           "lanes": 2,
-          "congestion_index": 12.6
+          "congestion_index": 0.0
         },
         {
-          "link_id": 192,
-          "name": "Ajmer Road",
+          "link_id": "osm-54937999",
+          "name": "Sirsi Road",
           "between": [
-            "Police Station",
-            "Sodala Thana"
+            "Kardhani Police Station",
+            "Police Station Vaishali Nagar"
           ],
           "lanes": 2,
-          "congestion_index": 11.6
-        }
-      ],
-      "cumulative_cameras": 4
-    },
-    {
-      "area": "Police Station Gandhi Circle",
-      "cordon_links": 2,
-      "cameras_needed": 2,
-      "unlocks": "Police Station Gandhi Circle",
-      "links": [
-        {
-          "link_id": 133,
-          "name": "JLN Marg",
-          "between": [
-            "Mahila Thana East Gandhinagar",
-            "Police Station Gandhi Circle"
-          ],
-          "lanes": 6,
-          "congestion_index": 13.9
+          "congestion_index": 0.0
         },
         {
-          "link_id": 336,
-          "name": "JLN Marg",
+          "link_id": "osm-200670468",
+          "name": "SH2C;90",
           "between": [
-            "Mahila Thana East Gandhinagar",
-            "Police Station Gandhi Circle"
-          ],
-          "lanes": 6,
-          "congestion_index": 12.0
-        }
-      ],
-      "cumulative_cameras": 6
-    },
-    {
-      "area": "Sodala Thana",
-      "cordon_links": 4,
-      "cameras_needed": 4,
-      "unlocks": "Sodala Thana",
-      "links": [
-        {
-          "link_id": 191,
-          "name": "Ajmer Road",
-          "between": [
-            "Police Station",
-            "Sodala Thana"
+            "Kalwad pulia police station.",
+            "Kardhani Police Station"
           ],
           "lanes": 2,
-          "congestion_index": 12.6
+          "congestion_index": 0.0
         },
         {
-          "link_id": 192,
-          "name": "Ajmer Road",
+          "link_id": "osm-263194164",
+          "name": "Benad Road",
           "between": [
-            "Police Station",
-            "Sodala Thana"
+            "Harmara Police Station",
+            "Kardhani Police Station"
           ],
           "lanes": 2,
-          "congestion_index": 11.6
+          "congestion_index": 0.0
         },
         {
-          "link_id": 136,
-          "name": "Gopalpura Bypass",
+          "link_id": "osm-928277495",
+          "name": "Sirsi Road",
           "between": [
-            "Bajaj Nagar Police Station",
-            "Sodala Thana"
+            "Kardhani Police Station",
+            "Police Station Vaishali Nagar"
           ],
-          "lanes": 3,
-          "congestion_index": 12.2
-        },
-        {
-          "link_id": 152,
-          "name": "Gopalpura Bypass",
-          "between": [
-            "Bajaj Nagar Police Station",
-            "Sodala Thana"
-          ],
-          "lanes": 3,
-          "congestion_index": 11.3
+          "lanes": 2,
+          "congestion_index": 0.0
         }
       ],
       "cumulative_cameras": 10
     },
     {
+      "area": "Police chowki",
+      "cordon_links": 6,
+      "cameras_needed": 6,
+      "unlocks": "Police chowki",
+      "links": [
+        {
+          "link_id": "osm-134988460",
+          "name": "Jamwa Ramgarh Road",
+          "between": [
+            "Police Station Subhash Chowk , Jaipur",
+            "Police chowki"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-486358153",
+          "name": "unnamed arterial",
+          "between": [
+            "Harmara Police Station",
+            "Police chowki"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-863482440",
+          "name": "Amer Road",
+          "between": [
+            "Police Station Subhash Chowk , Jaipur",
+            "Police chowki"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-863494850",
+          "name": "Jamwa Ramgarh Road",
+          "between": [
+            "Police Station Subhash Chowk , Jaipur",
+            "Police chowki"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1327597549",
+          "name": "Jaipur Delhi Road",
+          "between": [
+            "Harmara Police Station",
+            "Police chowki"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1327597550",
+          "name": "Jaipur Delhi Road",
+          "between": [
+            "Harmara Police Station",
+            "Police chowki"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 16
+    },
+    {
+      "area": "Police Station Vaishali Nagar",
+      "cordon_links": 8,
+      "cameras_needed": 8,
+      "unlocks": "Police Station Vaishali Nagar",
+      "links": [
+        {
+          "link_id": "osm-54937999",
+          "name": "Sirsi Road",
+          "between": [
+            "Kardhani Police Station",
+            "Police Station Vaishali Nagar"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200570271",
+          "name": "NH48;NH52",
+          "between": [
+            "Kalwad pulia police station.",
+            "Police Station Vaishali Nagar"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200570273",
+          "name": "NH48;NH52",
+          "between": [
+            "Kalwad pulia police station.",
+            "Police Station Vaishali Nagar"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-316631427",
+          "name": "Khatipura Road Flyover",
+          "between": [
+            "Kalwad pulia police station.",
+            "Police Station Vaishali Nagar"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-874048692",
+          "name": "Khatipura Road Flyover",
+          "between": [
+            "Kalwad pulia police station.",
+            "Police Station Vaishali Nagar"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-928277495",
+          "name": "Sirsi Road",
+          "between": [
+            "Kardhani Police Station",
+            "Police Station Vaishali Nagar"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1315889540",
+          "name": "NH48;NH52",
+          "between": [
+            "Chitrakoot police Station",
+            "Police Station Vaishali Nagar"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1315889542",
+          "name": "NH48;NH52",
+          "between": [
+            "Chitrakoot police Station",
+            "Police Station Vaishali Nagar"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 24
+    },
+    {
+      "area": "Police Station Subhash Chowk , Jaipur",
+      "cordon_links": 9,
+      "cameras_needed": 9,
+      "unlocks": "Police Station Subhash Chowk , Jaipur",
+      "links": [
+        {
+          "link_id": "osm-28776728",
+          "name": "Amer Road",
+          "between": [
+            "Police Station Subhash Chowk , Jaipur",
+            "Police Thana Manak Chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-86623386",
+          "name": "Sujrapol Bazaar Road",
+          "between": [
+            "Police Station Subhash Chowk , Jaipur",
+            "Police Thana Manak Chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-134988460",
+          "name": "Jamwa Ramgarh Road",
+          "between": [
+            "Police Station Subhash Chowk , Jaipur",
+            "Police chowki"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-755258597",
+          "name": "Jamwa Ramgarh Road",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "Police Station Subhash Chowk , Jaipur"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-862509168",
+          "name": "Amer Road",
+          "between": [
+            "Police Station Subhash Chowk , Jaipur",
+            "Police Thana Manak Chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-863482440",
+          "name": "Amer Road",
+          "between": [
+            "Police Station Subhash Chowk , Jaipur",
+            "Police chowki"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-863494850",
+          "name": "Jamwa Ramgarh Road",
+          "between": [
+            "Police Station Subhash Chowk , Jaipur",
+            "Police chowki"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-935417080",
+          "name": "Galta Road",
+          "between": [
+            "Police Station Subhash Chowk , Jaipur",
+            "Police Thana Manak Chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1409959204",
+          "name": "Jamwa Ramgarh Road , JAIPUR",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "Police Station Subhash Chowk , Jaipur"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 33
+    },
+    {
+      "area": "Chitrakoot police Station",
+      "cordon_links": 9,
+      "cameras_needed": 9,
+      "unlocks": "Chitrakoot police Station",
+      "links": [
+        {
+          "link_id": "osm-200570235",
+          "name": "Ajmer Road",
+          "between": [
+            "Chitrakoot police Station",
+            "Karni Vihar Police Station Jaipur"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200570253",
+          "name": "NH48;NH52",
+          "between": [
+            "Chitrakoot police Station",
+            "Karni Vihar Police Station Jaipur"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375521478",
+          "name": "Ajmer Road",
+          "between": [
+            "Chitrakoot police Station",
+            "Karni Vihar Police Station Jaipur"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-390374919",
+          "name": "Ajmer Road",
+          "between": [
+            "Chitrakoot police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-753701965",
+          "name": "Ajmer Road",
+          "between": [
+            "Chitrakoot police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-758683199",
+          "name": "NH48;NH52",
+          "between": [
+            "Chitrakoot police Station",
+            "Karni Vihar Police Station Jaipur"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1201410821",
+          "name": "Acharya Shri Tulsi Setu",
+          "between": [
+            "Chitrakoot police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1315889540",
+          "name": "NH48;NH52",
+          "between": [
+            "Chitrakoot police Station",
+            "Police Station Vaishali Nagar"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1315889542",
+          "name": "NH48;NH52",
+          "between": [
+            "Chitrakoot police Station",
+            "Police Station Vaishali Nagar"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 42
+    },
+    {
+      "area": "Police Station Adarsh Nagar",
+      "cordon_links": 9,
+      "cameras_needed": 9,
+      "unlocks": "Police Station Adarsh Nagar",
+      "links": [
+        {
+          "link_id": "osm-200664182",
+          "name": "Agra Road",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200664183",
+          "name": "Agra Road",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375244405",
+          "name": "Jamwa Ramgarh Road",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-755258597",
+          "name": "Jamwa Ramgarh Road",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "Police Station Subhash Chowk , Jaipur"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-757545714",
+          "name": "Motidungri Marg",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-758365092",
+          "name": "Agra Jaipur Bikaner Bypass",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-759780305",
+          "name": "Motidungri Marg",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-925184530",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1409959204",
+          "name": "Jamwa Ramgarh Road , JAIPUR",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "Police Station Subhash Chowk , Jaipur"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 51
+    },
+    {
+      "area": "Police Thana Manak Chowk",
+      "cordon_links": 10,
+      "cameras_needed": 10,
+      "unlocks": "Police Thana Manak Chowk",
+      "links": [
+        {
+          "link_id": "osm-28776728",
+          "name": "Amer Road",
+          "between": [
+            "Police Station Subhash Chowk , Jaipur",
+            "Police Thana Manak Chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-28827965",
+          "name": "Ramganj Bazaar",
+          "between": [
+            "Police Thana Manak Chowk",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-43249919",
+          "name": "Gangauri Bazaar",
+          "between": [
+            "Police Thana Manak Chowk",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-43249923",
+          "name": "Jai Lal Munshi Ka Rasta",
+          "between": [
+            "Police Thana Manak Chowk",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-86623386",
+          "name": "Sujrapol Bazaar Road",
+          "between": [
+            "Police Station Subhash Chowk , Jaipur",
+            "Police Thana Manak Chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-482153772",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Thana Manak Chowk",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-862509168",
+          "name": "Amer Road",
+          "between": [
+            "Police Station Subhash Chowk , Jaipur",
+            "Police Thana Manak Chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-863031012",
+          "name": "Badi Chaupar",
+          "between": [
+            "Police Thana Manak Chowk",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-863303421",
+          "name": "Badi Chaupar",
+          "between": [
+            "Police Thana Manak Chowk",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-935417080",
+          "name": "Galta Road",
+          "between": [
+            "Police Station Subhash Chowk , Jaipur",
+            "Police Thana Manak Chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 61
+    },
+    {
+      "area": "Harmara Police Station",
+      "cordon_links": 11,
+      "cameras_needed": 11,
+      "unlocks": "Harmara Police Station",
+      "links": [
+        {
+          "link_id": "osm-189423508",
+          "name": "NH48;NH52",
+          "between": [
+            "Harmara Police Station",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-263194164",
+          "name": "Benad Road",
+          "between": [
+            "Harmara Police Station",
+            "Kardhani Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-483927478",
+          "name": "unnamed arterial",
+          "between": [
+            "Harmara Police Station",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-486358153",
+          "name": "unnamed arterial",
+          "between": [
+            "Harmara Police Station",
+            "Police chowki"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-645430343",
+          "name": "Benad Road",
+          "between": [
+            "Harmara Police Station",
+            "Police Station Murlipura"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-863231876",
+          "name": "unnamed arterial",
+          "between": [
+            "Harmara Police Station",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-931729781",
+          "name": "NH48;NH52",
+          "between": [
+            "Harmara Police Station",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1206900644",
+          "name": "Jaipur Road",
+          "between": [
+            "Harmara Police Station",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1207210429",
+          "name": "Sikar Road",
+          "between": [
+            "Harmara Police Station",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1327597549",
+          "name": "Jaipur Delhi Road",
+          "between": [
+            "Harmara Police Station",
+            "Police chowki"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1327597550",
+          "name": "Jaipur Delhi Road",
+          "between": [
+            "Harmara Police Station",
+            "Police chowki"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 72
+    },
+    {
+      "area": "Kalwad pulia police station.",
+      "cordon_links": 12,
+      "cameras_needed": 12,
+      "unlocks": "Kalwad pulia police station.",
+      "links": [
+        {
+          "link_id": "osm-28869808",
+          "name": "SH2C;90",
+          "between": [
+            "Kalwad pulia police station.",
+            "Kardhani Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-178211464",
+          "name": "Kalwad Road",
+          "between": [
+            "Kalwad pulia police station.",
+            "Panipech police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200570271",
+          "name": "NH48;NH52",
+          "between": [
+            "Kalwad pulia police station.",
+            "Police Station Vaishali Nagar"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200570273",
+          "name": "NH48;NH52",
+          "between": [
+            "Kalwad pulia police station.",
+            "Police Station Vaishali Nagar"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200670468",
+          "name": "SH2C;90",
+          "between": [
+            "Kalwad pulia police station.",
+            "Kardhani Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-316631426",
+          "name": "Khatipura Road",
+          "between": [
+            "Kalwad pulia police station.",
+            "Panipech police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-316631427",
+          "name": "Khatipura Road Flyover",
+          "between": [
+            "Kalwad pulia police station.",
+            "Police Station Vaishali Nagar"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-406615464",
+          "name": "NH48;NH52",
+          "between": [
+            "Kalwad pulia police station.",
+            "Police Station Murlipura"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-406615465",
+          "name": "Agra Bikaner Road",
+          "between": [
+            "Kalwad pulia police station.",
+            "Police Station Murlipura"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-866544672",
+          "name": "unnamed arterial",
+          "between": [
+            "Kalwad pulia police station.",
+            "Panipech police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-874048692",
+          "name": "Khatipura Road Flyover",
+          "between": [
+            "Kalwad pulia police station.",
+            "Police Station Vaishali Nagar"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-874048696",
+          "name": "Khatipura Road",
+          "between": [
+            "Kalwad pulia police station.",
+            "Panipech police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 84
+    },
+    {
+      "area": "Vishwakarma Police Station",
+      "cordon_links": 12,
+      "cameras_needed": 12,
+      "unlocks": "Vishwakarma Police Station",
+      "links": [
+        {
+          "link_id": "osm-31988466",
+          "name": "Flyover",
+          "between": [
+            "Police Station Murlipura",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-189423508",
+          "name": "NH48;NH52",
+          "between": [
+            "Harmara Police Station",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200670475",
+          "name": "Sikar Road",
+          "between": [
+            "Police Station Murlipura",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375269978",
+          "name": "Jaipur Road",
+          "between": [
+            "Police Station Murlipura",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-459515030",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Murlipura",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-479012689",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Murlipura",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-483927478",
+          "name": "unnamed arterial",
+          "between": [
+            "Harmara Police Station",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-863231876",
+          "name": "unnamed arterial",
+          "between": [
+            "Harmara Police Station",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-931729779",
+          "name": "Flyover",
+          "between": [
+            "Police Station Murlipura",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-931729781",
+          "name": "NH48;NH52",
+          "between": [
+            "Harmara Police Station",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1206900644",
+          "name": "Jaipur Road",
+          "between": [
+            "Harmara Police Station",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1207210429",
+          "name": "Sikar Road",
+          "between": [
+            "Harmara Police Station",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 96
+    },
+    {
+      "area": "Karni Vihar Police Station Jaipur",
+      "cordon_links": 12,
+      "cameras_needed": 12,
+      "unlocks": "Karni Vihar Police Station Jaipur",
+      "links": [
+        {
+          "link_id": "osm-200570235",
+          "name": "Ajmer Road",
+          "between": [
+            "Chitrakoot police Station",
+            "Karni Vihar Police Station Jaipur"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200570253",
+          "name": "NH48;NH52",
+          "between": [
+            "Chitrakoot police Station",
+            "Karni Vihar Police Station Jaipur"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-374926592",
+          "name": "unnamed arterial",
+          "between": [
+            "Karni Vihar Police Station Jaipur",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375416540",
+          "name": "NH52",
+          "between": [
+            "Karni Vihar Police Station Jaipur",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375521478",
+          "name": "Ajmer Road",
+          "between": [
+            "Chitrakoot police Station",
+            "Karni Vihar Police Station Jaipur"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-570137372",
+          "name": "NH52",
+          "between": [
+            "Karni Vihar Police Station Jaipur",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-570150174",
+          "name": "unnamed arterial",
+          "between": [
+            "Karni Vihar Police Station Jaipur",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-660832138",
+          "name": "Vande Mataram Road",
+          "between": [
+            "Karni Vihar Police Station Jaipur",
+            "Sanganer Police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-660832139",
+          "name": "Vande Mataram Road",
+          "between": [
+            "Karni Vihar Police Station Jaipur",
+            "Sanganer Police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-758626622",
+          "name": "unnamed arterial",
+          "between": [
+            "Karni Vihar Police Station Jaipur",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-758683199",
+          "name": "NH48;NH52",
+          "between": [
+            "Chitrakoot police Station",
+            "Karni Vihar Police Station Jaipur"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1008772926",
+          "name": "unnamed arterial",
+          "between": [
+            "Karni Vihar Police Station Jaipur",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 108
+    },
+    {
+      "area": "rajasthan police headquaters",
+      "cordon_links": 13,
+      "cameras_needed": 13,
+      "unlocks": "rajasthan police headquaters",
+      "links": [
+        {
+          "link_id": "osm-28809506",
+          "name": "Sawai Mansingh Road",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-28826233",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Gandhi Circle",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-28826248",
+          "name": "unnamed arterial",
+          "between": [
+            "Sodala Thana",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-230827929",
+          "name": "Laxmi Mandir Underpass",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-734694478",
+          "name": "unnamed arterial",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-757545713",
+          "name": "Motidungri Marg",
+          "between": [
+            "Police Station Gandhi Circle",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-863572360",
+          "name": "Gandhi Marg",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-863572361",
+          "name": "Sawai Mansingh Road",
+          "between": [
+            "Police Station Gandhi Circle",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-863572364",
+          "name": "Motidungri Marg",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-865674741",
+          "name": "Bhawani Singh Road",
+          "between": [
+            "Police Station Gandhi Circle",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-871562934",
+          "name": "Elevated Hawa Sadak",
+          "between": [
+            "Sodala Thana",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1201594490",
+          "name": "Elevated Hawa Sadak",
+          "between": [
+            "Sodala Thana",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1393571054",
+          "name": "unnamed arterial",
+          "between": [
+            "Sodala Thana",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 121
+    },
+    {
       "area": "Mahila Thana East Gandhinagar",
-      "cordon_links": 4,
-      "cameras_needed": 4,
+      "cordon_links": 14,
+      "cameras_needed": 14,
       "unlocks": "Mahila Thana East Gandhinagar",
       "links": [
         {
@@ -181,14 +1372,959 @@
           ],
           "lanes": 6,
           "congestion_index": 12.0
+        },
+        {
+          "link_id": "osm-230827929",
+          "name": "Laxmi Mandir Underpass",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-244089590",
+          "name": "JLN Marg",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Mahila Thana East Gandhinagar"
+          ],
+          "lanes": 6,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-374926090",
+          "name": "JLN Marg",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 6,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-734694478",
+          "name": "unnamed arterial",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-863572360",
+          "name": "Gandhi Marg",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-864605429",
+          "name": "JLN Marg",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Mahila Thana East Gandhinagar"
+          ],
+          "lanes": 6,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-864605431",
+          "name": "JLN Marg",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 6,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1226124401",
+          "name": "Laxmi Mandir Underpass",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Mahila Thana East Gandhinagar"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1543999199",
+          "name": "unnamed arterial",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1543999200",
+          "name": "Gandhi Marg",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
         }
       ],
-      "cumulative_cameras": 14
+      "cumulative_cameras": 135
+    },
+    {
+      "area": "Police Station Murlipura",
+      "cordon_links": 14,
+      "cameras_needed": 14,
+      "unlocks": "Police Station Murlipura",
+      "links": [
+        {
+          "link_id": "osm-31988466",
+          "name": "Flyover",
+          "between": [
+            "Police Station Murlipura",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200670475",
+          "name": "Sikar Road",
+          "between": [
+            "Police Station Murlipura",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-230843930",
+          "name": "unnamed arterial",
+          "between": [
+            "Panipech police Station",
+            "Police Station Murlipura"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-230843933",
+          "name": "unnamed arterial",
+          "between": [
+            "Panipech police Station",
+            "Police Station Murlipura"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-263194166",
+          "name": "unnamed arterial",
+          "between": [
+            "Panipech police Station",
+            "Police Station Murlipura"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375269978",
+          "name": "Jaipur Road",
+          "between": [
+            "Police Station Murlipura",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-406615464",
+          "name": "NH48;NH52",
+          "between": [
+            "Kalwad pulia police station.",
+            "Police Station Murlipura"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-406615465",
+          "name": "Agra Bikaner Road",
+          "between": [
+            "Kalwad pulia police station.",
+            "Police Station Murlipura"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-459515030",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Murlipura",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-463448496",
+          "name": "Sikar Road",
+          "between": [
+            "Panipech police Station",
+            "Police Station Murlipura"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-479012689",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Murlipura",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-645430343",
+          "name": "Benad Road",
+          "between": [
+            "Harmara Police Station",
+            "Police Station Murlipura"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-931729779",
+          "name": "Flyover",
+          "between": [
+            "Police Station Murlipura",
+            "Vishwakarma Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1206042230",
+          "name": "Jaipur Road",
+          "between": [
+            "Panipech police Station",
+            "Police Station Murlipura"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 149
+    },
+    {
+      "area": "policr thana manak chowk",
+      "cordon_links": 15,
+      "cameras_needed": 15,
+      "unlocks": "policr thana manak chowk",
+      "links": [
+        {
+          "link_id": "osm-28825667",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Gandhi Circle",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-28827965",
+          "name": "Ramganj Bazaar",
+          "between": [
+            "Police Thana Manak Chowk",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-43249919",
+          "name": "Gangauri Bazaar",
+          "between": [
+            "Police Thana Manak Chowk",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-43249923",
+          "name": "Jai Lal Munshi Ka Rasta",
+          "between": [
+            "Police Thana Manak Chowk",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-181750352",
+          "name": "Mirza Ismail Road",
+          "between": [
+            "Police Station",
+            "policr thana manak chowk"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200664182",
+          "name": "Agra Road",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200664183",
+          "name": "Agra Road",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-293692016",
+          "name": "Chandpol Bazaar",
+          "between": [
+            "Police Station",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-374920055",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Gandhi Circle",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-482153772",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Thana Manak Chowk",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-757545714",
+          "name": "Motidungri Marg",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-758060824",
+          "name": "Sawai Mansingh Road",
+          "between": [
+            "Police Station Gandhi Circle",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-863031012",
+          "name": "Badi Chaupar",
+          "between": [
+            "Police Thana Manak Chowk",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-863303421",
+          "name": "Badi Chaupar",
+          "between": [
+            "Police Thana Manak Chowk",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1266354998",
+          "name": "Chandpol Bazaar",
+          "between": [
+            "Police Station",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 164
+    },
+    {
+      "area": "Police Station",
+      "cordon_links": 16,
+      "cameras_needed": 16,
+      "unlocks": "Police Station",
+      "links": [
+        {
+          "link_id": 191,
+          "name": "Ajmer Road",
+          "between": [
+            "Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 12.6
+        },
+        {
+          "link_id": 192,
+          "name": "Ajmer Road",
+          "between": [
+            "Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 11.6
+        },
+        {
+          "link_id": "osm-43249934",
+          "name": "Powerhouse Road",
+          "between": [
+            "Panipech police Station",
+            "Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-163425356",
+          "name": "Acharya Shri Tulsi Setu",
+          "between": [
+            "Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-181750352",
+          "name": "Mirza Ismail Road",
+          "between": [
+            "Police Station",
+            "policr thana manak chowk"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200611600",
+          "name": "Acharya Shri Tulsi Setu",
+          "between": [
+            "Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200611624",
+          "name": "Ram Mandir Rd",
+          "between": [
+            "Panipech police Station",
+            "Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200611625",
+          "name": "Ram Mandir Road",
+          "between": [
+            "Panipech police Station",
+            "Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-293692016",
+          "name": "Chandpol Bazaar",
+          "between": [
+            "Police Station",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375507175",
+          "name": "Ajmer Road",
+          "between": [
+            "Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375507179",
+          "name": "Ajmer Road",
+          "between": [
+            "Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-485247180",
+          "name": "unnamed arterial",
+          "between": [
+            "Panipech police Station",
+            "Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-485248415",
+          "name": "Sawai Jai Singh Highway",
+          "between": [
+            "Panipech police Station",
+            "Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1206537587",
+          "name": "Meera Marg",
+          "between": [
+            "Panipech police Station",
+            "Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1206544471",
+          "name": "Meera Marg",
+          "between": [
+            "Panipech police Station",
+            "Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1266354998",
+          "name": "Chandpol Bazaar",
+          "between": [
+            "Police Station",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 180
+    },
+    {
+      "area": "Panipech police Station",
+      "cordon_links": 16,
+      "cameras_needed": 16,
+      "unlocks": "Panipech police Station",
+      "links": [
+        {
+          "link_id": "osm-43249934",
+          "name": "Powerhouse Road",
+          "between": [
+            "Panipech police Station",
+            "Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-178211464",
+          "name": "Kalwad Road",
+          "between": [
+            "Kalwad pulia police station.",
+            "Panipech police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200611624",
+          "name": "Ram Mandir Rd",
+          "between": [
+            "Panipech police Station",
+            "Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200611625",
+          "name": "Ram Mandir Road",
+          "between": [
+            "Panipech police Station",
+            "Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-230843930",
+          "name": "unnamed arterial",
+          "between": [
+            "Panipech police Station",
+            "Police Station Murlipura"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-230843933",
+          "name": "unnamed arterial",
+          "between": [
+            "Panipech police Station",
+            "Police Station Murlipura"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-263194166",
+          "name": "unnamed arterial",
+          "between": [
+            "Panipech police Station",
+            "Police Station Murlipura"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-316631426",
+          "name": "Khatipura Road",
+          "between": [
+            "Kalwad pulia police station.",
+            "Panipech police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-463448496",
+          "name": "Sikar Road",
+          "between": [
+            "Panipech police Station",
+            "Police Station Murlipura"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-485247180",
+          "name": "unnamed arterial",
+          "between": [
+            "Panipech police Station",
+            "Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-485248415",
+          "name": "Sawai Jai Singh Highway",
+          "between": [
+            "Panipech police Station",
+            "Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-866544672",
+          "name": "unnamed arterial",
+          "between": [
+            "Kalwad pulia police station.",
+            "Panipech police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-874048696",
+          "name": "Khatipura Road",
+          "between": [
+            "Kalwad pulia police station.",
+            "Panipech police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1206042230",
+          "name": "Jaipur Road",
+          "between": [
+            "Panipech police Station",
+            "Police Station Murlipura"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1206537587",
+          "name": "Meera Marg",
+          "between": [
+            "Panipech police Station",
+            "Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1206544471",
+          "name": "Meera Marg",
+          "between": [
+            "Panipech police Station",
+            "Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 196
+    },
+    {
+      "area": "Sodala Thana",
+      "cordon_links": 19,
+      "cameras_needed": 19,
+      "unlocks": "Sodala Thana",
+      "links": [
+        {
+          "link_id": 191,
+          "name": "Ajmer Road",
+          "between": [
+            "Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 12.6
+        },
+        {
+          "link_id": 192,
+          "name": "Ajmer Road",
+          "between": [
+            "Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 11.6
+        },
+        {
+          "link_id": 136,
+          "name": "Gopalpura Bypass",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 3,
+          "congestion_index": 12.2
+        },
+        {
+          "link_id": 152,
+          "name": "Gopalpura Bypass",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 3,
+          "congestion_index": 11.3
+        },
+        {
+          "link_id": "osm-28826248",
+          "name": "unnamed arterial",
+          "between": [
+            "Sodala Thana",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-163425356",
+          "name": "Acharya Shri Tulsi Setu",
+          "between": [
+            "Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-200611600",
+          "name": "Acharya Shri Tulsi Setu",
+          "between": [
+            "Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-374926095",
+          "name": "Gopalpura Bypass",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-374926592",
+          "name": "unnamed arterial",
+          "between": [
+            "Karni Vihar Police Station Jaipur",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375044275",
+          "name": "Gopalpura Bypass",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375507175",
+          "name": "Ajmer Road",
+          "between": [
+            "Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375507179",
+          "name": "Ajmer Road",
+          "between": [
+            "Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-390374919",
+          "name": "Ajmer Road",
+          "between": [
+            "Chitrakoot police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-570150174",
+          "name": "unnamed arterial",
+          "between": [
+            "Karni Vihar Police Station Jaipur",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-753701965",
+          "name": "Ajmer Road",
+          "between": [
+            "Chitrakoot police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-871562934",
+          "name": "Elevated Hawa Sadak",
+          "between": [
+            "Sodala Thana",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1201410821",
+          "name": "Acharya Shri Tulsi Setu",
+          "between": [
+            "Chitrakoot police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1201594490",
+          "name": "Elevated Hawa Sadak",
+          "between": [
+            "Sodala Thana",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1393571054",
+          "name": "unnamed arterial",
+          "between": [
+            "Sodala Thana",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 215
     },
     {
       "area": "Bajaj Nagar Police Station",
-      "cordon_links": 6,
-      "cameras_needed": 6,
+      "cordon_links": 21,
+      "cameras_needed": 21,
       "unlocks": "Bajaj Nagar Police Station",
       "links": [
         {
@@ -250,9 +2386,637 @@
           ],
           "lanes": 6,
           "congestion_index": 12.3
+        },
+        {
+          "link_id": "osm-28809506",
+          "name": "Sawai Mansingh Road",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-28814911",
+          "name": "unnamed arterial",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-28846528",
+          "name": "unnamed arterial",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sanganer Police Station"
+          ],
+          "lanes": 3,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-244089590",
+          "name": "JLN Marg",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Mahila Thana East Gandhinagar"
+          ],
+          "lanes": 6,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-374926095",
+          "name": "Gopalpura Bypass",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-374933215",
+          "name": "Durgapura Flyover",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sanganer Police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375044275",
+          "name": "Gopalpura Bypass",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375269504",
+          "name": "Durgapura Flyover",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sanganer Police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-571240967",
+          "name": "unnamed arterial",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-863572364",
+          "name": "Motidungri Marg",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-864605429",
+          "name": "JLN Marg",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Mahila Thana East Gandhinagar"
+          ],
+          "lanes": 6,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-865638243",
+          "name": "Calgiri Road",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-865638244",
+          "name": "Calgiri Road",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1208475519",
+          "name": "unnamed arterial",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 3,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1226124401",
+          "name": "Laxmi Mandir Underpass",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Mahila Thana East Gandhinagar"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
         }
       ],
-      "cumulative_cameras": 20
+      "cumulative_cameras": 236
+    },
+    {
+      "area": "Sanganer Police Station",
+      "cordon_links": 22,
+      "cameras_needed": 22,
+      "unlocks": "Sanganer Police Station",
+      "links": [
+        {
+          "link_id": 261,
+          "name": "Tonk Road",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 11.3
+        },
+        {
+          "link_id": 593,
+          "name": "Tonk Road",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 11.1
+        },
+        {
+          "link_id": "osm-28810589",
+          "name": "Diggi Malpura Rd",
+          "between": [
+            "Sanganer Police Station",
+            "Sanganer Sadar Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-28814911",
+          "name": "unnamed arterial",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-28846528",
+          "name": "unnamed arterial",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sanganer Police Station"
+          ],
+          "lanes": 3,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-374555550",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Gandhi Circle",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-374933215",
+          "name": "Durgapura Flyover",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sanganer Police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375205097",
+          "name": "NH52",
+          "between": [
+            "Sanganer Police Station",
+            "Sanganer Sadar Police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375269504",
+          "name": "Durgapura Flyover",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sanganer Police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375416540",
+          "name": "NH52",
+          "between": [
+            "Karni Vihar Police Station Jaipur",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-570137372",
+          "name": "NH52",
+          "between": [
+            "Karni Vihar Police Station Jaipur",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-571240967",
+          "name": "unnamed arterial",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-660832138",
+          "name": "Vande Mataram Road",
+          "between": [
+            "Karni Vihar Police Station Jaipur",
+            "Sanganer Police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-660832139",
+          "name": "Vande Mataram Road",
+          "between": [
+            "Karni Vihar Police Station Jaipur",
+            "Sanganer Police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-758626622",
+          "name": "unnamed arterial",
+          "between": [
+            "Karni Vihar Police Station Jaipur",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-862954952",
+          "name": "NH52",
+          "between": [
+            "Sanganer Police Station",
+            "Sanganer Sadar Police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1008772926",
+          "name": "unnamed arterial",
+          "between": [
+            "Karni Vihar Police Station Jaipur",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1095872606",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Gandhi Circle",
+            "Sanganer Police Station"
+          ],
+          "lanes": 3,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1095872609",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Gandhi Circle",
+            "Sanganer Police Station"
+          ],
+          "lanes": 3,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1267052977",
+          "name": "Agra Jaipur Bikaner Bypass",
+          "between": [
+            "Police Station Gandhi Circle",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1544997545",
+          "name": "Mahal Road",
+          "between": [
+            "Sanganer Police Station",
+            "Sanganer Sadar Police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1544997546",
+          "name": "Mahal Road",
+          "between": [
+            "Sanganer Police Station",
+            "Sanganer Sadar Police Station"
+          ],
+          "lanes": 4,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 258
+    },
+    {
+      "area": "Police Station Gandhi Circle",
+      "cordon_links": 24,
+      "cameras_needed": 24,
+      "unlocks": "Police Station Gandhi Circle",
+      "links": [
+        {
+          "link_id": 133,
+          "name": "JLN Marg",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 6,
+          "congestion_index": 13.9
+        },
+        {
+          "link_id": 336,
+          "name": "JLN Marg",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 6,
+          "congestion_index": 12.0
+        },
+        {
+          "link_id": "osm-28825667",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Gandhi Circle",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-28826233",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Gandhi Circle",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-374555550",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Gandhi Circle",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-374920055",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Gandhi Circle",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-374926090",
+          "name": "JLN Marg",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 6,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-375244405",
+          "name": "Jamwa Ramgarh Road",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-757545713",
+          "name": "Motidungri Marg",
+          "between": [
+            "Police Station Gandhi Circle",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-758060824",
+          "name": "Sawai Mansingh Road",
+          "between": [
+            "Police Station Gandhi Circle",
+            "policr thana manak chowk"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-758365092",
+          "name": "Agra Jaipur Bikaner Bypass",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-759780305",
+          "name": "Motidungri Marg",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-863572361",
+          "name": "Sawai Mansingh Road",
+          "between": [
+            "Police Station Gandhi Circle",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-864605431",
+          "name": "JLN Marg",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 6,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-865638243",
+          "name": "Calgiri Road",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-865638244",
+          "name": "Calgiri Road",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-865674741",
+          "name": "Bhawani Singh Road",
+          "between": [
+            "Police Station Gandhi Circle",
+            "rajasthan police headquaters"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-925184530",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Adarsh Nagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1095872606",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Gandhi Circle",
+            "Sanganer Police Station"
+          ],
+          "lanes": 3,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1095872609",
+          "name": "unnamed arterial",
+          "between": [
+            "Police Station Gandhi Circle",
+            "Sanganer Police Station"
+          ],
+          "lanes": 3,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1208475519",
+          "name": "unnamed arterial",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 3,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1267052977",
+          "name": "Agra Jaipur Bikaner Bypass",
+          "between": [
+            "Police Station Gandhi Circle",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1543999199",
+          "name": "unnamed arterial",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        },
+        {
+          "link_id": "osm-1543999200",
+          "name": "Gandhi Marg",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 2,
+          "congestion_index": 0.0
+        }
+      ],
+      "cumulative_cameras": 282
     }
   ],
   "cordon_note": "Vehicles inside an area are counted at its boundary, not on every road within it. These are the links that cross each catchment boundary: instrument them and that area's accumulation becomes measurable. cumulative_cameras reads down the list cheapest first, so a pilot can pick a budget and see what it buys.",
@@ -261,7 +3025,8 @@
       "name": "Jaipur West",
       "kind": "commissionerate_zone",
       "station": null,
-      "links": 12,
+      "links": 550,
+      "links_modelled": 12,
       "links_measured": 0,
       "vehicles_per_hour": 0,
       "pcu_per_hour": 0,
@@ -273,13 +3038,14 @@
         "congestion_index": 13.8,
         "speed_kmh": 56.9
       },
-      "coverage": 0.0
+      "coverage": 0.02
     },
     {
       "name": "Jaipur South",
       "kind": "commissionerate_zone",
       "station": null,
-      "links": 78,
+      "links": 685,
+      "links_modelled": 78,
       "links_measured": 0,
       "vehicles_per_hour": 0,
       "pcu_per_hour": 0,
@@ -291,6 +3057,34 @@
         "congestion_index": 13.9,
         "speed_kmh": 33.2
       },
+      "coverage": 0.11
+    },
+    {
+      "name": "Jaipur North",
+      "kind": "commissionerate_zone",
+      "station": null,
+      "links": 56,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
+      "coverage": 0.0
+    },
+    {
+      "name": "Jaipur East",
+      "kind": "commissionerate_zone",
+      "station": null,
+      "links": 161,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
       "coverage": 0.0
     }
   ],
@@ -302,7 +3096,8 @@
         "lon": 75.7950769,
         "lat": 26.9177909
       },
-      "links": 5,
+      "links": 112,
+      "links_modelled": 5,
       "links_measured": 0,
       "vehicles_per_hour": 0,
       "pcu_per_hour": 0,
@@ -314,7 +3109,7 @@
         "congestion_index": 13.7,
         "speed_kmh": 56.9
       },
-      "coverage": 0.0
+      "coverage": 0.04
     },
     {
       "name": "Police Station Gandhi Circle",
@@ -323,7 +3118,8 @@
         "lon": 75.8129569,
         "lat": 26.8840927
       },
-      "links": 6,
+      "links": 85,
+      "links_modelled": 6,
       "links_measured": 0,
       "vehicles_per_hour": 0,
       "pcu_per_hour": 0,
@@ -335,7 +3131,7 @@
         "congestion_index": 13.9,
         "speed_kmh": 47.4
       },
-      "coverage": 0.0
+      "coverage": 0.07
     },
     {
       "name": "Bajaj Nagar Police Station",
@@ -344,7 +3140,8 @@
         "lon": 75.7996764,
         "lat": 26.8776453
       },
-      "links": 48,
+      "links": 138,
+      "links_modelled": 48,
       "links_measured": 0,
       "vehicles_per_hour": 0,
       "pcu_per_hour": 0,
@@ -356,7 +3153,7 @@
         "congestion_index": 13.9,
         "speed_kmh": 33.2
       },
-      "coverage": 0.0
+      "coverage": 0.35
     },
     {
       "name": "Sanganer Police Station",
@@ -365,7 +3162,8 @@
         "lon": 75.7971644,
         "lat": 26.8195252
       },
-      "links": 22,
+      "links": 238,
+      "links_modelled": 22,
       "links_measured": 0,
       "vehicles_per_hour": 0,
       "pcu_per_hour": 0,
@@ -377,7 +3175,7 @@
         "congestion_index": 13.9,
         "speed_kmh": 47.4
       },
-      "coverage": 0.0
+      "coverage": 0.09
     },
     {
       "name": "Sodala Thana",
@@ -386,7 +3184,8 @@
         "lon": 75.7763672,
         "lat": 26.9019038
       },
-      "links": 7,
+      "links": 91,
+      "links_modelled": 7,
       "links_measured": 0,
       "vehicles_per_hour": 0,
       "pcu_per_hour": 0,
@@ -398,7 +3197,7 @@
         "congestion_index": 13.8,
         "speed_kmh": 56.9
       },
-      "coverage": 0.0
+      "coverage": 0.08
     },
     {
       "name": "Mahila Thana East Gandhinagar",
@@ -407,7 +3206,8 @@
         "lon": 75.8042117,
         "lat": 26.8815478
       },
-      "links": 2,
+      "links": 13,
+      "links_modelled": 2,
       "links_measured": 0,
       "vehicles_per_hour": 0,
       "pcu_per_hour": 0,
@@ -419,17 +3219,288 @@
         "congestion_index": 12.3,
         "speed_kmh": 47.8
       },
+      "coverage": 0.15
+    },
+    {
+      "name": "Chitrakoot police Station",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.7342969,
+        "lat": 26.8994432
+      },
+      "links": 8,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
+      "coverage": 0.0
+    },
+    {
+      "name": "Harmara Police Station",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.7690247,
+        "lat": 27.0131737
+      },
+      "links": 25,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
+      "coverage": 0.0
+    },
+    {
+      "name": "Kalwad pulia police station.",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.7313534,
+        "lat": 26.9462279
+      },
+      "links": 32,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
+      "coverage": 0.0
+    },
+    {
+      "name": "Kardhani Police Station",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.7119204,
+        "lat": 26.953527
+      },
+      "links": 10,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
+      "coverage": 0.0
+    },
+    {
+      "name": "Karni Vihar Police Station Jaipur",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.7331235,
+        "lat": 26.8967564
+      },
+      "links": 103,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
+      "coverage": 0.0
+    },
+    {
+      "name": "Panipech police Station",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.7878589,
+        "lat": 26.938816
+      },
+      "links": 100,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
+      "coverage": 0.0
+    },
+    {
+      "name": "Police Station Adarsh Nagar",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.8348836,
+        "lat": 26.9024266
+      },
+      "links": 85,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
+      "coverage": 0.0
+    },
+    {
+      "name": "Police Station Murlipura",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.7647832,
+        "lat": 26.970402
+      },
+      "links": 58,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
+      "coverage": 0.0
+    },
+    {
+      "name": "Police Station Subhash Chowk , Jaipur",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.8324821,
+        "lat": 26.9290701
+      },
+      "links": 87,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
+      "coverage": 0.0
+    },
+    {
+      "name": "Police Station Vaishali Nagar",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.7355845,
+        "lat": 26.9153921
+      },
+      "links": 36,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
+      "coverage": 0.0
+    },
+    {
+      "name": "Police Thana Manak Chowk",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.8275598,
+        "lat": 26.9231805
+      },
+      "links": 19,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
+      "coverage": 0.0
+    },
+    {
+      "name": "Police chowki",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.797715,
+        "lat": 27.0078424
+      },
+      "links": 19,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
+      "coverage": 0.0
+    },
+    {
+      "name": "Sanganer Sadar Police Station",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.8225385,
+        "lat": 26.7834733
+      },
+      "links": 91,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
+      "coverage": 0.0
+    },
+    {
+      "name": "Vishwakarma Police Station",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.7745373,
+        "lat": 26.9780908
+      },
+      "links": 12,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
+      "coverage": 0.0
+    },
+    {
+      "name": "policr thana manak chowk",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.8271042,
+        "lat": 26.9224223
+      },
+      "links": 55,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
+      "coverage": 0.0
+    },
+    {
+      "name": "rajasthan police headquaters",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.7988001,
+        "lat": 26.8854969
+      },
+      "links": 35,
+      "links_modelled": 0,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": null,
+      "max_congestion": null,
+      "worst_link": null,
       "coverage": 0.0
     }
   ],
   "stations_total": 22,
-  "links_total": 90,
+  "links_total": 1452,
   "links_unassigned": 0,
   "boundary_basis": "Approximate, not gazetted. Police jurisdiction polygons are not in open data: an Overpass query for boundary=police over Jaipur returns zero. Each area is the set of links whose midpoint is nearest that station, which is the Voronoi cell computed directly. Zones roll those up by bearing from the walled city. Replace with the Commissionerate's own shapefile when supplied; nothing downstream changes.",
   "pcu_source": "IRC:106-1990, urban roads",
-  "coverage_note": "coverage is the share of an area's links that carry measured counts. Congestion is modelled on the rest, so a low-coverage area is an estimate and the panel says so.",
+  "coverage_note": "mean_congestion is null where an area has road network but no modelled link. That is 'not measured', not 'clear'. Jaipur North and East are in that state today: real arterials, no measurement on them yet.",
   "vehicle_counts_available": false,
   "vehicle_count_note": "Congestion and worst-link are live for every area. Vehicle and PCU totals need measured counts, which exist only on instrumented links; until cameras are connected these read zero rather than being estimated.",
-  "is_synthetic": true,
-  "cordon_caveat": "Computed over the 90 modelled links across four corridors, not the whole city road network. A full-network run would raise the camera counts, because more roads cross each boundary. The method and the ordering hold; treat these as a floor rather than a quote."
+  "is_synthetic": true
 }
