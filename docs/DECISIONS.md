@@ -2045,3 +2045,58 @@ refreshes it but re-running the script. That is acceptable only because it is
 labelled. **Remove this the moment the API is hosted** — set
 `NEXT_PUBLIC_API_URL` on Vercel and the snapshot silently stops being consulted,
 with no code change needed.
+
+## ADR-063 — The console's hydration failure is the `ssr: false` map loaders
+
+**Status.** Diagnosed, not fixed. Deliberately.
+
+React error #418 fires several times on every load of `/en/console`, and has
+been doing so for longer than today. It was found in a console log, not by
+looking at the page — the page renders correctly, because React recovers by
+throwing away the server markup for the affected subtree and re-rendering it on
+the client.
+
+**First diagnosis was wrong.** The console header formatted `new Date()` into
+text during render, and since Next.js server-renders client components, the
+server wrote one minute and the browser hydrated wanting another. That is a real
+hydration bug and it is fixed (`lib/use-client-now.ts`), along with two others
+it was hiding: the clock never ticked, so a console left on a wall showed the
+load time indefinitely while looking live, and the day-profile's "now" marker
+defaulted to `?? 0`, drawing a confident line at midnight for the first frame.
+
+But #418 survived the fix, several times per load, which rules out a minute
+rollover — that would be rare, not deterministic.
+
+**The actual source, by correlation.**
+
+| page | map or 3D scene | #418 |
+|---|---|---|
+| `/en` | no | no |
+| `/en/citizen` | no | no |
+| `/en/console` | yes | **yes** |
+| `/en/city` | yes | **yes** |
+
+Both map-bearing pages fail, in the same two chunks. `CorridorMap` and
+`CityScene` are both `next/dynamic` with `ssr: false`. The server renders the
+`loading` fallback — for the map, a div containing `…` — and a diff of the
+server HTML against the hydrated DOM shows that `…` present on the server and
+absent on the client, which is the mismatch.
+
+**Why it is not fixed here.** The fix is to gate the dynamic component behind a
+mounted flag so the server and the first client render both produce the
+fallback. That changes when the map mounts, and this repo has a documented
+history of exactly that going wrong: ADR-020 (console map blank), the
+unmeasured-canvas bug that made the pane empty on the deployment, and the
+buildings-as-static-asset attempt that mounted the scene before its geometry
+existed. Changing mount timing on the highest-risk component in the codebase,
+at the end of a long session, to fix something with no visible symptom, is a bad
+trade.
+
+**What it costs today.** Wasted client render work on two pages, and the
+standing risk that the next mismatch in one of those subtrees is one that does
+not recover cleanly.
+
+**How to confirm before fixing.** Run `pnpm --filter @pravaah/web dev` and open
+`/en/console`. A development build names the mismatched element outright, which
+a minified production build will not. Confirm it is the loaders before touching
+them.
