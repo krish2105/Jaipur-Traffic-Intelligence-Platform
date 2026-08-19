@@ -196,6 +196,47 @@ def summarise(name: str, kind: str, members: list[dict], station: dict | None) -
     }
 
 
+def cordon(links: list[dict], stations: list[dict]) -> dict[str, list[dict]]:
+    """Which links cross an area boundary, and therefore need a camera.
+
+    This is the point of the whole exercise. Vehicles *inside* an area cannot be
+    counted by instrumenting every road in it: that is a hundred cameras per
+    thana and nobody is buying that. They are counted at the **cordon** by
+    counting what enters and what leaves, and integrating. So the only roads
+    that need a detector are the ones that cross the boundary.
+
+    A link crosses a boundary when its two ends fall in different catchments.
+    Assignment is by nearest station, so a link whose start is nearest thana A
+    and whose end is nearest thana B is, by construction, a boundary crossing.
+
+    The output turns "we need camera access" into a named list an official can
+    approve or refuse: instrument these specific junctions, measure these
+    specific areas.
+    """
+    def nearest(point: tuple[float, float]) -> str:
+        return min(stations, key=lambda s: haversine(point, (s["lon"], s["lat"])))["name"]
+
+    out: dict[str, list[dict]] = {}
+    for link in links:
+        coords = link.get("coordinates") or []
+        if len(coords) < 2:
+            continue
+        a = nearest((float(coords[0][0]), float(coords[0][1])))
+        b = nearest((float(coords[-1][0]), float(coords[-1][1])))
+        if a == b:
+            continue  # wholly inside one catchment, so it carries no flow across
+        entry = {
+            "link_id": link.get("link_id"),
+            "name": (link.get("name") or {}).get("en"),
+            "between": sorted([a, b]),
+            "lanes": link.get("lanes"),
+            "congestion_index": round(float(link.get("congestion_index") or 0), 1),
+        }
+        for area in (a, b):
+            out.setdefault(area, []).append(entry)
+    return out
+
+
 def main() -> None:
     stations = fetch_stations()
     links = fetch_links()
@@ -229,7 +270,36 @@ def main() -> None:
     zones = [summarise(z, "commissionerate_zone", m, None) for z, m in by_zone.items() if m]
     zones.sort(key=lambda a: a["mean_congestion"], reverse=True)
 
+    crossings = cordon(links, stations)
+    # Cheapest first: an area with four boundary crossings is four cameras away
+    # from being measurable, and that is where a pilot should start.
+    plan = sorted(
+        (
+            {
+                "area": name,
+                "cordon_links": len(entries),
+                "cameras_needed": len(entries),
+                "unlocks": name,
+                "links": entries,
+            }
+            for name, entries in crossings.items()
+        ),
+        key=lambda r: r["cordon_links"],
+    )
+    cumulative = 0
+    for row in plan:
+        cumulative += row["cordon_links"]
+        row["cumulative_cameras"] = cumulative
+
     payload = {
+        "cordon_plan": plan,
+        "cordon_note": (
+            "Vehicles inside an area are counted at its boundary, not on every "
+            "road within it. These are the links that cross each catchment "
+            "boundary: instrument them and that area's accumulation becomes "
+            "measurable. cumulative_cameras reads down the list cheapest first, "
+            "so a pilot can pick a budget and see what it buys."
+        ),
         "zones": zones,
         "thanas": thanas,
         "stations_total": len(stations),
@@ -278,6 +348,12 @@ def main() -> None:
     for t in thanas[:6]:
         print(f"  {t['name'][:30]:<32}{t['mean_congestion']:>6}  {t['vehicles_per_hour']:>7} veh/h"
               f"  worst: {(t['worst_link'] or {}).get('name','-')}")
+    print("\ncordon plan, cheapest area first:")
+    print(f"  {'area':<34}{'cameras':>8}{'cumulative':>12}")
+    for row in plan[:8]:
+        print(f"  {row['area'][:32]:<34}{row['cameras_needed']:>8}{row['cumulative_cameras']:>12}")
+    total = sum(r["cameras_needed"] for r in plan)
+    print(f"\n  {len(plan)} areas measurable for {total} cordon cameras in total")
     print(f"\n-> {OUT}")
 
 

@@ -1,4 +1,261 @@
 {
+  "cordon_plan": [
+    {
+      "area": "Sanganer Police Station",
+      "cordon_links": 2,
+      "cameras_needed": 2,
+      "unlocks": "Sanganer Police Station",
+      "links": [
+        {
+          "link_id": 261,
+          "name": "Tonk Road",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 11.3
+        },
+        {
+          "link_id": 593,
+          "name": "Tonk Road",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 11.1
+        }
+      ],
+      "cumulative_cameras": 2
+    },
+    {
+      "area": "Police Station",
+      "cordon_links": 2,
+      "cameras_needed": 2,
+      "unlocks": "Police Station",
+      "links": [
+        {
+          "link_id": 191,
+          "name": "Ajmer Road",
+          "between": [
+            "Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 12.6
+        },
+        {
+          "link_id": 192,
+          "name": "Ajmer Road",
+          "between": [
+            "Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 11.6
+        }
+      ],
+      "cumulative_cameras": 4
+    },
+    {
+      "area": "Police Station Gandhi Circle",
+      "cordon_links": 2,
+      "cameras_needed": 2,
+      "unlocks": "Police Station Gandhi Circle",
+      "links": [
+        {
+          "link_id": 133,
+          "name": "JLN Marg",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 6,
+          "congestion_index": 13.9
+        },
+        {
+          "link_id": 336,
+          "name": "JLN Marg",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 6,
+          "congestion_index": 12.0
+        }
+      ],
+      "cumulative_cameras": 6
+    },
+    {
+      "area": "Sodala Thana",
+      "cordon_links": 4,
+      "cameras_needed": 4,
+      "unlocks": "Sodala Thana",
+      "links": [
+        {
+          "link_id": 191,
+          "name": "Ajmer Road",
+          "between": [
+            "Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 12.6
+        },
+        {
+          "link_id": 192,
+          "name": "Ajmer Road",
+          "between": [
+            "Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 2,
+          "congestion_index": 11.6
+        },
+        {
+          "link_id": 136,
+          "name": "Gopalpura Bypass",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 3,
+          "congestion_index": 12.2
+        },
+        {
+          "link_id": 152,
+          "name": "Gopalpura Bypass",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 3,
+          "congestion_index": 11.3
+        }
+      ],
+      "cumulative_cameras": 10
+    },
+    {
+      "area": "Mahila Thana East Gandhinagar",
+      "cordon_links": 4,
+      "cameras_needed": 4,
+      "unlocks": "Mahila Thana East Gandhinagar",
+      "links": [
+        {
+          "link_id": 98,
+          "name": "JLN Marg",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Mahila Thana East Gandhinagar"
+          ],
+          "lanes": 6,
+          "congestion_index": 11.9
+        },
+        {
+          "link_id": 133,
+          "name": "JLN Marg",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 6,
+          "congestion_index": 13.9
+        },
+        {
+          "link_id": 335,
+          "name": "JLN Marg",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Mahila Thana East Gandhinagar"
+          ],
+          "lanes": 6,
+          "congestion_index": 12.3
+        },
+        {
+          "link_id": 336,
+          "name": "JLN Marg",
+          "between": [
+            "Mahila Thana East Gandhinagar",
+            "Police Station Gandhi Circle"
+          ],
+          "lanes": 6,
+          "congestion_index": 12.0
+        }
+      ],
+      "cumulative_cameras": 14
+    },
+    {
+      "area": "Bajaj Nagar Police Station",
+      "cordon_links": 6,
+      "cameras_needed": 6,
+      "unlocks": "Bajaj Nagar Police Station",
+      "links": [
+        {
+          "link_id": 261,
+          "name": "Tonk Road",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 11.3
+        },
+        {
+          "link_id": 593,
+          "name": "Tonk Road",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sanganer Police Station"
+          ],
+          "lanes": 2,
+          "congestion_index": 11.1
+        },
+        {
+          "link_id": 136,
+          "name": "Gopalpura Bypass",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 3,
+          "congestion_index": 12.2
+        },
+        {
+          "link_id": 152,
+          "name": "Gopalpura Bypass",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Sodala Thana"
+          ],
+          "lanes": 3,
+          "congestion_index": 11.3
+        },
+        {
+          "link_id": 98,
+          "name": "JLN Marg",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Mahila Thana East Gandhinagar"
+          ],
+          "lanes": 6,
+          "congestion_index": 11.9
+        },
+        {
+          "link_id": 335,
+          "name": "JLN Marg",
+          "between": [
+            "Bajaj Nagar Police Station",
+            "Mahila Thana East Gandhinagar"
+          ],
+          "lanes": 6,
+          "congestion_index": 12.3
+        }
+      ],
+      "cumulative_cameras": 20
+    }
+  ],
+  "cordon_note": "Vehicles inside an area are counted at its boundary, not on every road within it. These are the links that cross each catchment boundary: instrument them and that area's accumulation becomes measurable. cumulative_cameras reads down the list cheapest first, so a pilot can pick a budget and see what it buys.",
   "zones": [
     {
       "name": "Jaipur West",
@@ -173,5 +430,6 @@
   "coverage_note": "coverage is the share of an area's links that carry measured counts. Congestion is modelled on the rest, so a low-coverage area is an estimate and the panel says so.",
   "vehicle_counts_available": false,
   "vehicle_count_note": "Congestion and worst-link are live for every area. Vehicle and PCU totals need measured counts, which exist only on instrumented links; until cameras are connected these read zero rather than being estimated.",
-  "is_synthetic": true
+  "is_synthetic": true,
+  "cordon_caveat": "Computed over the 90 modelled links across four corridors, not the whole city road network. A full-network run would raise the camera counts, because more roads cross each boundary. The method and the ordering hold; treat these as a floor rather than a quote."
 }
