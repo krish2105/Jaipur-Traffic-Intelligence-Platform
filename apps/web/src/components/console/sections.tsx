@@ -25,7 +25,7 @@ import {
   type SignalAdvisory,
   type WeeklyMatrix,
 } from "@/lib/api";
-import type { AreaScreening } from "@/lib/api";
+import type { AreaAccumulation, AreaScreening } from "@/lib/api";
 import type { SceneLink } from "@/components/city/city-view";
 import type { Locale } from "@/i18n/routing";
 import { formatCount } from "@/lib/format";
@@ -894,6 +894,7 @@ const SCENARIO_LABEL: Record<string, { en: string; hi: string }> = {
 
 function AreasSection({ hi }: { hi: boolean }) {
   const { data } = useLazy<AreaScreening>(() => api.areas(), true);
+  const { data: acc } = useLazy<AreaAccumulation>(() => api.accumulation(), true);
   return (
     <Shell
       title={hi ? "क्षेत्र स्क्रीनिंग" : "Area screening"}
@@ -906,7 +907,7 @@ function AreasSection({ hi }: { hi: boolean }) {
       {!data ? (
         <Loading label={hi ? "क्षेत्र जोड़े जा रहे हैं" : "Aggregating areas"} />
       ) : (
-        <AreaScreeningPanel data={data} hi={hi} />
+        <AreaScreeningPanel data={data} accumulation={acc ?? null} hi={hi} />
       )}
     </Shell>
   );

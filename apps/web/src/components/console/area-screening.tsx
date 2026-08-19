@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import type { Area, AreaScreening } from "@/lib/api";
+import type { Area, AreaAccumulation, AreaScreening } from "@/lib/api";
 import { congestionVar } from "@/lib/api";
 
 /**
@@ -125,11 +125,47 @@ function Row({
   );
 }
 
+/**
+ * Vehicles inside the area, hour by hour, from cordon counts.
+ *
+ * The curve is the answer to the question the whole area layer exists for. It
+ * is drawn from a baseline rather than from zero because an area is never
+ * empty: the floor of the curve IS the resident population, and hiding that
+ * would make the peak look like it appeared from nowhere.
+ */
+function InsideCurve({ hourly, peakHour }: { hourly: number[]; peakHour: number }) {
+  const max = Math.max(...hourly, 1);
+  const min = Math.min(...hourly);
+  const span = max - min || 1;
+  const points = hourly
+    .map((v, h) => `${(h / 23) * 100},${28 - ((v - min) / span) * 26}`)
+    .join(" ");
+  return (
+    <svg viewBox="0 0 100 30" preserveAspectRatio="none" className="h-16 w-full" role="img"
+         aria-label="Vehicles inside the area by hour of day">
+      <polyline
+        points={points}
+        fill="none"
+        stroke="var(--accent)"
+        strokeWidth="1.2"
+        vectorEffect="non-scaling-stroke"
+      />
+      <line
+        x1={(peakHour / 23) * 100} x2={(peakHour / 23) * 100} y1="0" y2="30"
+        stroke="var(--accent)" strokeWidth="0.6" strokeDasharray="2 2"
+        vectorEffect="non-scaling-stroke" opacity="0.6"
+      />
+    </svg>
+  );
+}
+
 export function AreaScreeningPanel({
   data,
+  accumulation,
   hi,
 }: {
   data: AreaScreening | null;
+  accumulation: AreaAccumulation | null;
   hi: boolean;
 }) {
   const [level, setLevel] = useState<"zones" | "thanas">("thanas");
@@ -144,6 +180,9 @@ export function AreaScreeningPanel({
   const measured = areas.filter((a) => a.mean_congestion !== null);
   const unmeasured = areas.filter((a) => a.mean_congestion === null);
   const active = areas.find((a) => a.name === selected) ?? null;
+  const acc = active
+    ? (accumulation?.areas.find((a) => a.area === active.name) ?? null)
+    : null;
 
   return (
     <section
@@ -276,6 +315,53 @@ export function AreaScreeningPanel({
               </div>
             ))}
           </dl>
+        </div>
+      )}
+
+      {active && acc && (
+        <div className="mt-3 rounded-lg border border-[var(--rule)] bg-[var(--surface-2)] p-3">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <p className="text-[var(--ink)]" style={{ fontSize: "var(--d-support)" }}>
+              {hi ? "अंदर वाहन, घंटे दर घंटे" : "Vehicles inside, by hour"}
+            </p>
+            <p
+              className="font-mono tabular-nums text-[var(--accent)]"
+              style={{ fontSize: "var(--d-support)" }}
+            >
+              {acc.peak_inside.toLocaleString("en-IN")} @ {acc.peak_hour}:00
+            </p>
+          </div>
+          <InsideCurve hourly={acc.hourly} peakHour={acc.peak_hour} />
+          <p
+            className="text-[var(--ink-faint)]"
+            style={{ fontSize: "calc(var(--d-support) * 0.85)" }}
+          >
+            {hi
+              ? `आधार ${acc.resident_baseline.toLocaleString("en-IN")} — क्षेत्र कभी खाली नहीं होता।`
+              : `Floor is the resident baseline of ${acc.resident_baseline.toLocaleString("en-IN")}. An area is never empty.`}
+          </p>
+
+          {/* The specification nobody asks for: how accurate the detectors must
+              be before the integrated count stops supporting a decision. */}
+          <table className="mt-3 w-full" style={{ fontSize: "calc(var(--d-support) * 0.85)" }}>
+            <caption className="pb-1 text-left text-[var(--ink-muted)]">
+              {hi
+                ? "गिनती में त्रुटि — कितनी देर बाद दोबारा मापना पड़ेगा"
+                : "Detector error, and how often the count must be re-anchored"}
+            </caption>
+            <tbody>
+              {Object.entries(acc.drift).map(([rate, d]) => (
+                <tr key={rate} className="border-t border-[var(--rule)]">
+                  <td className="py-1 font-mono tabular-nums text-[var(--ink-muted)]">
+                    {rate.replace("pct", "%")}
+                  </td>
+                  <td className="py-1 text-right font-mono tabular-nums text-[var(--ink)]">
+                    {d.reanchor_every_hours ? `${d.reanchor_every_hours} h` : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 

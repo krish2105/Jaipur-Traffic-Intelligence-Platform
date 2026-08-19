@@ -605,6 +605,29 @@ export interface AreaScreening {
   is_synthetic: boolean;
 }
 
+/** Cordon accumulation: how many vehicles are inside an area, hour by hour. */
+export interface AreaAccumulation {
+  method: string;
+  areas: {
+    area: string;
+    cordon_cameras: number;
+    peak_inside: number;
+    peak_hour: number;
+    mean_inside: number;
+    resident_baseline: number;
+    conserved: boolean;
+    hourly: number[];
+    drift: Record<
+      string,
+      { phantom_vehicles_per_day: number; reanchor_every_hours: number | null }
+    >;
+  }[];
+  drift_note: string;
+  flow_is_synthetic: boolean;
+  flow_note: string;
+  is_synthetic: boolean;
+}
+
 /**
  * The demo role, read from the session at call time.
  *
@@ -707,6 +730,7 @@ export const api = {
   corridors: () => get<Corridor[]>("/corridors"),
   severity: () => get<SeverityFinding>("/safety/severity"),
   areas: () => get<AreaScreening>("/areas"),
+  accumulation: () => get<AreaAccumulation>("/areas/accumulation"),
   severityModel: () => get<SeverityModel>("/safety/severity-model"),
   allocation: () => get<EnforcementAllocation>("/enforcement/allocation"),
   // Routed through get() rather than fetched raw in the page, so the 3D scene
