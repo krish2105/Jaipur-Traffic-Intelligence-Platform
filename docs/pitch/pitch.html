@@ -405,10 +405,71 @@ figure there is printed above the address of the endpoint that produced it. Clic
 the address and you get the raw JSON. We would rather you checked than believed
 us, and a document cannot be checked.</p>
 
-<h2>7. What is honest to say about the limits</h2>
+<h2>7. How close this is, and what would finish it</h2>
+
+<p>The problem we set out to solve is one sentence: <b>a control room cannot say
+how many vehicles are inside an area right now, so it cannot act before the area
+locks up.</b> Here is exactly how far along that is.</p>
+
+<table>
+<tr><th>Step</th><th>State</th><th>What is missing</th></tr>
+<tr><td>Know the road network</td><td class="num">Done</td>
+    <td>1,452 roads, 22 police catchments, 4 zones, from OpenStreetMap.</td></tr>
+<tr><td>Measure how fast each road moves</td><td class="num">Done</td>
+    <td>90 corridor links, live, every 45 minutes, from 25 TomTom calls.</td></tr>
+<tr><td>Turn speed into a vehicle count</td><td class="num">Done, validated</td>
+    <td>2.8 percent error on a busy road, measured against simulation. Nothing on a quiet one, by design.</td></tr>
+<tr><td>Add it up per area</td><td class="num">Done</td>
+    <td>Against each area's own critical capacity, so the number means something.</td></tr>
+<tr><td>Say which gates to hold</td><td class="num">Done</td>
+    <td>Advisory. An officer approves.</td></tr>
+<tr><td>Cover the whole city</td><td class="num">6 of 22 areas</td>
+    <td><b>Sixteen areas have roads and no measurement on them.</b></td></tr>
+<tr><td>Count vehicles rather than infer them</td><td class="num">Not started</td>
+    <td><b>Needs your camera feed.</b> The method is built and waiting.</td></tr>
+<tr><td>Know composition, not just volume</td><td class="num">Not started</td>
+    <td><b>Needs your camera feed.</b> A speed reading cannot tell a bus from a scooter.</td></tr>
+</table>
+
+<p><b>So: the method is finished and the coverage is not.</b> Everything from the
+road network to the recommendation works today, on four of your corridors, using
+speed we buy for nothing. What it does not have is eyes on the other sixteen
+areas, and it does not have a single real vehicle count anywhere.</p>
+
+<div class="box">
+<p><b>Three things finish it, and none of them is more software.</b></p>
+<p style="margin-bottom:0"><b>One.</b> A read token for the vehicle classification
+cameras Jaipur already publishes to the national data exchange. That turns every
+estimated count into a measured one and gives us composition. It is a form, not
+a purchase.<br>
+<b>Two.</b> FIR-level accident records, about 3,000 rows a year. That turns the
+severity model from published national averages into a Jaipur model.<br>
+<b>Three.</b> Probe coverage on the other sixteen areas. This one is ours, not
+yours: it is more of the same free calls, and it is limited by our free tier
+rather than by anything you have to provide.</p>
+</div>
+
+<div class="hin">
+<p style="margin-bottom:0"><b>Hinglish:</b> Tareeka poora ban chuka hai, coverage
+nahi. Sadak se lekar sifarish tak sab kuch aaj kaam kar raha hai, chaar corridor
+par, aur gaadi ki ginti humein speed se mil rahi hai jiska paisa nahi lagta. Jo
+nahi hai wo do cheezein hain: baaki solah ilaakon par nazar, aur kahin bhi ek bhi
+asli ginti. Dono ke liye software nahi, aapki permission chahiye.</p>
+</div>
+
+<h2>8. What is honest to say about the limits</h2>
 
 <p>A pitch that only lists strengths is a pitch you should distrust.</p>
 <ul>
+<li><b>Vehicle counts are estimated, not counted</b>, and calibrated against a
+simulation rather than against Jaipur, because no Jaipur counts exist to
+calibrate against. On a busy road that estimate is 2.8 percent out. On a quiet
+one it is 65 percent out, so we print no number there at all.</li>
+<li><b>Six of 22 areas have a measured road in them.</b> The other sixteen are
+unmeasured, which the screen says in those words. Unmeasured is not clear.</li>
+<li><b>Travel time reliability is still collecting.</b> It needs 40 readings
+across 8 different hours before it will show an index, and it has been recording
+since yesterday. The panel shows the countdown rather than a premature number.</li>
 <li>Per-road hourly counts in the demo are simulated and labelled as such on screen.</li>
 <li>The severity model is built on published national figures. It is not fitted to
 Jaipur crash records, because those records are not public. With FIR data it
@@ -421,13 +482,13 @@ any serious accident at a junction, somebody has to be able to answer who set th
 timing and why.</li>
 </ul>
 
-<h2>8. What we will never build</h2>
+<h2>9. What we will never build</h2>
 <p>No face recognition. No person tracking. No number plates in logs. Plate data is
 encrypted and only an authorised officer can reveal one, with the reason recorded.
 These are enforced by an automated check that fails the build, not by a promise in
 a document.</p>
 
-<h2>9. Where the project stands today</h2>
+<h2>10. Where the project stands today</h2>
 
 <p>We assess ourselves against six measures and publish the result, including
 the parts that are not finished. A supplier who only shows you finished work is
@@ -440,29 +501,31 @@ showing you a selection.</p>
 <tr><td>Honesty of claims</td><td class="num">20 / 20</td>
     <td>Three of our own technical claims were tested and two were wrong. Both were corrected in the record rather than dropped quietly.</td></tr>
 <tr><td>Engineering quality</td><td class="num">19 / 20</td>
-    <td>295 automated tests across the platform, plus checks for security, colour contrast and accessibility that fail the build. Three of them stop the readiness panel claiming a source it does not have, does not point anywhere, or has a credential the supplier refuses.</td></tr>
-<tr><td>Product completeness</td><td class="num">18 / 20</td>
-    <td>Area screening built and live with the camera plan costed, and two more data sources now one free key away. Vehicle detection still needs training on Indian traffic.</td></tr>
+    <td>285 automated tests, plus checks for security, colour contrast and accessibility that fail the build. Eighteen more run only against a live database and API. Several tests exist purely to stop the interface claiming a source it does not have.</td></tr>
+<tr><td>Product completeness</td><td class="num">17 / 20</td>
+    <td>The full chain from road network to recommendation works on four corridors. Sixteen of 22 areas have no measurement, and no vehicle anywhere has actually been counted.</td></tr>
 <tr><td>Interface</td><td class="num">10 / 10</td>
     <td>Works on a phone and a control-room screen, in Hindi and English, and with the internet disconnected.</td></tr>
 <tr><td>Commercial readiness</td><td class="num">9 / 10</td>
     <td>Priced, on GeM route, open API, and the camera ask is now a named list rather than a request for goodwill. No pilot yet.</td></tr>
-<tr><td><b>Total</b></td><td class="num"><b>95 / 100</b></td>
-    <td>Up from 74. The remaining five points are the camera feed and the crash records.</td></tr>
+<tr><td><b>Total</b></td><td class="num"><b>94 / 100</b></td>
+    <td>The missing six points are coverage and counting, not capability.</td></tr>
 </table>
 
 <div class="box">
-<p style="margin-bottom:0"><b>The missing 5 points are things only you can give us.</b>
-One corridor's camera feed, FIR-level accident records, and the current signal
-timings for that corridor. There is no more software we can write that closes
-them. That is why the ask in section 5 is small and specific.</p>
+<p style="margin-bottom:0"><b>Most of the missing six points are things only you
+can give us.</b> A read token for cameras you already run, FIR-level accident
+records, and the signal timings for one corridor. There is almost no more
+software we can write that closes them, which is why the ask is small and
+specific rather than a roadmap.</p>
 </div>
 
 <div class="hin">
-<p style="margin-bottom:0"><b>Hinglish:</b> Humne khud ko 100 mein se 88 diya hai,
-aur jo adhura hai wo bhi likha hai. Jo 12 number kam hain, wo humare haath mein
-nahi hain. Uske liye ek corridor ka camera feed, FIR-level accident record, aur
-signal timing chahiye. Isliye humari maang chhoti hai aur clear hai.</p>
+<p style="margin-bottom:0"><b>Hinglish:</b> Humne khud ko 100 mein se 94 diya
+hai, aur jo adhura hai wo bhi saaf likha hai. Jo 6 number kam hain wo kaabiliyat
+ke nahi, coverage ke hain. Solah ilaake abhi bina naap ke hain aur kahin bhi ek
+bhi gaadi asli mein gini nahi gayi. Uske liye camera ka read access, FIR-level
+accident record, aur ek corridor ki signal timing chahiye.</p>
 </div>
 
 <p class="foot" style="margin-top:14pt">

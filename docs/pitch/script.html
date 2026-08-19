@@ -15,7 +15,7 @@
   ul{margin:0 0 8pt;padding-left:14pt;} li{margin-bottom:4pt;}
 </style></head><body>
 
-<span class="t">Read this aloud · 8 minutes</span>
+<span class="t">Read this aloud · 10 minutes</span>
 <h1>Speaking script</h1>
 <p class="note">Each block has the English line first, then the same thing in Hinglish.
 Use whichever the room is speaking. Do not read both.</p>
@@ -69,34 +69,121 @@ engineer use karte hain. Isse ek sifarish nikalti hai: helmet ka challan 6.7 se 
 karo, speed ka 88 se 74. Isse lagbhag 18 jaan har saal bachegi. Aur kharcha zero hai.
 Wahi staff, utne hi challan, sirf mix badalna hai.</p></div>
 
+<h2>The live answer (90 seconds)</h2>
+<p class="note">Have the console open on this. Point at the top panel while you talk.</p>
+<div class="say"><p>Sir, the question every control room asks is not "how is this
+road". It is "how bad is Vaishali Nagar right now, and how much traffic is sitting
+in it". Nothing in Jaipur answers that today.</p>
+<p>This does. We take the live speed on each road, and traffic engineering has
+connected speed to the number of vehicles since the 1930s. So we can tell you how
+many vehicles are inside a police station area right now, against how many that
+area can hold before it stops moving.</p>
+<p style="margin-bottom:0">And it costs nothing. Twenty-five calls, every
+forty-five minutes, on a free account. Fifteen thousand a month against an
+allowance of twenty thousand.</p></div>
+<div class="hin"><p style="margin-bottom:0">Sir, control room ka sawaal ye nahi hota
+ki "ye sadak kaisi hai". Sawaal hota hai "abhi Vaishali Nagar mein kitni gaadi
+khadi hai". Aaj Jaipur mein iska jawab kahin nahi milta. Yahan milta hai. Har sadak
+ki live speed lete hain, aur speed se gaadi ki ginti nikalna traffic engineering
+mein 1930 se hota aa raha hai. Toh hum bata sakte hain ki kisi thana ilaake mein
+abhi kitni gaadi hai, aur wo ilaaka kitni jhel sakta hai. Aur iska kharcha zero
+hai. Pachees call, har paintalees minute, free account par.</p></div>
+
 <h2>The honest part (60 seconds)</h2>
 <p class="note">This is the most important block. Do not skip it. It is what separates
 you from every vendor who has pitched them before.</p>
-<div class="say"><p>Sir, I want to tell you something against my own interest.</p>
-<p style="margin-bottom:0">We ran a standard detection model on real photographs of
-Jaipur streets. It found buses, cars, trucks. It found <b>zero two-wheelers</b>, in a city
-that is 61 percent two-wheelers. These models are trained on European roads. Any vendor
-showing you a demo has this same problem. Most will not tell you. Training on Indian
-traffic is the first job, and we have costed it.</p></div>
-<div class="hin"><p style="margin-bottom:0">Sir, main apne khilaaf ek baat bataunga.
-Humne standard model Jaipur ki asli photos par chalaya. Bus mili, car mili, truck mila.
-Dopahiya <b>ek bhi nahi</b> mila, us shehar mein jahan 61 percent dopahiya hai. Ye model
-Europe ki sadkon par train hote hain. Jo bhi vendor aapko demo dikhayega, uske paas yahi
-problem hai. Zyadatar batayenge nahi. Indian traffic par training pehla kaam hai, aur
-humne uska kharcha nikala hua hai.</p></div>
+<div class="say"><p>Sir, I want to tell you two things against my own interest.</p>
+<p><b>First.</b> That number I just showed you, we tested it against a simulation
+where the true answer is known. It failed. The constant every textbook gives made
+us 63 percent wrong on a busy road. We refitted it against fifty-four runs and now
+it is 2.8 percent. On a quiet road it is still 65 percent wrong, so on a quiet road
+<b>we print no number at all</b>. The screen goes blank on purpose. Nobody would
+have found that from looking at the screen. We found it because we checked.</p>
+<p style="margin-bottom:0"><b>Second.</b> We ran a standard detection model on real
+photographs of Jaipur streets. It found buses, cars, trucks. It found <b>zero
+two-wheelers</b>, in a city that is 61 percent two-wheelers. These models are
+trained on European roads. Any vendor showing you a demo has this same problem.
+Most will not tell you.</p></div>
+<div class="hin"><p>Sir, main apne khilaaf do baat bataunga. Pehli: abhi jo ginti
+dikhayi, usko humne simulation par test kiya jahan sahi jawab pata tha. Wo fail ho
+gayi. Kitaab ka standard number humein vyast sadak par 63 percent galat kar raha
+tha. Chauvan run par dobara fit kiya, ab 2.8 percent hai. Halki sadak par abhi bhi
+65 percent galat hai, isliye halki sadak par hum koi number dikhate hi nahi. Screen
+jaan-boojhkar khaali rehti hai.</p>
+<p style="margin-bottom:0">Doosri: humne standard model Jaipur ki asli photos par
+chalaya. Bus mili, car mili, truck mila. Dopahiya <b>ek bhi nahi</b> mila, us shehar
+mein jahan 61 percent dopahiya hai. Jo bhi vendor demo dikhayega, uske paas yahi
+problem hai. Zyadatar batayenge nahi.</p></div>
 
 <h2>The ask (45 seconds)</h2>
-<div class="say"><p>One corridor. Ninety days. Paid. No new cameras, we use what is
-already installed.</p>
-<p style="margin-bottom:0">Three things from you: the corridor, its camera feed, and
-FIR-level accident records. That third one is the most valuable and it costs you nothing.
-About 3,000 rows a year turns our estimate into a proper statistical model for Jaipur.</p></div>
-<div class="hin"><p style="margin-bottom:0">Ek corridor. 90 din. Paid. Naya camera nahi
-chahiye, jo laga hai wahi. Aapse teen cheez: corridor, camera feed, aur FIR-level accident
-data. Teesri sabse zyada kaam ki hai aur usme aapka paisa nahi lagta. Saal ke lagbhag
-3,000 record se humara estimate Jaipur ka asli statistical model ban jaata hai.</p></div>
+<div class="say"><p>One corridor. Ninety days. Paid. And the ask got smaller while
+we were preparing this.</p>
+<p>Jaipur already publishes the locations of its vehicle classification cameras to
+the national data exchange, under an API approved by the Bureau of Indian
+Standards. The cameras that count and classify vehicles are already installed and
+already listed. What we cannot do is read what they see. <b>That is a token, not a
+purchase.</b></p>
+<p style="margin-bottom:0">So: a read token, and FIR-level accident records. About
+3,000 rows a year, and it turns our estimate into a proper Jaipur model. Neither
+costs you money.</p></div>
+<div class="hin"><p style="margin-bottom:0">Ek corridor. 90 din. Paid. Aur maang
+pehle se chhoti ho gayi hai. Jaipur apne vehicle classification camera ki location
+pehle se national data exchange par publish karta hai, us API par jise Bureau of
+Indian Standards ne approve kiya hai. Camera lage hue hain aur list mein hain. Hum
+sirf ye nahi kar paa rahe ki wo kya dekh rahe hain. <b>Ye token ka maamla hai,
+kharid ka nahi.</b> Toh do cheez: read token, aur FIR-level accident record. Dono
+mein aapka paisa nahi lagta.</p></div>
+
+<h2>What to show, in this order</h2>
+<p class="note">Ten minutes. Do not wander. If a page is slow, keep talking and come back to it.</p>
+<table style="width:100%;border-collapse:collapse;font-size:9.5pt;margin-bottom:10pt">
+<tr><td style="padding:3pt 6pt 3pt 0;width:34%"><b>1. /en/brief</b></td>
+    <td style="padding:3pt 0">Open here, not on the console. It is the argument on one page and
+    every number has the address of the endpoint that produced it printed underneath. Say
+    "click any of these and you get the raw data" and then actually click one.</td></tr>
+<tr><td style="padding:3pt 6pt 3pt 0"><b>2. /en/console</b></td>
+    <td style="padding:3pt 0">Top panel is Vehicles in area. That is the answer to their
+    question. Point at "estimated" in the corner before they ask.</td></tr>
+<tr><td style="padding:3pt 6pt 3pt 0"><b>3. Live probe speeds</b></td>
+    <td style="padding:3pt 0">90 of 90 links, 25 calls, and what is left of the free
+    allowance. This is the panel that proves it is running, not staged.</td></tr>
+<tr><td style="padding:3pt 6pt 3pt 0"><b>4. Jaipur's own data</b></td>
+    <td style="padding:3pt 0">Scroll to it. VCC and ANPR are in pink. This is the ask, on
+    screen, read live from the national exchange.</td></tr>
+<tr><td style="padding:3pt 6pt 3pt 0"><b>5. Scheme appraisal</b></td>
+    <td style="padding:3pt 0">₹184.87 crore. Through traffic and local traffic reported
+    separately. Use this if a JDA person is in the room.</td></tr>
+<tr><td style="padding:3pt 6pt 3pt 0"><b>6. Live data readiness</b></td>
+    <td style="padding:3pt 0">4 of 8 live. Close on this. It is the most honest screen in
+    the product and it names exactly what you are asking for.</td></tr>
+</table>
+
+<p class="note"><b>Two things will look wrong and are not.</b> Every area says "lightly
+loaded, count withheld" during the day, because the estimator is only trusted above 40
+percent saturation and a Jaipur afternoon is below it. Say so before they ask. And Travel
+time reliability says "collecting, needs 39 more sweeps" because it has been recording
+since yesterday. That is the gate working.</p>
 
 <h2>If they ask the hard questions</h2>
+<p><b>"Ye ginti asli hai ya andaaza?"</b><br>
+Andaaza hai sir, aur screen par "estimated" likha hai. Speed asli hai, ginti uss speed se
+nikali hai. Vyast sadak par 2.8 percent farak, aur wo humne simulation par naapa hai jahan
+sahi jawab pata tha. Halki sadak par bharosa nahi, isliye wahan hum number dikhate hi nahi.
+Camera ka access mil jaaye toh yahi andaaza asli ginti ban jaata hai.</p>
+
+<p><b>"Sirf 6 ilaake dikha rahe ho, baaki 16 ka kya?"</b><br>
+Sahi pakda sir. Solah ilaakon mein sadak hai par naap nahi hai, aur screen par likha hai
+"unmeasured, which is not clear". Matlab khaali nahi, bin-naapa hua. Wo hamari taraf ka
+kaam hai, aapki taraf ka nahi.</p>
+
+<p><b>"Aap TomTom ka data hi bech rahe ho?"</b><br>
+Nahi sir. TomTom sirf speed batata hai, ginti nahi, aur ye nahi batata ki bus hai ya scooter.
+Wahi kami hai jise ye product bharta hai. TomTom humara input hai, product nahi.</p>
+
+<p><b>"Kal se chala sakte hain?"</b><br>
+Jo abhi dikh raha hai wo aaj chal raha hai, aur uska kharcha shunya hai. Naya kuch nahi
+lagana. Camera ka token milte hi andaaza asli ginti ban jaayega.</p>
+
 <p><b>"ITMS already lagaya hai, aapki kya zaroorat?"</b><br>
 Sir, ITMS signal chalata hai, aur achha chalata hai. Wo ye nahi batata ki jaan kyun ja rahi
 hai. Hum uske upar baithte hain, uske khilaaf nahi. Uska data humara input hai.</p>
