@@ -352,13 +352,25 @@ describe("an ssr:false map must render the same thing on both first renders", ()
   );
 
   it("gates the dynamic import behind a mount check", () => {
-    expect(source).toContain("useSyncExternalStore");
+    expect(source).toContain("useMounted");
   });
 
   it("reports not-mounted on the server, so both first renders agree", () => {
     // The whole mechanism. If this snapshot ever returns true, the server and
     // the client can disagree again and the error comes straight back.
-    expect(source).toMatch(/\(\)\s*=>\s*false,/);
+    const hook = readFileSync(join(__dirname, "../src/lib/use-mounted.ts"), "utf8");
+    expect(hook).toMatch(/\(\)\s*=>\s*false,/);
+  });
+
+  it("both Recharts containers are gated too", () => {
+    // ResponsiveContainer measures its parent, finds nothing on the server, and
+    // renders an empty box the client fills at once. Same error, different
+    // cause, and it was the half left over after the map was fixed.
+    for (const chart of ["day-profile", "incident-timeline"]) {
+      const src = readFileSync(join(__dirname, `../src/components/charts/${chart}.tsx`), "utf8");
+      expect(src).toContain("useMounted");
+      expect(src).toMatch(/\{mounted && \(/);
+    }
   });
 
   it("renders the same fallback component in both paths", () => {

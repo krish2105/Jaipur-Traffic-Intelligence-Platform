@@ -11,6 +11,7 @@ import {
 } from "recharts";
 
 import type { IncidentHour } from "@/lib/api";
+import { useMounted } from "@/lib/use-mounted";
 
 /**
  * Crashes by hour of day, stacked by injury outcome, with the congestion curve
@@ -33,8 +34,15 @@ export function IncidentTimelineChart({
   hours: IncidentHour[];
   height?: number;
 }) {
+  const mounted = useMounted();
+
   return (
     <div style={{ height: height ?? "var(--d-chart-h)" }} className="w-full">
+      {/* ResponsiveContainer measures its parent. On the server there is
+          nothing to measure, so it renders an empty box that the client fills
+          the instant it can — a hydration mismatch (ADR-063). The wrapper above
+          keeps its height either way, so gating costs no layout shift. */}
+      {mounted && (
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={hours} margin={{ top: 4, right: 2, bottom: 0, left: 2 }}>
           <XAxis
@@ -77,6 +85,7 @@ export function IncidentTimelineChart({
           />
         </ComposedChart>
       </ResponsiveContainer>
+      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useMounted } from "@/lib/use-mounted";
 import {
   Area,
   AreaChart,
@@ -33,6 +34,8 @@ export function DayProfileChart({
   nowMinutes: number | null;
   height?: number;
 }) {
+  const mounted = useMounted();
+
   const data = useMemo(
     () =>
       points.map((p) => ({
@@ -49,6 +52,11 @@ export function DayProfileChart({
 
   return (
     <div style={{ height: height ?? "var(--d-chart-h)" }} className="w-full">
+      {/* ResponsiveContainer measures its parent. On the server there is
+          nothing to measure, so it renders an empty box that the client fills
+          the instant it can — a hydration mismatch (ADR-063). The wrapper above
+          keeps its height either way, so gating costs no layout shift. */}
+      {mounted && (
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 4, right: 2, bottom: 0, left: 2 }}>
           <defs>
@@ -107,6 +115,7 @@ export function DayProfileChart({
           />
         </AreaChart>
       </ResponsiveContainer>
+      )}
     </div>
   );
 }

@@ -2,8 +2,8 @@
 
 import dynamic from "next/dynamic";
 import type { ComponentProps } from "react";
-import { useSyncExternalStore } from "react";
 
+import { useMounted } from "@/lib/use-mounted";
 import type { CorridorMap as CorridorMapComponent } from "./corridor-map";
 
 /**
@@ -27,12 +27,9 @@ import type { CorridorMap as CorridorMapComponent } from "./corridor-map";
  * server HTML against the hydrated DOM shows the ellipsis present on the server
  * and absent on the client.
  *
- * `useSyncExternalStore` with a server snapshot of `false` makes the two
- * renders agree by construction — both produce the fallback — and the real
- * component mounts on the update that follows hydration. This is the same
- * pattern, for the same reason, as the capability gate in
- * `city/city-scene.loader.tsx`, which carries the note about a lazy `useState`
- * that read `document` and blanked the whole scene.
+ * `useMounted` makes the two renders agree by construction — both produce the
+ * fallback — and the real component mounts on the update that follows
+ * hydration. Same hook, same reason, as the two Recharts containers.
  *
  * On mount timing, which is the risk here
  * ---------------------------------------
@@ -59,15 +56,8 @@ const Inner = dynamic(() => import("./corridor-map").then((m) => m.CorridorMap),
   loading: Fallback,
 });
 
-/** Never fires. The value changes once, on the render after hydration. */
-const subscribeNever = () => () => {};
-
 export function CorridorMap(props: ComponentProps<typeof CorridorMapComponent>) {
-  const mounted = useSyncExternalStore(
-    subscribeNever,
-    () => true,
-    () => false,
-  );
+  const mounted = useMounted();
   if (!mounted) return <Fallback />;
   return <Inner {...props} />;
 }
