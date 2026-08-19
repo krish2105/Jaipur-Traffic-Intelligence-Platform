@@ -58,27 +58,27 @@ set_key DATA_GOV_IN_API_KEY "VAHAN fleet via data.gov.in (free, Jan Parichay log
         "https://www.data.gov.in/login  ->  My Account  ->  generate API key" "$ROOT_ENV"
 set_key VAHAN_RESOURCE_ID   "Which data.gov.in resource to read (not a secret)" \
         "open the dataset page, copy the UUID after /resource/" "$ROOT_ENV" plain
-set_key OPENAQ_API_KEY      "OpenAQ air quality (free)" \
-        "https://explore.openaq.org/register" "$ROOT_ENV"
-set_key GOOGLE_MAPS_API_KEY "Google Map Tiles API (billing required)" \
-        "https://console.cloud.google.com/" "$ROOT_ENV"
-
-# The browser needs the Google key too; the others stay server-side only.
-gkey=$(grep -E '^GOOGLE_MAPS_API_KEY=' "$ROOT_ENV" 2>/dev/null | head -1 | cut -d= -f2-)
-if [ -n "$gkey" ]; then
-  if grep -qE '^NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=' "$WEB_ENV"; then
-    tmp=$(mktemp); grep -vE '^NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=' "$WEB_ENV" > "$tmp"; mv "$tmp" "$WEB_ENV"; chmod 600 "$WEB_ENV"
-  fi
-  printf 'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=%s\n' "$gkey" >> "$WEB_ENV"
-  echo
-  echo "   mirrored Google key to ${WEB_ENV} for the browser"
-  echo "   RESTRICT that key in Cloud Console to HTTP referrers — a public"
-  echo "   NEXT_PUBLIC_ key is visible to anyone who opens the page."
-fi
+# Deliberately NOT asked for, and please do not add them back:
+#
+#   OPENAQ_API_KEY      Nothing reads it. Air quality comes from Open-Meteo /
+#                       CAMS, which needs no credential and already reports
+#                       live in /meta/sources. OpenAQ was the original plan and
+#                       put registration behind an account, which is why it was
+#                       replaced. Asking for this key sent people to register
+#                       for a service the platform stopped using.
+#
+#   GOOGLE_MAPS_API_KEY Nothing reads it either. The map is MapLibre over OSM
+#                       raster tiles. Google Map Tiles needs billing enabled,
+#                       and this project is free tier throughout, so the prompt
+#                       was inviting someone to put a card on file for a
+#                       feature that does not exist.
+#
+# Both were prompted here for months with no code behind them. That is the same
+# fault the readiness panel had: a credential slot implying a capability.
 
 echo
 echo "── which keys are set ──"
-for v in TOMTOM_API_KEY DATA_GOV_IN_API_KEY VAHAN_RESOURCE_ID OPENAQ_API_KEY GOOGLE_MAPS_API_KEY; do
+for v in TOMTOM_API_KEY DATA_GOV_IN_API_KEY VAHAN_RESOURCE_ID; do
   n=$(grep -E "^${v}=" "$ROOT_ENV" 2>/dev/null | head -1 | cut -d= -f2- | wc -c | tr -d ' ')
   if [ "${n:-1}" -gt 1 ]; then echo "   set     ${v}"; else echo "   missing ${v}"; fi
 done
