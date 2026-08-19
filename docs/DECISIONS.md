@@ -2048,7 +2048,7 @@ with no code change needed.
 
 ## ADR-063 — The console's hydration failure is the `ssr: false` map loaders
 
-**Status.** Diagnosed, not fixed. Deliberately.
+**Status.** Two of three sources fixed. One remains, unlocalised.
 
 React error #418 fires several times on every load of `/en/console`, and has
 been doing so for longer than today. It was found in a console log, not by
@@ -2100,3 +2100,33 @@ not recover cleanly.
 `/en/console`. A development build names the mismatched element outright, which
 a minified production build will not. Confirm it is the loaders before touching
 them.
+
+### ADR-063 addendum — fixed, and what is left
+
+Both `ssr: false` loaders and both Recharts containers are now gated behind
+`lib/use-mounted.ts`, so server and first client render agree by construction.
+On clean loads with the service worker unregistered and caches cleared, the
+console went from **five** hydration errors to **one**, twice, in independent
+fresh tabs.
+
+**The map still renders**, which was the risk worth taking care over. Verified
+after each change at 1600x1000: MapLibre mounts, canvas measured 1004x913 CSS
+and 2008x1826 backing at 2x DPR, 13 tile requests, corridor drawn, camera and
+black-spot markers present, legend and attribution present, nothing stuck on the
+loading ellipsis. Both Recharts containers render. The 3D scene mounts and is
+measured too.
+
+**The remaining error is not localised.** A structural diff of server HTML
+against the hydrated DOM cannot separate a hydration mismatch from a legitimate
+post-hydration update: `usePoll` resolves against the local snapshot in
+milliseconds, so by the time the DOM can be sampled the polled panels have
+already changed shape. Every candidate found this way — the air-quality panel
+appearing, the "live" pulse replacing the "simulated" tag in the counts header —
+turned out to be a poll landing, not a mismatch.
+
+Naming it needs a development build, where React prints the offending element
+instead of a minified error code. `pnpm --filter @pravaah/web dev`, open
+`/en/console`, read the warning. That is a two-minute job with the right tool and
+an unbounded one without it, which is why it stops here rather than continuing
+by guesswork — one wrong guess was already made on this bug (the header clock,
+which was a real defect and not this one).
