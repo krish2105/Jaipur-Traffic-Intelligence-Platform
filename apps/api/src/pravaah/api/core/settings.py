@@ -4,7 +4,17 @@ from __future__ import annotations
 
 from functools import lru_cache
 
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Settings reads .env by itself, but only into this object. The source adapters
+# read os.environ directly, because they are a standalone package with no reason
+# to depend on the API's configuration. So a key written to .env by
+# scripts/set_keys.sh reached Settings and never reached the adapters, and the
+# readiness panel stayed amber for a credential that was sitting right there.
+# Nothing already exported is overwritten: a real environment still wins over a
+# developer's file.
+load_dotenv(".env", override=False)
 
 
 class Settings(BaseSettings):
