@@ -1,0 +1,105 @@
+{
+  "question": "Does the stock detector miss Indian two-wheelers because the weights are wrong, because the score floor is too high, or because the backbone is too small?",
+  "images": 5,
+  "image_titles": [
+    "Jaipur, India, Downtown Jaipur.jpg",
+    "Jaipur - Verkehr 1.jpg",
+    "Jaipur - Verkehr 2.jpg",
+    "Jaipur - Verkehr 5.jpg",
+    "Jaipur Road (1580689081).jpg"
+  ],
+  "excluded": "ministerial press photographs, which contain no traffic",
+  "runs": [
+    {
+      "model": "PekingU/rtdetr_v2_r18vd",
+      "threshold": 0.1,
+      "counts": {
+        "motorcycle": 0,
+        "car": 155,
+        "bus": 35,
+        "truck": 69
+      }
+    },
+    {
+      "model": "PekingU/rtdetr_v2_r18vd",
+      "threshold": 0.2,
+      "counts": {
+        "motorcycle": 0,
+        "car": 76,
+        "bus": 15,
+        "truck": 33
+      }
+    },
+    {
+      "model": "PekingU/rtdetr_v2_r18vd",
+      "threshold": 0.3,
+      "counts": {
+        "motorcycle": 0,
+        "car": 37,
+        "bus": 9,
+        "truck": 13
+      }
+    },
+    {
+      "model": "PekingU/rtdetr_v2_r18vd",
+      "threshold": 0.45,
+      "counts": {
+        "motorcycle": 0,
+        "car": 16,
+        "bus": 2,
+        "truck": 2
+      }
+    },
+    {
+      "model": "PekingU/rtdetr_v2_r50vd",
+      "threshold": 0.1,
+      "counts": {
+        "motorcycle": 0,
+        "car": 140,
+        "bus": 14,
+        "truck": 53
+      }
+    },
+    {
+      "model": "PekingU/rtdetr_v2_r50vd",
+      "threshold": 0.2,
+      "counts": {
+        "motorcycle": 0,
+        "car": 73,
+        "bus": 7,
+        "truck": 21
+      }
+    },
+    {
+      "model": "PekingU/rtdetr_v2_r50vd",
+      "threshold": 0.3,
+      "counts": {
+        "motorcycle": 0,
+        "car": 38,
+        "bus": 4,
+        "truck": 8
+      }
+    },
+    {
+      "model": "PekingU/rtdetr_v2_r50vd",
+      "threshold": 0.45,
+      "counts": {
+        "motorcycle": 0,
+        "car": 17,
+        "bus": 3,
+        "truck": 0
+      }
+    }
+  ],
+  "best_for_two_wheelers": {
+    "model": "PekingU/rtdetr_v2_r18vd",
+    "threshold": 0.1,
+    "counts": {
+      "motorcycle": 0,
+      "car": 155,
+      "bus": 35,
+      "truck": 69
+    }
+  },
+  "note": "Counts are detections, not accuracy. These photographs carry no labels, so nothing here is precision or recall. It separates three explanations and no more."
+}

@@ -16,12 +16,14 @@
       "licence": "CC BY 4.0",
       "author": "<table cellspacing=\"10px\" cellpadding=\"0\" style=\"width:100%; clear:both; margin:0.5em auto; background-color:#f8f8f8; bo",
       "detections": {
+        "2W": 11,
         "NMV": 6
       },
       "mean_confidence": {
-        "NMV": 0.558
+        "2W": 0.527,
+        "NMV": 0.543
       },
-      "total_vehicles": 6
+      "total_vehicles": 17
     },
     {
       "title": "File:Jaipur - Verkehr 1.jpg",
@@ -29,14 +31,16 @@
       "licence": "CC BY-SA 4.0",
       "author": "<a href=\"//commons.wikimedia.org/wiki/User:Xenophon\" title=\"User:Xenophon\">Wolfgang Sauber</a>",
       "detections": {
+        "2W": 2,
         "CAR": 2,
         "TRK2": 2
       },
       "mean_confidence": {
-        "CAR": 0.518,
-        "TRK2": 0.471
+        "2W": 0.836,
+        "CAR": 0.524,
+        "TRK2": 0.47
       },
-      "total_vehicles": 4
+      "total_vehicles": 6
     },
     {
       "title": "File:Jaipur - Verkehr 2.jpg",
@@ -44,21 +48,27 @@
       "licence": "CC BY-SA 4.0",
       "author": "<a href=\"//commons.wikimedia.org/wiki/User:Xenophon\" title=\"User:Xenophon\">Wolfgang Sauber</a>",
       "detections": {
+        "2W": 5,
         "CAR": 1
       },
       "mean_confidence": {
-        "CAR": 0.578
+        "2W": 0.66,
+        "CAR": 0.603
       },
-      "total_vehicles": 1
+      "total_vehicles": 6
     },
     {
       "title": "File:Jaipur - Verkehr 3.jpg",
       "page": "https://commons.wikimedia.org/wiki/File%3AJaipur%20-%20Verkehr%203.jpg",
       "licence": "CC BY-SA 4.0",
       "author": "<a href=\"//commons.wikimedia.org/wiki/User:Xenophon\" title=\"User:Xenophon\">Wolfgang Sauber</a>",
-      "detections": {},
-      "mean_confidence": {},
-      "total_vehicles": 0
+      "detections": {
+        "2W": 8
+      },
+      "mean_confidence": {
+        "2W": 0.721
+      },
+      "total_vehicles": 8
     },
     {
       "title": "File:Jaipur - Verkehr 4.jpg",
@@ -66,12 +76,14 @@
       "licence": "CC BY-SA 4.0",
       "author": "<a href=\"//commons.wikimedia.org/wiki/User:Xenophon\" title=\"User:Xenophon\">Wolfgang Sauber</a>",
       "detections": {
-        "TRK2": 2
+        "2W": 4,
+        "TRK2": 1
       },
       "mean_confidence": {
-        "TRK2": 0.59
+        "2W": 0.751,
+        "TRK2": 0.728
       },
-      "total_vehicles": 2
+      "total_vehicles": 5
     },
     {
       "title": "File:Jaipur - Verkehr 5.jpg",
@@ -79,14 +91,16 @@
       "licence": "CC BY-SA 4.0",
       "author": "<a href=\"//commons.wikimedia.org/wiki/User:Xenophon\" title=\"User:Xenophon\">Wolfgang Sauber</a>",
       "detections": {
+        "2W": 8,
         "CAR": 1,
         "TRK2": 1
       },
       "mean_confidence": {
-        "CAR": 0.608,
-        "TRK2": 0.547
+        "2W": 0.715,
+        "CAR": 0.63,
+        "TRK2": 0.544
       },
-      "total_vehicles": 2
+      "total_vehicles": 10
     },
     {
       "title": "File:Jaipur - Verkehr 7.jpg",
@@ -99,9 +113,9 @@
         "TRK2": 1
       },
       "mean_confidence": {
-        "CAR": 0.841,
+        "CAR": 0.838,
         "NMV": 0.731,
-        "TRK2": 0.89
+        "TRK2": 0.891
       },
       "total_vehicles": 5
     },
@@ -111,12 +125,14 @@
       "licence": "CC BY-SA 4.0",
       "author": "<a href=\"//commons.wikimedia.org/wiki/User:Xenophon\" title=\"User:Xenophon\">Wolfgang Sauber</a>",
       "detections": {
-        "BUS": 2,
+        "2W": 1,
+        "BUS": 1,
         "TRK2": 1
       },
       "mean_confidence": {
-        "BUS": 0.565,
-        "TRK2": 0.821
+        "2W": 0.608,
+        "BUS": 0.609,
+        "TRK2": 0.845
       },
       "total_vehicles": 3
     },
@@ -126,16 +142,18 @@
       "licence": "CC BY 2.0",
       "author": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/10345599@N03\">Francisco Anzola</a>",
       "detections": {
+        "2W": 12,
         "BUS": 2,
-        "CAR": 11,
-        "NMV": 4
+        "CAR": 12,
+        "NMV": 2
       },
       "mean_confidence": {
-        "BUS": 0.883,
-        "CAR": 0.644,
-        "NMV": 0.605
+        "2W": 0.545,
+        "BUS": 0.875,
+        "CAR": 0.628,
+        "NMV": 0.746
       },
-      "total_vehicles": 17
+      "total_vehicles": 28
     },
     {
       "title": "File:Oscar Fernandes along with the Chief Minister of Rajasthan, Shri Ashok Gehlot, the Chief Minister of Haryana, Shri Bhupinder Singh Hooda and the Ministers of State for Road Transport & Highways.jpg",
@@ -169,13 +187,9 @@
       "page": "https://commons.wikimedia.org/wiki/File%3AStreet%20Scene%20with%20regiment%20marching%2C%20Jaipur.jpg",
       "licence": "CC BY 4.0",
       "author": "TuckDB Postcards",
-      "detections": {
-        "NMV": 1
-      },
-      "mean_confidence": {
-        "NMV": 0.46
-      },
-      "total_vehicles": 1
+      "detections": {},
+      "mean_confidence": {},
+      "total_vehicles": 0
     },
     {
       "title": "File:Street scene (5581456110).jpg",
@@ -186,9 +200,54 @@
         "NMV": 1
       },
       "mean_confidence": {
-        "NMV": 0.908
+        "NMV": 0.904
       },
       "total_vehicles": 1
+    },
+    {
+      "title": "File:Street scene in Jaipur.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AStreet%20scene%20in%20Jaipur.jpg",
+      "licence": "CC BY-SA 4.0",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Cl%C3%A9ment_Bardot\" title=\"User:Clément Bardot\">Clément Bardot</a>",
+      "detections": {
+        "2W": 4
+      },
+      "mean_confidence": {
+        "2W": 0.818
+      },
+      "total_vehicles": 4
+    },
+    {
+      "title": "File:Street scene in Jaipur 2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AStreet%20scene%20in%20Jaipur%202.jpg",
+      "licence": "CC BY-SA 4.0",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Cl%C3%A9ment_Bardot\" title=\"User:Clément Bardot\">Clément Bardot</a>",
+      "detections": {
+        "2W": 4,
+        "NMV": 4
+      },
+      "mean_confidence": {
+        "2W": 0.633,
+        "NMV": 0.703
+      },
+      "total_vehicles": 8
+    },
+    {
+      "title": "File:Autorickshaw (6799412194).jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AAutorickshaw%20%286799412194%29.jpg",
+      "licence": "CC BY 2.0",
+      "author": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/51668926@N00\">Ryan</a> from Toronto, Canada",
+      "detections": {
+        "2W": 3,
+        "NMV": 1,
+        "TRK2": 1
+      },
+      "mean_confidence": {
+        "2W": 0.793,
+        "NMV": 0.832,
+        "TRK2": 0.885
+      },
+      "total_vehicles": 5
     },
     {
       "title": "File:India - Jaipur2 - 031 - traffic in Jaipurs pink-clad Old Town (2178575969).jpg",
@@ -196,39 +255,64 @@
       "licence": "CC BY 2.0",
       "author": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/56796376@N00\">McKay Savage</a> from London, ",
       "detections": {
-        "BUS": 1,
         "CAR": 3,
         "NMV": 2,
         "TRK2": 1
       },
       "mean_confidence": {
-        "BUS": 0.48,
-        "CAR": 0.634,
+        "CAR": 0.652,
         "NMV": 0.865,
-        "TRK2": 0.548
+        "TRK2": 0.545
       },
-      "total_vehicles": 7
+      "total_vehicles": 6
+    },
+    {
+      "title": "File:Jaipur - Verkehr 6.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AJaipur%20-%20Verkehr%206.jpg",
+      "licence": "CC BY-SA 4.0",
+      "author": "<a href=\"//commons.wikimedia.org/wiki/User:Xenophon\" title=\"User:Xenophon\">Wolfgang Sauber</a>",
+      "detections": {
+        "CAR": 2,
+        "TRK2": 3
+      },
+      "mean_confidence": {
+        "CAR": 0.798,
+        "TRK2": 0.659
+      },
+      "total_vehicles": 5
+    },
+    {
+      "title": "File:Jaipur 03-2016 29 auto-rikshaw meter.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File%3AJaipur%2003-2016%2029%20auto-rikshaw%20meter.jpg",
+      "licence": "FAL",
+      "author": "<b><span class=\"plainlinks\"><a class=\"external text\" href=\"https://commons.wikimedia.org/wiki/User:A.Savin\">A.Savin</a><",
+      "detections": {},
+      "mean_confidence": {},
+      "total_vehicles": 0
     }
   ],
   "totals": {
-    "NMV": 17,
-    "CAR": 19,
-    "TRK2": 8,
-    "BUS": 5
+    "2W": 62,
+    "NMV": 19,
+    "CAR": 22,
+    "TRK2": 11,
+    "BUS": 3
   },
   "class_mix_pct": {
-    "BUS": 10.2,
-    "CAR": 38.8,
-    "NMV": 34.7,
-    "TRK2": 16.3
+    "2W": 53.0,
+    "BUS": 2.6,
+    "CAR": 18.8,
+    "NMV": 16.2,
+    "TRK2": 9.4
   },
-  "images_analysed": 15,
-  "vehicles_detected": 49,
-  "discarded_person_detections": 196,
+  "images_analysed": 20,
+  "vehicles_detected": 117,
+  "discarded_person_detections": 242,
   "prohibition": "The COCO person class is discarded before counting. CLAUDE.md prohibits person detection; the count above records that it was enforced rather than assumed.",
   "proves": "Vehicle classes can be read off real Jaipur streets by the shipped Apache-2.0 detector, with confidences.",
   "does_not_prove": "Counting accuracy. These photographs carry no ground-truth labels and no motion, so this is classification evidence, not a MAPE.",
-  "finding": "The stock Apache-2.0 detector found no two-wheelers in a city whose fleet is about 61% two-wheelers. Off-the-shelf COCO weights are trained on Western road scenes where a motorcycle is rare, large in frame and unoccluded; in Jaipur it is the majority class, small, and usually in a dense mixed stream. This is the measured case for fine-tuning on Indian traffic before any accuracy claim is made — and it is exactly the gap a vendor shipping stock weights would not report.",
-  "two_wheeler_detected": 0,
+  "finding": "Two-wheelers are 53% of what the stock Apache-2.0 detector finds on real Jaipur streets, against a registered fleet that is about 61% two-wheelers. The dominant class is recovered at roughly the right share without any fine-tuning, which is a stronger starting point than assumed. What the detector still cannot do is name an auto-rickshaw: COCO has no such class, autos are 6.2% of measured traffic on this corridor, and they are reported here as car or two-wheeler depending on the angle. That, not two-wheeler blindness, is the measured case for fine-tuning on Indian data.",
+  "corrects": "An earlier version of this file reported zero two-wheelers and that figure was published as evidence that stock weights cannot see Indian traffic. It was a bug in this script, not a property of the model: the class map was keyed on the label name 'motorcycle', and RT-DETR's config uses the older VOC-style vocabulary in which the class is called 'motorbike'. Every two-wheeler was detected and then dropped by the lookup. The map is now imported from pravaah.ganana.classes and keyed on the COCO id, which is what the shipped counting path always used — GANANA was never affected.",
+  "two_wheeler_detected": 62,
   "is_synthetic": false
 }

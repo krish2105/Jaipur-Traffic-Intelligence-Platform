@@ -2130,3 +2130,161 @@ instead of a minified error code. `pnpm --filter @pravaah/web dev`, open
 an unbounded one without it, which is why it stops here rather than continuing
 by guesswork — one wrong guess was already made on this bug (the header clock,
 which was a real defect and not this one).
+
+---
+
+## ADR-064 — The detector was never blind to two-wheelers; our lookup was
+
+**Status:** accepted · corrects a published claim
+
+**What was claimed.** `scripts/prove_detection.py` reported **zero two-wheelers**
+across openly licensed photographs of Jaipur streets. That went into the pitch,
+the speaking script and the console's detection panel as the headline honest
+failure: that off-the-shelf COCO weights cannot see Indian traffic, and that
+fine-tuning was therefore the first task to fund.
+
+**What was true.** The script carried its own copy of the class map, keyed on the
+COCO **label name**, with `"motorcycle"` as the two-wheeler key. RT-DETR's config
+publishes the older VOC-style vocabulary: the class is `motorbike`, and potted
+plant is `pottedplant`. The key never matched, so every two-wheeler was detected
+by the model and then discarded by `if name not in COCO_TO_CLASS: continue`.
+
+Keyed on the COCO id instead, the same weights on the same photographs give
+**53% two-wheelers** across 20 images and 117 vehicles, against a registered
+fleet that is about 61% two-wheelers. The dominant class is recovered at roughly
+the right share with no fine-tuning at all.
+
+**`packages/ganana` was never affected.** The shipped counting path keys
+`COCO_TO_CLASS` on the id, and ids do not get renamed between checkpoints. The
+defect existed only in the evidence script, which had restated the map by hand —
+precisely the parallel definition CLAUDE.md rule 5 prohibits.
+
+**Why it took so long to find.** Nothing failed loudly. `mypy` accepts a
+`dict[str, str]` whose keys match nothing, `ruff` has no opinion, and the result
+was consistent across every configuration tried: zero two-wheelers at thresholds
+0.10 through 0.45, on both `rtdetr_v2_r18vd` and `rtdetr_v2_r50vd`, and zero
+again under 3×2 tiled inference even as total detections rose from 100 to 254.
+A result that survives the score floor, the backbone size *and* the input
+resolution is not a detection problem, and that is what finally sent us to read
+the label names rather than tune the detector.
+
+**What is now claimed instead, and it is still against us.** COCO has no
+auto-rickshaw class. Autos are 6.2% of measured traffic on this corridor and the
+model reports them as `car` or `motorbike` depending on the angle. That is the
+real, narrower case for fine-tuning on Indian data (IDD), and it is what the
+pitch, the script and the console panel now say.
+
+**What changed**
+- `scripts/prove_detection.py` imports `COCO_TO_CLASS` and `PERSON_CLASS_IDS`
+  from `pravaah.ganana.classes` instead of restating them. It also caches images
+  under `data/detection-images/` (gitignored), because a run that lost 16 of 24
+  images to HTTP 429 makes the published class mix a statement about the network
+  rather than about Jaipur.
+- `packages/ganana/tests/test_classes.py` asserts the map is `int`-keyed. That is
+  the structural defence: a `str` key is the bug, so it is a test failure.
+- `docs/pitch/pitch.html`, `docs/pitch/script.html` (both languages) and
+  `apps/web/src/components/console/detection-panel.tsx` corrected.
+- `scripts/diagnose_detection.py` and `scripts/tiled_detection.py` keep their
+  findings under a RESOLVED header. Their premise is void and their output is
+  what made the answer findable, so they are a record, not a live claim.
+
+**The rule taken from this.** A published number that is *worse* than expected
+gets the same scrutiny as one that is better. This one agreed with a documented
+prior — docs/04 warns that COCO detectors are weakest on two-wheelers — and that
+agreement is exactly why nobody checked it for so long.
+
+---
+
+## ADR-063 addendum — the console's remaining hydration error is not the theme script
+
+**Status:** narrowed, still open
+
+ADR-063 closed with one React #418 left unlocalised and the note that naming it
+needed a dev build. A dev build was run (`--port 3070`) while correcting ADR-064,
+and it produced two distinct errors on `/en/console`, which had until now been
+assumed to be one:
+
+1. `Encountered a script tag while rendering React component.`
+2. `Hydration failed because the server rendered HTML didn't match the client.`
+
+**They are independent.** Isolated by substitution, in a fresh tab each time so
+the console was not carrying messages from a previous load:
+
+| `ThemeScript` renders | script warning | hydration error |
+|---|---|---|
+| `<Script strategy="beforeInteractive" dangerouslySetInnerHTML>` (shipped) | yes | yes |
+| `<Script strategy="beforeInteractive" src=…>` | yes | yes |
+| `<Script strategy="afterInteractive" dangerouslySetInnerHTML>` | yes | yes |
+| nothing | **no** | **yes** |
+
+So `next/script` causes warning 1 in all three strategies — inline or `src`, and
+regardless of strategy — and causes none of error 2. Removing it silences the
+warning and leaves the hydration failure exactly as it was.
+
+**Consequence for ADR-063.** The theme script is eliminated as the cause, which
+matters because it was the most plausible remaining suspect: it is the one thing
+on the page that deliberately writes to `<html>` before React sees it. The
+correlation ADR-063 recorded — the two pages carrying a map fail, the two without
+one are silent — is still the strongest signal, and `corridor-map.loader.tsx` is
+already gated on `useMounted`, so the mismatch is somewhere else in that subtree.
+
+**Not fixed, and deliberately not guessed at.** ADR-063 refused to continue by
+guesswork after one wrong guess had already been made on this bug, and that still
+applies. What is added here is a suspect ruled out by experiment rather than by
+reasoning, and the fact that the warning and the error were never the same thing.
+
+**`ThemeScript` is left exactly as it was.** It is correct per the bundled Next
+16.3.1 docs (`01-app/02-guides/scripts.md` §Inline Scripts), the warning is a dev
+-only console message, and removing it would trade a warning for a real
+regression: a user who chose light mode would get dark until they toggled.
+
+---
+
+## ADR-065 — The PDFs are the deliverable, so they are now built and checked
+
+**Status:** accepted
+
+Correcting the two-wheeler claim (ADR-064) fixed `pitch.html` and `script.html`.
+It did not fix `pitch.pdf` or `script.pdf`, and those are what actually gets
+handed to an official. Both still read "zero two-wheelers" — the retracted
+version — while the HTML beside them argued the opposite. Nothing in the repo
+connected the two: the PDFs had been produced once by hand with headless Chrome
+and never again.
+
+**A stale PDF is worse than a missing one.** A missing one gets noticed.
+
+`scripts/build_pitch_pdfs.sh` (also `make pitch-pdf`) rebuilds both from the HTML
+with the same renderer that produced the originals — headless Chrome, whose
+Skia/PDF output matched the existing files' producer string, and the `@page` rule
+in the HTML already sets A4 and the margins. Page counts come out unchanged at 10
+and 5.
+
+It then asserts the output. Two mistakes were made writing that check and both
+are worth keeping in mind:
+
+* **It cannot just grep for the retracted phrase.** The corrected script *quotes*
+  it deliberately — "for a while we believed it found zero two-wheelers ... it was
+  our own bug" — because owning the correction aloud is the point of the passage.
+  The first version of the check failed the very text that fixes the problem.
+* **It cannot read the file the instant Chrome returns.** Chrome flushes
+  asynchronously, so the first run reported `auto-rickshaw` missing from a PDF
+  that contained it. The check now waits for the write to settle.
+
+So it asserts the *corrected* claims are present and that the retracted
+*sentence* — wording that only ever existed in the old version — is gone.
+
+**Two further errors found by auditing the rest of the pitch's numbers against
+their sources**, neither related to detection, both checkable by an engineer in
+the room:
+
+| Claim | Was | Source of truth | Now |
+|---|---|---|---|
+| PCU factors | 2W 0.5, truck 2.2 | `PCU_FACTORS` in `packages/contracts` | 2W 0.25, truck 3.0 |
+| Test count | 303 | 248 pytest + 58 vitest | 306 |
+
+Everything else checked out against live data and is left alone: 1,452 links, 22
+thanas, 4 zones, 282 cordon cameras, 6 of 22 areas with a measured road, 90/90
+probe links, 20 images / 117 vehicles / 5 classes, and "eighteen tests read the
+seeded database and the running API" (3 + 15, exactly). The cordon table's three
+sample rows all match the plan; it elides a fourth, which is presentation rather
+than error.

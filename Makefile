@@ -3,7 +3,8 @@ SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
 .PHONY: help install dev api web worker seed test lint typecheck contracts \
-        up down status migrate demo-reset train eval replay sim audit verify-security
+        up down status migrate demo-reset train eval replay sim audit verify-security \
+        pitch-pdf
 
 help: ## Show this help
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN{FS=":.*?## "}{printf "  \033[1m%-24s\033[0m %s\n", $$1, $$2}'
@@ -89,3 +90,10 @@ sim: ## Run a SUMO scenario. usage: make sim SCENARIO=sim/scenarios/median.yaml
 
 demo-reset: ## Restore pristine demo state (docs plan §9)
 	bash scripts/demo_reset.sh
+
+# Rebuild the pitch and script PDFs from their HTML. The PDFs are what gets
+# handed to an official and the HTML is what gets edited; nothing connected the
+# two, so a corrected claim once survived only in the HTML while both PDFs still
+# argued the retracted version (ADR-064).
+pitch-pdf: ## Rebuild docs/pitch/*.pdf from their HTML, and check the claims match
+	bash scripts/build_pitch_pdfs.sh

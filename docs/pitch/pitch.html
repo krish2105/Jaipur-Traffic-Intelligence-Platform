@@ -113,8 +113,8 @@ We keep the two numbers separate on purpose: 18.5 is what re-arranging existing
 effort buys, 147 is what actually changing rider behaviour buys.</p>
 
 <h3>Signal timing that knows a scooter is not a truck</h3>
-<p>Standard ITMS gives green time by counting vehicles. A two-wheeler is 0.5 PCU
-and a truck is 2.2. Two roads can send the same vehicle count and need twice the
+<p>Standard ITMS gives green time by counting vehicles. A two-wheeler is 0.25 PCU
+and a truck is 3.0. Two roads can send the same vehicle count and need twice the
 green time.</p>
 <p>We tested this in simulation. The honest result: PCU timing does <b>not</b>
 reduce average delay. It moves about 7 seconds off every bus and truck, and adds
@@ -163,18 +163,25 @@ ya sab gaadiyon ko. Ye faisla aapka hona chahiye, software ka nahi.</p>
 <tr><td>Accumulation model</td>
     <td>Vehicles inside an area by hour, from boundary counts. Conserves over 24 hours, verified on all 22 areas.</td></tr>
 <tr><td>Vehicle detection</td>
-    <td>Apache-2.0 model run on 15 openly licensed photographs of real Jaipur streets. 49 vehicles found across 4 classes.</td></tr>
+    <td>Apache-2.0 model run on 20 openly licensed photographs of real Jaipur streets. 117 vehicles found across 5 classes.</td></tr>
 </table>
 
 <div class="warn">
 <p><b>One result we are not comfortable with, and are telling you anyway.</b></p>
-<p style="margin-bottom:0">The off-the-shelf detector found <b>zero two-wheelers</b>
-in a city where 61 percent of vehicles are two-wheelers. Standard models are
-trained on European and American roads, where a motorcycle is rare and clearly
-visible. In Jaipur it is the majority, it is small in frame, and it sits packed
-between other vehicles. Any vendor who shows you a demo on stock software has this
-same problem and will not mention it. Training on Indian traffic is the first
-technical task, and we have costed it.</p>
+<p>The off-the-shelf detector cannot name an <b>auto-rickshaw</b>. The class does
+not exist in the standard vocabulary these models are trained on, so an auto is
+reported as a car or a two-wheeler depending on the angle it is seen from. Autos
+are 6.2 percent of measured traffic on this corridor. Any vendor demonstrating on
+stock software has this same gap and will not mention it. Training on Indian
+traffic data is the first technical task, and we have costed it.</p>
+<p style="margin-bottom:0">Two-wheelers, we expected to be the problem and they
+are not. They come back as <b>53 percent</b> of what the detector finds, against a
+registered fleet that is about 61 percent two-wheelers — the dominant class
+recovered at roughly the right share with no training of our own. We report this
+because an earlier version of this document claimed the opposite, on the strength
+of a defect in our own evidence script rather than any property of the model. The
+script is fixed, the evidence is regenerated, and the claim is corrected here
+rather than quietly dropped.</p>
 </div>
 
 <h3>What is live today, and what is one key away</h3>
@@ -501,7 +508,7 @@ showing you a selection.</p>
 <tr><td>Honesty of claims</td><td class="num">20 / 20</td>
     <td>Three of our own technical claims were tested and two were wrong. Both were corrected in the record rather than dropped quietly.</td></tr>
 <tr><td>Engineering quality</td><td class="num">19 / 20</td>
-    <td>303 automated tests, all passing, plus checks for security, colour contrast and accessibility that fail the build. Eighteen of them read the seeded database and the running API rather than mocks, so they check the product and not a stand-in. Several tests exist purely to stop the interface claiming a source it does not have.</td></tr>
+    <td>306 automated tests, all passing, plus checks for security, colour contrast and accessibility that fail the build. Eighteen of them read the seeded database and the running API rather than mocks, so they check the product and not a stand-in. Several tests exist purely to stop the interface claiming a source it does not have.</td></tr>
 <tr><td>Product completeness</td><td class="num">17 / 20</td>
     <td>The full chain from road network to recommendation works on four corridors. Sixteen of 22 areas have no measurement, and no vehicle anywhere has actually been counted.</td></tr>
 <tr><td>Interface</td><td class="num">10 / 10</td>

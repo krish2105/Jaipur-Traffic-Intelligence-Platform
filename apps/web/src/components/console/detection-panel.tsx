@@ -5,14 +5,24 @@ import type { DetectionEvidence } from "@/lib/api";
 /**
  * What the detector actually saw on real Jaipur streets.
  *
- * The rest of the console reports measurements. This reports a *test*, and its
- * headline result is a failure: the stock Apache-2.0 detector found zero
- * two-wheelers in a city whose fleet is about 61% two-wheelers.
+ * The rest of the console reports measurements. This reports a *test*, and it
+ * leads with the result that is against us, because a panel that leads with its
+ * own worst finding is a panel the rest of which gets believed.
  *
- * That belongs on screen, prominently, for two reasons. It is the honest state
- * of the technology, and every competitor demoing on off-the-shelf weights has
- * the same problem and will not raise it. A panel that leads with its own worst
- * result is a panel the rest of which gets believed.
+ * That worst finding used to be "zero two-wheelers detected". It was wrong, and
+ * the correction is worth recording here because the panel was built around it.
+ * The evidence script keyed its class map on the COCO label name "motorcycle";
+ * RT-DETR publishes the older VOC-style vocabulary, in which the class is
+ * "motorbike". Every two-wheeler was detected and then dropped by the lookup.
+ * Re-run against the id-based map the counting package always used, two-
+ * wheelers come back at ~53% of detections against a fleet that is ~61%
+ * two-wheelers — the dominant class recovered at roughly the right share with
+ * no fine-tuning at all.
+ *
+ * The real gap is narrower and harder: COCO has no auto-rickshaw class, autos
+ * are 6.2% of measured traffic on this corridor, and the model reports them as
+ * car or two-wheeler depending on the angle. That is what the section below
+ * now says, because it is what the evidence supports.
  *
  * The discarded person count is shown for a different reason: CLAUDE.md
  * prohibits person detection, the model emits it anyway, and a prohibition that
@@ -28,6 +38,7 @@ export function DetectionPanel({
   if (!data?.images?.length) return null;
 
   const classes = Object.entries(data.class_mix_pct).sort((a, b) => b[1] - a[1]);
+  const twoWheelerShare = (data.class_mix_pct["2W"] ?? 0).toFixed(0);
 
   return (
     <div className="space-y-4">
@@ -48,16 +59,16 @@ export function DetectionPanel({
           style={{ fontSize: "calc(var(--d-support) * 1.5)" }}
         >
           {hi
-            ? `${data.images_analysed} असली जयपुर तस्वीरों में ${data.two_wheeler_detected} दोपहिया मिले।`
-            : `${data.two_wheeler_detected} two-wheelers found across ${data.images_analysed} real Jaipur photographs.`}
+            ? "ऑटो-रिक्शा के लिए कोई श्रेणी ही नहीं है।"
+            : "There is no auto-rickshaw class for it to use."}
         </p>
         <p
           className="mt-2 leading-relaxed text-[var(--ink-muted)]"
           style={{ fontSize: "var(--d-support)" }}
         >
           {hi
-            ? "जयपुर के 61% वाहन दोपहिया हैं। मानक मॉडल यूरोप और अमेरिका की सड़कों पर प्रशिक्षित हैं, जहाँ मोटरसाइकिल कम और साफ़ दिखती है। भारतीय ट्रैफ़िक पर प्रशिक्षण पहला तकनीकी काम है।"
-            : "61% of Jaipur's fleet is two-wheelers. Stock models are trained on European and American roads, where a motorcycle is rare and clearly visible. Training on Indian traffic is the first technical task, and it is costed."}
+            ? `इस कॉरिडोर पर मापे गए ट्रैफ़िक का 6.2% ऑटो है, पर COCO में यह श्रेणी नहीं है — कोण के अनुसार मॉडल इसे कार या दोपहिया बताता है। दोपहिया ठीक मिलते हैं: ${twoWheelerShare}% पहचान, जबकि बेड़े में लगभग 61% हैं। भारतीय डेटा (IDD) पर प्रशिक्षण का असली कारण ऑटो है, दोपहिया नहीं।`
+            : `Autos are 6.2% of measured traffic on this corridor and COCO has no class for them, so the model calls them car or two-wheeler depending on the angle. Two-wheelers it handles: ${twoWheelerShare}% of detections against a fleet that is about 61% two-wheelers, with no fine-tuning. Training on Indian data is the first technical task, and autos — not two-wheelers — are why.`}
         </p>
       </section>
 

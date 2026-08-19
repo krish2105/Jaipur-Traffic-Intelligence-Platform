@@ -1,0 +1,180 @@
+{
+  "model": "PekingU/rtdetr_v2_r50vd",
+  "licence": "Apache-2.0",
+  "threshold": 0.3,
+  "tiles": "3x2 at 20% overlap",
+  "per_image": [
+    {
+      "image": "India - Jaipur2 - 031 - traffic in Jaipurs pink-clad Old Town (2178575969).jpg",
+      "whole": {
+        "NMV": 4,
+        "CAR": 4,
+        "TRK2": 1,
+        "BUS": 1
+      },
+      "tiled": {
+        "NMV": 15,
+        "BUS": 1,
+        "CAR": 10,
+        "TRK2": 2
+      }
+    },
+    {
+      "image": "Jaipur - Verkehr 1.jpg",
+      "whole": {
+        "CAR": 3,
+        "TRK2": 1
+      },
+      "tiled": {
+        "CAR": 8,
+        "BUS": 2,
+        "NMV": 5,
+        "TRK2": 4
+      }
+    },
+    {
+      "image": "Jaipur - Verkehr 2.jpg",
+      "whole": {
+        "CAR": 5,
+        "TRK2": 1
+      },
+      "tiled": {
+        "BUS": 3,
+        "CAR": 3,
+        "TRK2": 2
+      }
+    },
+    {
+      "image": "Jaipur - Verkehr 3.jpg",
+      "whole": {
+        "NMV": 1,
+        "CAR": 1,
+        "TRK2": 3
+      },
+      "tiled": {
+        "NMV": 8,
+        "BUS": 5,
+        "TRK2": 5,
+        "CAR": 4
+      }
+    },
+    {
+      "image": "Jaipur - Verkehr 4.jpg",
+      "whole": {
+        "TRK2": 1,
+        "CAR": 1
+      },
+      "tiled": {
+        "TRK2": 3,
+        "NMV": 5,
+        "CAR": 3,
+        "BUS": 1
+      }
+    },
+    {
+      "image": "Jaipur - Verkehr 5.jpg",
+      "whole": {
+        "CAR": 3,
+        "BUS": 1,
+        "NMV": 1,
+        "TRK2": 1
+      },
+      "tiled": {
+        "CAR": 4,
+        "NMV": 5,
+        "BUS": 1,
+        "TRK2": 1
+      }
+    },
+    {
+      "image": "Jaipur - Verkehr 7.jpg",
+      "whole": {
+        "NMV": 3,
+        "TRK2": 1,
+        "CAR": 4
+      },
+      "tiled": {
+        "TRK2": 4,
+        "NMV": 2,
+        "CAR": 7
+      }
+    },
+    {
+      "image": "Jaipur - Verkehr 8.jpg",
+      "whole": {
+        "BUS": 1,
+        "TRK2": 1
+      },
+      "tiled": {
+        "BUS": 4,
+        "TRK2": 5,
+        "CAR": 2
+      }
+    },
+    {
+      "image": "Jaipur Road (1580689081).jpg",
+      "whole": {
+        "CAR": 21,
+        "BUS": 2,
+        "NMV": 17,
+        "TRK2": 3
+      },
+      "tiled": {
+        "CAR": 34,
+        "BUS": 7,
+        "NMV": 44,
+        "TRK2": 10
+      }
+    },
+    {
+      "image": "Jaipur, India, Downtown Jaipur.jpg",
+      "whole": {
+        "NMV": 13
+      },
+      "tiled": {
+        "NMV": 16,
+        "CAR": 9,
+        "TRK2": 2,
+        "BUS": 1
+      }
+    },
+    {
+      "image": "Street Scene with regiment marching, Jaipur.jpg",
+      "whole": {},
+      "tiled": {
+        "TRK2": 2,
+        "CAR": 1
+      }
+    },
+    {
+      "image": "Street Scene, Jaipur.jpg",
+      "whole": {},
+      "tiled": {}
+    },
+    {
+      "image": "Street scene (5581456110).jpg",
+      "whole": {
+        "NMV": 1
+      },
+      "tiled": {
+        "NMV": 3,
+        "TRK2": 1
+      }
+    }
+  ],
+  "whole_image_totals": {
+    "NMV": 40,
+    "CAR": 42,
+    "TRK2": 13,
+    "BUS": 5
+  },
+  "tiled_totals": {
+    "NMV": 103,
+    "BUS": 25,
+    "CAR": 85,
+    "TRK2": 41
+  },
+  "why": "RT-DETR resizes its input to 640 square. On a wide street scene that leaves a scooter forty metres back about twenty pixels tall, below what this family resolves. Tiling puts the same scooter in front of the network several times larger, with no training and no change of licence.",
+  "not_an_accuracy_measurement": "These photographs carry no labels. This counts detections and cannot report precision or recall.",
+  "is_synthetic": false
+}

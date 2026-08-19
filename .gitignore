@@ -47,3 +47,7 @@ Thumbs.db
 apps/web/.env.local
 .vercel
 .env*
+
+# Cached Commons photographs for the detection experiments. Openly licensed,
+# but binaries do not belong in a public repo; re-fetch with the script.
+data/detection-images/

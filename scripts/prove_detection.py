@@ -36,12 +36,16 @@ claim nobody checks.
 
 from __future__ import annotations
 
+import io
 import json
 import time
 import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Final
+
+from PIL import Image
+from pravaah.ganana.classes import COCO_TO_CLASS, PERSON_CLASS_IDS
 
 OUT = Path("apps/web/src/data/detection-evidence.json")
 
@@ -76,17 +80,21 @@ EXCLUDE: Final = (
     "fort",
 )
 
-#: COCO label -> PRAVAAH class. `person` is deliberately absent: see the module
-#: docstring. Truck and bus are the classes a count-based ITMS cannot separate
-#: from a car by count alone, which is the whole PCU argument.
-COCO_TO_CLASS: Final[dict[str, str]] = {
-    "motorcycle": "2W",
-    "car": "CAR",
-    "bus": "BUS",
-    "truck": "TRK2",
-    "bicycle": "NMV",
-}
-PROHIBITED: Final = {"person"}
+# COCO id -> PRAVAAH class, and the person ids that are refused, both imported
+# from the shipped counting package rather than restated here.
+#
+# This file used to carry its own copy of that map, keyed by *label name*, with
+# "motorcycle" as the two-wheeler key. RT-DETR's config does not use that name.
+# It publishes the older VOC-style vocabulary — "motorbike", and "pottedplant"
+# for potted plant — so the key never matched, every two-wheeler fell through
+# the `not in COCO_TO_CLASS` guard, and this script reported zero of them.
+#
+# That zero was published as a finding: that stock weights cannot see Indian
+# traffic and a fine-tune must be funded first. It was a bug in this file, not
+# a property of the model. GANANA was never affected, because it keys on the id
+# and ids do not get renamed.
+#
+# Keyed by id and imported from one place, so the failure cannot recur here.
 
 MIN_SCORE: Final = 0.45
 MAX_IMAGES: Final = 24
@@ -114,6 +122,32 @@ def _fetch(url: str, tries: int = 3) -> bytes:
             last = exc
             time.sleep(1.5 * (attempt + 1))
     raise last if last else RuntimeError("unreachable")
+
+
+CACHE: Final = Path("data/detection-images")
+
+
+def _load(title: str, url: str) -> Image.Image:
+    """Cache first, then Commons, and keep whatever Commons gives.
+
+    Pacing is not enough on its own. A run of this script lost sixteen of
+    twenty-four images to HTTP 429, and the eight that survived were selected by
+    which requests happened to succeed — which makes the published class mix a
+    statement about the network rather than about Jaipur.
+
+    Caching to disk fixes the reproducibility rather than the politeness: the
+    evidence behind the pitch can be regenerated on demand instead of depending
+    on how Commons feels. The cache is gitignored, so a clean checkout still
+    fetches.
+    """
+    local = CACHE / title.removeprefix("File:").replace("/", "_")
+    if local.exists():
+        return Image.open(local).convert("RGB")
+    raw = _fetch(url)
+    time.sleep(0.8)  # pace, so Commons keeps answering
+    CACHE.mkdir(parents=True, exist_ok=True)
+    local.write_bytes(raw)
+    return Image.open(io.BytesIO(raw)).convert("RGB")
 
 
 def _get(url: str, params: dict[str, str]) -> dict:
@@ -170,10 +204,7 @@ def find_images() -> list[dict[str, str]]:
 
 
 def main() -> None:
-    import io
-
     import torch
-    from PIL import Image
     from transformers import RTDetrImageProcessor, RTDetrV2ForObjectDetection
 
     model_id = "PekingU/rtdetr_v2_r18vd"
@@ -191,8 +222,7 @@ def main() -> None:
 
     for item in images:
         try:
-            image = Image.open(io.BytesIO(_fetch(item["url"]))).convert("RGB")
-            time.sleep(0.8)  # pace, so Commons keeps answering
+            image = _load(item["title"], item["url"])
         except Exception as exc:
             print(f"  skip {item['title'][:50]}: {type(exc).__name__}")
             continue
@@ -206,13 +236,13 @@ def main() -> None:
 
         found: dict[str, list[float]] = {}
         for score, label in zip(detections["scores"], detections["labels"], strict=True):
-            name = model.config.id2label[int(label)]
-            if name in PROHIBITED:
+            class_id = int(label)
+            if class_id in PERSON_CLASS_IDS:
                 # Dropped at the boundary, counted only so the prohibition is
                 # visibly enforced rather than quietly assumed.
                 discarded_person += 1
                 continue
-            cls = COCO_TO_CLASS.get(name)
+            cls = COCO_TO_CLASS.get(class_id)
             if not cls:
                 continue
             found.setdefault(cls, []).append(round(float(score), 3))
@@ -266,16 +296,29 @@ def main() -> None:
             "Counting accuracy. These photographs carry no ground-truth labels "
             "and no motion, so this is classification evidence, not a MAPE."
         ),
-        # The result that matters most, and it is not a flattering one.
+        # The result that matters most, and a correction to what this file said
+        # before. See `corrects` below.
         "finding": (
-            "The stock Apache-2.0 detector found no two-wheelers in a city whose "
-            "fleet is about 61% two-wheelers. Off-the-shelf COCO weights are "
-            "trained on Western road scenes where a motorcycle is rare, large in "
-            "frame and unoccluded; in Jaipur it is the majority class, small, and "
-            "usually in a dense mixed stream. This is the measured case for "
-            "fine-tuning on Indian traffic before any accuracy claim is made — "
-            "and it is exactly the gap a vendor shipping stock weights would not "
-            "report."
+            "Two-wheelers are 53% of what the stock Apache-2.0 detector finds on "
+            "real Jaipur streets, against a registered fleet that is about 61% "
+            "two-wheelers. The dominant class is recovered at roughly the right "
+            "share without any fine-tuning, which is a stronger starting point "
+            "than assumed. What the detector still cannot do is name an "
+            "auto-rickshaw: COCO has no such class, autos are 6.2% of measured "
+            "traffic on this corridor, and they are reported here as car or "
+            "two-wheeler depending on the angle. That, not two-wheeler "
+            "blindness, is the measured case for fine-tuning on Indian data."
+        ),
+        "corrects": (
+            "An earlier version of this file reported zero two-wheelers and that "
+            "figure was published as evidence that stock weights cannot see "
+            "Indian traffic. It was a bug in this script, not a property of the "
+            "model: the class map was keyed on the label name 'motorcycle', and "
+            "RT-DETR's config uses the older VOC-style vocabulary in which the "
+            "class is called 'motorbike'. Every two-wheeler was detected and "
+            "then dropped by the lookup. The map is now imported from "
+            "pravaah.ganana.classes and keyed on the COCO id, which is what the "
+            "shipped counting path always used — GANANA was never affected."
         ),
         "two_wheeler_detected": totals.get("2W", 0),
         "is_synthetic": False,
