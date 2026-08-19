@@ -14,9 +14,7 @@ from pathlib import Path
 
 from pravaah.api.core.rbac import MATRIX
 
-_TS = (
-    Path(__file__).resolve().parents[3] / "apps" / "web" / "src" / "lib" / "rbac.ts"
-)
+_TS = Path(__file__).resolve().parents[3] / "apps" / "web" / "src" / "lib" / "rbac.ts"
 
 
 def _client_matrix() -> dict[str, set[str]]:

@@ -50,8 +50,30 @@ OUT = Path("apps/web/src/data/accumulation.json")
 #: Jaipur's evening peak is bigger than its morning one (docs/01). The shape is
 #: the corridor's own measured profile, normalised.
 DIURNAL: Final[tuple[float, ...]] = (
-    0.18, 0.12, 0.09, 0.08, 0.10, 0.22, 0.45, 0.72, 0.92, 0.85, 0.78, 0.80,
-    0.84, 0.82, 0.79, 0.83, 0.90, 0.97, 1.00, 0.93, 0.74, 0.55, 0.38, 0.26,
+    0.18,
+    0.12,
+    0.09,
+    0.08,
+    0.10,
+    0.22,
+    0.45,
+    0.72,
+    0.92,
+    0.85,
+    0.78,
+    0.80,
+    0.84,
+    0.82,
+    0.79,
+    0.83,
+    0.90,
+    0.97,
+    1.00,
+    0.93,
+    0.74,
+    0.55,
+    0.38,
+    0.26,
 )
 
 #: Vehicles per hour across one cordon crossing at the daily peak. An arterial
@@ -96,9 +118,7 @@ def baseline(inflow: list[float], outflow: list[float]) -> float:
     return -low
 
 
-def integrate(
-    inflow: list[float], outflow: list[float], start: float | None = None
-) -> list[float]:
+def integrate(inflow: list[float], outflow: list[float], start: float | None = None) -> list[float]:
     """inside(h+1) = inside(h) + in(h) - out(h).
 
     No floor. Clamping at zero silently destroys vehicles and leaves a broken
@@ -197,16 +217,20 @@ def main() -> None:
 
     print(f"{'area':<34}{'cameras':>8}{'peak inside':>13}{'at':>5}")
     for r in results[:6]:
-        print(f"{r['area'][:32]:<34}{r['cordon_cameras']:>8}"
-              f"{r['peak_inside']:>13}{r['peak_hour']:>5}:00")
+        print(
+            f"{r['area'][:32]:<34}{r['cordon_cameras']:>8}"
+            f"{r['peak_inside']:>13}{r['peak_hour']:>5}:00"
+        )
 
     print("\nhow often the count must be re-anchored, by detector error:")
     sample = results[0]
     print(f"  (for {sample['area'][:40]}, peak {sample['peak_inside']} vehicles)")
     for rate, d in sample["drift"].items():
         h = d["reanchor_every_hours"]
-        print(f"    {rate:>5} error  {d['phantom_vehicles_per_day']:>7} phantom/day  "
-              f"re-anchor every {h if h else 'never needed'} h")
+        print(
+            f"    {rate:>5} error  {d['phantom_vehicles_per_day']:>7} phantom/day  "
+            f"re-anchor every {h if h else 'never needed'} h"
+        )
     print(f"\n-> {OUT}")
 
 

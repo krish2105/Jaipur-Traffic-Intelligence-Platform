@@ -83,7 +83,7 @@ ENFORCEMENT_MIX_OTHER: Final = round(100.0 - sum(ENFORCEMENT_MIX.values()), 2)
 
 CHALLANS_2025: Final = 2_761_000
 CHALLANS_2024: Final = 1_748_000  # 27.61 lakh less the published 10.13 lakh rise
-RECOVERY_RATE_PCT: Final = 76.0   # highest in India, March 2025
+RECOVERY_RATE_PCT: Final = 76.0  # highest in India, March 2025
 JAIPUR_FINE_REVENUE_CR: Final = 32.0
 
 # ── National severity drivers ───────────────────────────────────────────────

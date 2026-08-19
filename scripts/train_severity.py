@@ -98,10 +98,7 @@ async def main() -> None:
     base_rate = float(y[train].mean())
     auc = roc_auc_score(y[test], probability)
     ap_score = average_precision_score(y[test], probability)
-    print(
-        f"\nholdout ROC-AUC {auc:.3f}   PR-AUC {ap_score:.3f}   "
-        f"base rate {base_rate:.3f}"
-    )
+    print(f"\nholdout ROC-AUC {auc:.3f}   PR-AUC {ap_score:.3f}   base rate {base_rate:.3f}")
     # A model at chance is worth knowing about before it reaches a screen.
     verdict = "beats base rate" if ap_score > base_rate + 0.01 else "NO BETTER THAN BASE RATE"
     print(f"verdict: {verdict}")

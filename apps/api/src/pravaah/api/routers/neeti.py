@@ -96,9 +96,7 @@ CATALOGUE: tuple[Question, ...] = (
             "Mean congestion across each rolling three-hour window, quietest first. "
             "A freight window is chosen from the top of this list."
         ),
-        reading_hi=(
-            "प्रत्येक तीन-घंटे की खिड़की में औसत भीड़, सबसे शांत पहले।"
-        ),
+        reading_hi=("प्रत्येक तीन-घंटे की खिड़की में औसत भीड़, सबसे शांत पहले।"),
     ),
     Question(
         id="class_mix",
@@ -124,8 +122,7 @@ CATALOGUE: tuple[Question, ...] = (
             "disagree is the case for classifying rather than sampling."
         ),
         reading_hi=(
-            "वाहनों का हिस्सा बनाम सड़क स्थान का हिस्सा। जहाँ दोनों स्तंभ असहमत हैं, "
-            "वही वर्गीकरण का तर्क है।"
+            "वाहनों का हिस्सा बनाम सड़क स्थान का हिस्सा। जहाँ दोनों स्तंभ असहमत हैं, वही वर्गीकरण का तर्क है।"
         ),
     ),
     Question(
@@ -148,10 +145,7 @@ CATALOGUE: tuple[Question, ...] = (
             "Share of crashes involving a death, by hour. Hours with fewer than 50 "
             "crashes are excluded — a percentage over a small base is noise."
         ),
-        reading_hi=(
-            "घंटे के अनुसार मृत्यु वाली दुर्घटनाओं का हिस्सा। 50 से कम दुर्घटनाओं "
-            "वाले घंटे बाहर रखे गए हैं।"
-        ),
+        reading_hi=("घंटे के अनुसार मृत्यु वाली दुर्घटनाओं का हिस्सा। 50 से कम दुर्घटनाओं वाले घंटे बाहर रखे गए हैं।"),
     ),
     Question(
         id="enforcement_gate",
@@ -188,9 +182,7 @@ async def questions(scope: ScopeDep) -> dict[str, Any]:
     user can see exactly what can be asked rather than guessing at a prompt."""
     require(scope, "use:neeti")
     return {
-        "questions": [
-            {"id": q.id, "en": q.en, "hi": q.hi} for q in CATALOGUE
-        ],
+        "questions": [{"id": q.id, "en": q.en, "hi": q.hi} for q in CATALOGUE],
         "planner": (
             "Deterministic planner over a fixed catalogue. Every statement is a "
             "literal in the source; no SQL is assembled from user input, which "

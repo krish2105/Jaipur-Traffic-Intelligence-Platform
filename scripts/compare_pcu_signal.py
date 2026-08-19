@@ -106,7 +106,7 @@ def write_network() -> None:
 """
     )
     # Two lanes per approach, 50 km/h — an ordinary Jaipur arterial arm.
-    edges = ['<edges>']
+    edges = ["<edges>"]
     for a in ("n", "s", "e", "w"):
         edges.append(f'  <edge id="{a}c" from="{a}" to="c" numLanes="2" speed="13.9"/>')
         edges.append(f'  <edge id="c{a}" from="c" to="{a}" numLanes="2" speed="13.9"/>')
@@ -117,11 +117,15 @@ def write_network() -> None:
     subprocess.run(  # noqa: S603 — binary resolved by sumolib, args are literals
         [
             netconvert,
-            "-n", str(OUT / "j.nod.xml"),
-            "-e", str(OUT / "j.edg.xml"),
-            "-o", str(OUT / "j.net.xml"),
+            "-n",
+            str(OUT / "j.nod.xml"),
+            "-e",
+            str(OUT / "j.edg.xml"),
+            "-o",
+            str(OUT / "j.net.xml"),
             "--no-turnarounds",
-            "--tls.default-type", "static",
+            "--tls.default-type",
+            "static",
         ],
         check=True,
         capture_output=True,
@@ -287,9 +291,7 @@ def main() -> None:
             "wins_on_pcu_weighted_delay_at_all_levels": all(
                 r["pcu_weighted_saved_s"] > 0 for r in rows
             ),
-            "wins_on_freight_arm_at_all_levels": all(
-                r["freight_arm_saved_s"] > 0 for r in rows
-            ),
+            "wins_on_freight_arm_at_all_levels": all(r["freight_arm_saved_s"] > 0 for r in rows),
         },
         "method": {
             "pcu_source": "IRC:106-1990, urban roads",
@@ -316,8 +318,7 @@ def main() -> None:
 
     print(f"PCU ratio EW:NS = {result['pcu_ratio']}x at identical vehicle counts\n")
     hdr = (
-        f"{'veh/h':>6} {'EW v/c':>7} {'green':>9} "
-        f"{'mean saved':>11} {'pcu-wtd':>9} {'freight':>8}"
+        f"{'veh/h':>6} {'EW v/c':>7} {'green':>9} {'mean saved':>11} {'pcu-wtd':>9} {'freight':>8}"
     )
     print(hdr)
     print("-" * len(hdr))

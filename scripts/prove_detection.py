@@ -64,8 +64,16 @@ SEARCHES: Final = (
 #: composition computed over photographs of Amber Fort would be a composition of
 #: tourists, so they are excluded by name rather than by hoping.
 EXCLUDE: Final = (
-    "amber fort", "amer fort", "hawa mahal", "jantar", "city palace",
-    "nahargarh", "jal mahal", "albert hall", "panorama", "fort",
+    "amber fort",
+    "amer fort",
+    "hawa mahal",
+    "jantar",
+    "city palace",
+    "nahargarh",
+    "jal mahal",
+    "albert hall",
+    "panorama",
+    "fort",
 )
 
 #: COCO label -> PRAVAAH class. `person` is deliberately absent: see the module
@@ -219,9 +227,7 @@ def main() -> None:
                 "licence": item["licence"],
                 "author": item["author"],
                 "detections": {c: len(s) for c, s in sorted(found.items())},
-                "mean_confidence": {
-                    c: round(sum(s) / len(s), 3) for c, s in sorted(found.items())
-                },
+                "mean_confidence": {c: round(sum(s) / len(s), 3) for c, s in sorted(found.items())},
                 "total_vehicles": sum(len(s) for s in found.values()),
             }
         )

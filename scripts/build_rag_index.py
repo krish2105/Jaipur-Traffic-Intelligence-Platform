@@ -139,10 +139,7 @@ def main() -> None:
     # by the same tokeniser, and 362 chunks of ~69 tokens is a few milliseconds
     # of work in the browser — against ~300 KB of duplicated payload if sent.
     index = {
-        "chunks": [
-            {"d": c["doc"], "h": c["heading"], "t": c["text"]}
-            for c in chunks
-        ],
+        "chunks": [{"d": c["doc"], "h": c["heading"], "t": c["text"]} for c in chunks],
         "idf": idf,
         "avgdl": round(avgdl, 2),
         "n": n,

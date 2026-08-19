@@ -125,9 +125,7 @@ async def recent_audit(session: SessionDep, scope: ScopeDep) -> dict[str, Any]:
                 "role": r.actor_role,
                 "action": r.action,
                 "resource": (
-                    f"{r.resource_type}:{r.resource_id}"
-                    if r.resource_id
-                    else r.resource_type
+                    f"{r.resource_type}:{r.resource_id}" if r.resource_id else r.resource_type
                 ),
                 "reason": r.reason_code,
             }

@@ -111,9 +111,7 @@ def test_injection_attempts_are_refused(payload: str) -> None:
     "escaped badly"; they simply do not name a question. A 404 is the correct
     and only outcome.
     """
-    r = httpx.get(
-        f"{BASE}/neeti/ask", params={"question_id": payload}, headers=ANALYST, timeout=15
-    )
+    r = httpx.get(f"{BASE}/neeti/ask", params={"question_id": payload}, headers=ANALYST, timeout=15)
     assert r.status_code == 404, f"{payload!r} was not refused (got {r.status_code})"
     assert "unknown question" in r.text.lower()
 

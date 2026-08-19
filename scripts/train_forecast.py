@@ -149,13 +149,17 @@ async def main() -> None:
             if X.size == 0:
                 continue
             point = float(models[horizon].predict(X[-1:])[0])
-            payload.append((
-                issued, link_id, horizon,
-                round(max(0.0, min(100.0, point)), 1),
-                round(max(0.0, point + low), 1),
-                round(min(100.0, point + high), 1),
-                MODEL_VERSION,
-            ))
+            payload.append(
+                (
+                    issued,
+                    link_id,
+                    horizon,
+                    round(max(0.0, min(100.0, point)), 1),
+                    round(max(0.0, point + low), 1),
+                    round(min(100.0, point + high), 1),
+                    MODEL_VERSION,
+                )
+            )
 
     await conn.executemany(
         """

@@ -73,9 +73,7 @@ def run(scenario: str, steps: int = 3600) -> dict[str, object]:
             if step % 60 == 0 and step > 300:
                 vehicles = traci.vehicle.getIDList()
                 if vehicles:
-                    speeds.append(
-                        sum(traci.vehicle.getSpeed(v) for v in vehicles) / len(vehicles)
-                    )
+                    speeds.append(sum(traci.vehicle.getSpeed(v) for v in vehicles) / len(vehicles))
     finally:
         traci.close()
 

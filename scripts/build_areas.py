@@ -54,9 +54,18 @@ UA: Final = {"User-Agent": "PRAVAAH-research/0.1 (Jaipur traffic research)"}
 
 #: IRC:106-1990, urban roads. Same table the signal work uses.
 PCU: Final[dict[str, float]] = {
-    "2W": 0.5, "AUTO": 1.2, "ERIK": 1.2, "CAR": 1.0,
-    "LCV": 1.4, "BUS": 2.2, "TRK2": 2.2, "NMV": 0.4,
-    "TAXI": 1.0, "MBUS": 2.2, "TRKM": 3.0, "TRAC": 1.5,
+    "2W": 0.5,
+    "AUTO": 1.2,
+    "ERIK": 1.2,
+    "CAR": 1.0,
+    "LCV": 1.4,
+    "BUS": 2.2,
+    "TRK2": 2.2,
+    "NMV": 0.4,
+    "TAXI": 1.0,
+    "MBUS": 2.2,
+    "TRKM": 3.0,
+    "TRAC": 1.5,
 }
 
 #: The walled city. Zones are assigned by bearing from here, because that is how
@@ -68,10 +77,10 @@ BBOX: Final = "26.75,75.65,27.05,75.95"
 
 def fetch_stations() -> list[dict]:
     query = (
-        f'[out:json][timeout:90];('
+        f"[out:json][timeout:90];("
         f'node["amenity"="police"]({BBOX});'
         f'way["amenity"="police"]({BBOX});'
-        f');out center tags;'
+        f");out center tags;"
     )
     request = urllib.request.Request(
         "https://overpass-api.de/api/interpreter",
@@ -138,9 +147,7 @@ def fetch_network() -> list[dict]:
     the difference on every record.
     """
     query = (
-        f'[out:json][timeout:180];'
-        f'way["highway"~"^(trunk|primary|secondary)$"]({BBOX});'
-        f'out geom;'
+        f'[out:json][timeout:180];way["highway"~"^(trunk|primary|secondary)$"]({BBOX});out geom;'
     )
     request = urllib.request.Request(
         "https://overpass-api.de/api/interpreter",
@@ -189,9 +196,11 @@ def fetch_links() -> list[dict]:
 
 
 def _get(url: str) -> bytes:
-    with urllib.request.urlopen(  # noqa: S310 — fixed host from PRAVAAH_API
-        urllib.request.Request(url, headers=UA), timeout=90  # noqa: S310
-    ) as response:
+    # S310 wants the scheme audited. The host is fixed by PRAVAAH_API, so the
+    # suppression is on the request itself rather than spread across a wrapped
+    # call, where the formatter moves the line the rule actually points at.
+    request = urllib.request.Request(url, headers=UA)  # noqa: S310
+    with urllib.request.urlopen(request, timeout=90) as response:  # noqa: S310
         return response.read()
 
 
@@ -204,9 +213,10 @@ def midpoint(coords: list[list[float]]) -> tuple[float, float] | None:
 
 def haversine(a: tuple[float, float], b: tuple[float, float]) -> float:
     lon1, lat1, lon2, lat2 = map(math.radians, (a[0], a[1], b[0], b[1]))
-    h = math.sin((lat2 - lat1) / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(
-        (lon2 - lon1) / 2
-    ) ** 2
+    h = (
+        math.sin((lat2 - lat1) / 2) ** 2
+        + math.cos(lat1) * math.cos(lat2) * math.sin((lon2 - lon1) / 2) ** 2
+    )
     return 6371.0 * 2 * math.asin(math.sqrt(h))
 
 
@@ -223,9 +233,7 @@ def pcu_of(link: dict) -> float:
 def summarise(name: str, kind: str, members: list[dict], station: dict | None) -> dict:
     measured = [x for x in members if float(x.get("flow") or 0) > 0]
     congestion = [
-        float(x["congestion_index"])
-        for x in members
-        if x.get("congestion_index") is not None
+        float(x["congestion_index"]) for x in members if x.get("congestion_index") is not None
     ]
     vehicles = sum(float(x.get("flow") or 0) for x in members)
     pcu = sum(pcu_of(x) for x in members)
@@ -245,9 +253,7 @@ def summarise(name: str, kind: str, members: list[dict], station: dict | None) -
         # reading, and 0.0 reads as "free flowing" — the opposite of unknown.
         # Jaipur North and East are exactly this case: real road network, no
         # measurement on it yet, and the panel must not imply they are clear.
-        "mean_congestion": (
-            round(sum(congestion) / len(congestion), 1) if congestion else None
-        ),
+        "mean_congestion": (round(sum(congestion) / len(congestion), 1) if congestion else None),
         "max_congestion": round(max(congestion), 1) if congestion else None,
         "worst_link": (
             {
@@ -281,6 +287,7 @@ def cordon(links: list[dict], stations: list[dict]) -> dict[str, list[dict]]:
     approve or refuse: instrument these specific junctions, measure these
     specific areas.
     """
+
     def nearest(point: tuple[float, float]) -> str:
         return min(stations, key=lambda s: haversine(point, (s["lon"], s["lat"])))["name"]
 
@@ -335,6 +342,7 @@ def main() -> None:
         for name, members in by_station.items()
         if members
     ]
+
     # -1 for unmeasured, so they sort last instead of raising on None.
     def rank(a: dict) -> float:
         return a["mean_congestion"] if a["mean_congestion"] is not None else -1.0
@@ -405,9 +413,7 @@ def main() -> None:
         # carry a modelled congestion index with no vehicle total behind it.
         # The aggregation is correct; it has nothing to add up yet. Connect one
         # corridor's cameras and vehicles_per_hour fills in with no code change.
-        "vehicle_counts_available": any(
-            a["vehicles_per_hour"] > 0 for a in zones + thanas
-        ),
+        "vehicle_counts_available": any(a["vehicles_per_hour"] > 0 for a in zones + thanas),
         "vehicle_count_note": (
             "Congestion and worst-link are live for every area. Vehicle and PCU "
             "totals need measured counts, which exist only on instrumented "
@@ -422,16 +428,15 @@ def main() -> None:
     print(f"{'ZONE':<16}{'links':>7}{'veh/h':>9}{'PCU/h':>9}{'cong':>7}{'cover':>7}")
     for z in zones:
         cong = z["mean_congestion"]
-        print(f"{z['name']:<16}{z['links']:>7}{z['vehicles_per_hour']:>9}"
-              f"{z['pcu_per_hour']:>9}{(cong if cong is not None else '-'):>7}{z['coverage']:>7}")
+        print(
+            f"{z['name']:<16}{z['links']:>7}{z['vehicles_per_hour']:>9}"
+            f"{z['pcu_per_hour']:>9}{(cong if cong is not None else '-'):>7}{z['coverage']:>7}"
+        )
     print("\ntop thana catchments by congestion:")
     for t in thanas[:6]:
         cong = t["mean_congestion"] or "-"
         worst = (t["worst_link"] or {}).get("name", "-")
-        print(
-            f"  {t['name'][:30]:<32}{cong:>6}  "
-            f"{t['vehicles_per_hour']:>7} veh/h  worst: {worst}"
-        )
+        print(f"  {t['name'][:30]:<32}{cong:>6}  {t['vehicles_per_hour']:>7} veh/h  worst: {worst}")
     print("\ncordon plan, cheapest area first:")
     print(f"  {'area':<34}{'cameras':>8}{'cumulative':>12}")
     for row in plan[:8]:

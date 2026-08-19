@@ -33,6 +33,7 @@ from xml.etree import ElementTree as ET
 #: enough that the same junction reached from two links snaps to one node.
 NODE_PRECISION: Final = 6
 
+
 #: Vehicle types, with PCU matching `vehicle_classes.pcu_factor` and physical
 #: dimensions from IRC:106. `sigma` is driver imperfection: higher for the
 #: classes that behave less predictably in mixed traffic.
@@ -72,9 +73,9 @@ class Link:
 
 def node_id(lon: float, lat: float) -> str:
     """Stable id for a coordinate, so coincident endpoints share a junction."""
-    return f"n{round(lon, NODE_PRECISION)}_{round(lat, NODE_PRECISION)}".replace(
-        ".", "d"
-    ).replace("-", "m")
+    return f"n{round(lon, NODE_PRECISION)}_{round(lat, NODE_PRECISION)}".replace(".", "d").replace(
+        "-", "m"
+    )
 
 
 def build_plain_xml(links: list[Link]) -> tuple[str, str, str]:
@@ -149,8 +150,6 @@ def build_plain_xml(links: list[Link]) -> tuple[str, str, str]:
 
     def dump(element: ET.Element) -> str:
         ET.indent(element, space="  ")
-        return '<?xml version="1.0" encoding="UTF-8"?>\n' + ET.tostring(
-            element, encoding="unicode"
-        )
+        return '<?xml version="1.0" encoding="UTF-8"?>\n' + ET.tostring(element, encoding="unicode")
 
     return dump(nodes), dump(edges), dump(types)

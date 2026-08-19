@@ -5,9 +5,13 @@ from pravaah.adapters.air import AirQuality
 
 
 def _aq(**kwargs: float | int | None) -> AirQuality:
-    base: dict[str, float | int | None] = {
-        "pm2_5": None, "pm10": None, "nitrogen_dioxide": None,
-        "ozone": None, "carbon_monoxide": None, "us_aqi": None,
+    base: dict[str, float | int | str | None] = {
+        "pm2_5": None,
+        "pm10": None,
+        "nitrogen_dioxide": None,
+        "ozone": None,
+        "carbon_monoxide": None,
+        "us_aqi": None,
         "observed_at": "",
     }
     base.update(kwargs)
@@ -28,7 +32,9 @@ def test_a_missing_pollutant_is_never_an_exceedance() -> None:
 
 def test_multiple_exceedances_are_all_reported() -> None:
     assert set(_aq(pm2_5=70.0, pm10=140.0, nitrogen_dioxide=90.0).exceeds_cpcb) == {
-        "PM2.5", "PM10", "NO2",
+        "PM2.5",
+        "PM10",
+        "NO2",
     }
 
 

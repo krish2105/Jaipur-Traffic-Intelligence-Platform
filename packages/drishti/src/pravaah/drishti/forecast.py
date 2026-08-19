@@ -91,14 +91,16 @@ def build_supervised(
         # stand on exactly the same information or the margin means nothing.
         window = series[t - lags + 1 : t + 1]
         angle = 2 * np.pi * (hours[t] / 24.0)
-        rows.append([
-            *window,
-            float(window[-1] - window[0]),  # recent trend
-            float(window.mean()),
-            np.sin(angle),
-            np.cos(angle),
-            float(dows[t]),
-        ])
+        rows.append(
+            [
+                *window,
+                float(window[-1] - window[0]),  # recent trend
+                float(window.mean()),
+                np.sin(angle),
+                np.cos(angle),
+                float(dows[t]),
+            ]
+        )
         targets.append(series[t + horizon_steps])
         # Persistence: the value now, carried forward unchanged.
         baseline.append(series[t])

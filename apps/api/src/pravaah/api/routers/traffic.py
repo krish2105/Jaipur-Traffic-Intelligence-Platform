@@ -41,7 +41,6 @@ MIN_QUALITY = 0.6
 TZ = "Asia/Kolkata"
 
 
-
 IST = ZoneInfo("Asia/Kolkata")
 
 
@@ -69,9 +68,10 @@ async def _ist_day_bounds(
         # max() on an indexed column is an index scan; the previous version
         # applied AT TIME ZONE inside the aggregate, which was not.
         latest = await session.scalar(text("SELECT max(bucket_start) FROM traffic_counts"))
-        on = (latest.astimezone(IST).date() if latest else datetime.now(IST).date())
+        on = latest.astimezone(IST).date() if latest else datetime.now(IST).date()
     start_local = datetime.combine(on, time.min, tzinfo=IST)
     return start_local, start_local + timedelta(days=1), on
+
 
 @router.get("/corridors")
 async def list_corridors(session: SessionDep) -> list[dict[str, Any]]:
@@ -492,9 +492,7 @@ async def scene(
                 "speed_kmh": (
                     round(float(r.measured_speed_kmh), 1)
                     if r.measured_speed_kmh is not None
-                    else speed_kmh(
-                        float(r.congestion_index or 0), float(r.free_flow_kmh)
-                    )
+                    else speed_kmh(float(r.congestion_index or 0), float(r.free_flow_kmh))
                 ),
                 "speed_source": "measured" if r.measured_speed_kmh is not None else "modelled",
                 "free_flow_kmh": round(float(r.free_flow_kmh), 1),
@@ -1235,16 +1233,18 @@ async def edge_cameras(session: SessionDep) -> dict[str, Any]:
         # bins * 5. Dividing by 60 minutes of wall clock instead would report a
         # camera that was down for half the day as half as busy.
         minutes = bins * 5
-        cameras.append({
-            "camera_id": int(r.camera_id),
-            "external_ref": r.external_ref,
-            "status": r.status,
-            "junction": {"en": r.name_en, "hi": r.name_hi},
-            "vehicles_24h": vehicles,
-            "observed_minutes": minutes,
-            "vehicles_per_minute": round(vehicles / minutes, 1) if minutes else None,
-            "quality": round(float(r.quality), 3) if r.quality is not None else None,
-        })
+        cameras.append(
+            {
+                "camera_id": int(r.camera_id),
+                "external_ref": r.external_ref,
+                "status": r.status,
+                "junction": {"en": r.name_en, "hi": r.name_hi},
+                "vehicles_24h": vehicles,
+                "observed_minutes": minutes,
+                "vehicles_per_minute": round(vehicles / minutes, 1) if minutes else None,
+                "quality": round(float(r.quality), 3) if r.quality is not None else None,
+            }
+        )
 
     classes = await session.execute(
         text("""
@@ -1354,19 +1354,21 @@ async def representation(
         vehicles, pcu = counted.get(category.class_code, (0, 0.0))
         road_pct = vehicles / total_vehicles * 100
         space_pct = pcu / total_pcu * 100
-        comparison.append({
-            "class_code": category.class_code,
-            "name": {"en": category.name_en, "hi": category.name_hi},
-            "registered": category.vehicles,
-            "registered_pct": round(registered_pct, 2),
-            "on_road_pct": round(road_pct, 2),
-            "road_space_pct": round(space_pct, 2),
-            # >1 means the class is over-represented on this road relative to
-            # how many of them exist in the state.
-            "over_representation": (
-                round(road_pct / registered_pct, 2) if registered_pct > 0 else None
-            ),
-        })
+        comparison.append(
+            {
+                "class_code": category.class_code,
+                "name": {"en": category.name_en, "hi": category.name_hi},
+                "registered": category.vehicles,
+                "registered_pct": round(registered_pct, 2),
+                "on_road_pct": round(road_pct, 2),
+                "road_space_pct": round(space_pct, 2),
+                # >1 means the class is over-represented on this road relative to
+                # how many of them exist in the state.
+                "over_representation": (
+                    round(road_pct / registered_pct, 2) if registered_pct > 0 else None
+                ),
+            }
+        )
 
     comparison.sort(key=lambda c: float(c["registered_pct"]), reverse=True)
     return {
@@ -1459,13 +1461,15 @@ async def enforcement_fairness(session: SessionDep) -> dict[str, Any]:
     for r in type_rows:
         total_violations += int(r.total)
         class_code = _VIOLATION_CLASS.get(r.violation_type)
-        types.append({
-            "violation_type": r.violation_type,
-            "total": int(r.total),
-            "attributable_class": class_code,
-            "mean_confidence": round(float(r.mean_confidence), 3),
-            "below_gate_pct": round(100.0 * int(r.below_gate) / int(r.total), 1),
-        })
+        types.append(
+            {
+                "violation_type": r.violation_type,
+                "total": int(r.total),
+                "attributable_class": class_code,
+                "mean_confidence": round(float(r.mean_confidence), 3),
+                "below_gate_pct": round(100.0 * int(r.below_gate) / int(r.total), 1),
+            }
+        )
         if class_code:
             bucket = by_class.setdefault(class_code, {"violations": 0.0})
             bucket["violations"] += int(r.total)
@@ -1478,15 +1482,17 @@ async def enforcement_fairness(session: SessionDep) -> dict[str, Any]:
     for class_code, bucket in sorted(by_class.items()):
         challan_share = bucket["violations"] / comparable_violations
         road_share = exposure.get(class_code, 0) / comparable_exposure
-        classes.append({
-            "class_code": class_code,
-            "challans": int(bucket["violations"]),
-            "challan_share_pct": round(challan_share * 100, 1),
-            "road_share_pct": round(road_share * 100, 1),
-            # >1 means this class carries more of the enforcement burden than
-            # its presence on the road would imply.
-            "disparate_impact": round(challan_share / road_share, 2) if road_share else None,
-        })
+        classes.append(
+            {
+                "class_code": class_code,
+                "challans": int(bucket["violations"]),
+                "challan_share_pct": round(challan_share * 100, 1),
+                "road_share_pct": round(road_share * 100, 1),
+                # >1 means this class carries more of the enforcement burden than
+                # its presence on the road would imply.
+                "disparate_impact": round(challan_share / road_share, 2) if road_share else None,
+            }
+        )
 
     camera_result = await session.execute(
         text("""

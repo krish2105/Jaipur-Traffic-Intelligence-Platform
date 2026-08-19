@@ -40,9 +40,9 @@ def _side(line_a: Point, line_b: Point, point: Point) -> float:
     The sign is what matters, not the magnitude: positive one side, negative the
     other, zero exactly on the line.
     """
-    return (line_b[0] - line_a[0]) * (point[1] - line_a[1]) - (
-        line_b[1] - line_a[1]
-    ) * (point[0] - line_a[0])
+    return (line_b[0] - line_a[0]) * (point[1] - line_a[1]) - (line_b[1] - line_a[1]) * (
+        point[0] - line_a[0]
+    )
 
 
 def _segments_intersect(a1: Point, a2: Point, b1: Point, b2: Point) -> bool:

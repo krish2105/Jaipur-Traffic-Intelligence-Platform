@@ -148,8 +148,9 @@ async def main() -> None:
           AND tc.bucket_start >= now() - INTERVAL '7 days'
         """
     )
-    print(f"corridor at 19:00, 7 days: {int(check['vehicles']):,} vehicles, "
-          f"{int(check['pcu']):,} PCU")
+    print(
+        f"corridor at 19:00, 7 days: {int(check['vehicles']):,} vehicles, {int(check['pcu']):,} PCU"
+    )
     await conn.close()
 
 

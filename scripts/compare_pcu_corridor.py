@@ -49,19 +49,34 @@ RESULT = Path("apps/web/src/data/pcu-corridor.json")
 
 #: IRC:106-1990, urban roads — as in the single-junction comparison.
 PCU: Final[dict[str, float]] = {
-    "2W": 0.5, "AUTO": 1.2, "ERIK": 1.2, "CAR": 1.0,
-    "LCV": 1.4, "BUS": 2.2, "TRK2": 2.2,
+    "2W": 0.5,
+    "AUTO": 1.2,
+    "ERIK": 1.2,
+    "CAR": 1.0,
+    "LCV": 1.4,
+    "BUS": 2.2,
+    "TRK2": 2.2,
 }
 
 #: Free-flow speed each class can actually hold, m/s. From sim/vtypes.add.xml.
 VMAX: Final[dict[str, float]] = {
-    "2W": 16.667, "AUTO": 12.5, "ERIK": 6.944, "CAR": 19.444,
-    "LCV": 16.667, "BUS": 15.278, "TRK2": 15.278,
+    "2W": 16.667,
+    "AUTO": 12.5,
+    "ERIK": 6.944,
+    "CAR": 19.444,
+    "LCV": 16.667,
+    "BUS": 15.278,
+    "TRK2": 15.278,
 }
 
 #: The arterial's own composition — freight-bearing, as a Jaipur arterial is.
 ARTERIAL: Final[dict[str, float]] = {
-    "2W": 0.45, "AUTO": 0.10, "CAR": 0.22, "LCV": 0.10, "BUS": 0.08, "TRK2": 0.05,
+    "2W": 0.45,
+    "AUTO": 0.10,
+    "CAR": 0.22,
+    "LCV": 0.10,
+    "BUS": 0.08,
+    "TRK2": 0.05,
 }
 #: The cross streets are the two-wheeler-heavy local roads.
 CROSS: Final[dict[str, float]] = {"2W": 0.75, "AUTO": 0.10, "CAR": 0.12, "LCV": 0.03}
@@ -99,8 +114,8 @@ def progression_speed(mix: dict[str, float]) -> float:
 
 def write_network(n: int) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    nodes = ['<nodes>']
-    edges = ['<edges>']
+    nodes = ["<nodes>"]
+    edges = ["<edges>"]
 
     # Arterial runs west to east through j0..j(n-1), with a tail each end so
     # vehicles reach a steady speed before the first stop line.
@@ -129,19 +144,24 @@ def write_network(n: int) -> None:
     subprocess.run(  # noqa: S603 — binary from sumolib, args are literals
         [
             checkBinary("netconvert"),
-            "-n", str(OUT / "c.nod.xml"), "-e", str(OUT / "c.edg.xml"),
-            "-o", str(OUT / "c.net.xml"),
-            "--no-turnarounds", "--tls.default-type", "static",
+            "-n",
+            str(OUT / "c.nod.xml"),
+            "-e",
+            str(OUT / "c.edg.xml"),
+            "-o",
+            str(OUT / "c.net.xml"),
+            "--no-turnarounds",
+            "--tls.default-type",
+            "static",
         ],
-        check=True, capture_output=True,
+        check=True,
+        capture_output=True,
     )
 
 
 def write_routes(n: int) -> None:
     body = Path("sim/vtypes.add.xml").read_text().replace("</additional>", "")
-    route_art = " ".join(
-        ["w_j0"] + [f"j{i}_j{i+1}" for i in range(n - 1)] + [f"j{n-1}_e"]
-    )
+    route_art = " ".join(["w_j0"] + [f"j{i}_j{i + 1}" for i in range(n - 1)] + [f"j{n - 1}_e"])
     for cls, share in ARTERIAL.items():
         vph = ARTERIAL_VPH * share
         if vph < 1:
@@ -206,9 +226,7 @@ def write_tls(name: str, n: int, green_art: int, speed_ms: float) -> None:
             state = phase.get("state", "")
             if "G" not in state:
                 continue  # a yellow/clearance phase keeps its duration
-            serves_arterial = any(
-                k in art for k, ch in enumerate(state) if ch in "Gg"
-            )
+            serves_arterial = any(k in art for k, ch in enumerate(state) if ch in "Gg")
             phase.set("duration", str(green_art if serves_arterial else green_cross))
 
     tree.write(OUT / f"c_{name}.net.xml", encoding="UTF-8", xml_declaration=True)
@@ -233,7 +251,8 @@ def run(name: str, seed: int) -> dict[str, float]:
     )
     subprocess.run(  # noqa: S603 — binary from sumolib, args are literals
         [checkBinary("sumo"), "-c", str(cfg)],
-        check=True, capture_output=True,
+        check=True,
+        capture_output=True,
     )
 
     art_loss: list[float] = []
@@ -354,7 +373,9 @@ def main() -> None:
         "method": {
             "pcu_source": "IRC:106-1990",
             "offset_rule": "i * spacing / progression speed, mod cycle",
-            "cycle_s": CYCLE, "seeds": list(SEEDS), "sumo": "1.27.1",
+            "cycle_s": CYCLE,
+            "seeds": list(SEEDS),
+            "sumo": "1.27.1",
             "identical": "demand, seed, network, cycle. Split and offset differ.",
         },
         "caveat": (

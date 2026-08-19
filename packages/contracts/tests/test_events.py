@@ -42,7 +42,7 @@ def _count_event(**overrides: object) -> CountEvent:
         "edge_node_id": "node-tonk-01",
         "emitted_at": NOW,
     }
-    return CountEvent(**(base | overrides))  # type: ignore[arg-type]
+    return CountEvent(**(base | overrides))
 
 
 class TestPcuFactors:
@@ -93,7 +93,7 @@ class TestViolationEvent:
             "model_version": "parseq-0.1.0",
             "emitted_at": NOW,
         }
-        return ViolationEvent(**(base | overrides))  # type: ignore[arg-type]
+        return ViolationEvent(**(base | overrides))
 
     def test_accepts_a_confident_read(self) -> None:
         assert self._violation().requires_review is False

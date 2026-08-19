@@ -86,9 +86,7 @@ async def load_demand(
     demand: dict[int, dict[str, int]] = {}
     for r in rows:
         # Seven days of that hour; the simulation runs one.
-        demand.setdefault(int(r["lid"]), {})[r["class_code"]] = max(
-            0, int(r["vehicles"]) // 7
-        )
+        demand.setdefault(int(r["lid"]), {})[r["class_code"]] = max(0, int(r["vehicles"]) // 7)
     return demand
 
 
@@ -172,9 +170,12 @@ def main() -> None:
     result = subprocess.run(  # noqa: S603
         [
             netconvert,
-            "--node-files", str(OUT / "corridor.nod.xml"),
-            "--edge-files", str(OUT / "corridor.edg.xml"),
-            "--output-file", str(OUT / "corridor.net.xml"),
+            "--node-files",
+            str(OUT / "corridor.nod.xml"),
+            "--edge-files",
+            str(OUT / "corridor.edg.xml"),
+            "--output-file",
+            str(OUT / "corridor.net.xml"),
             # Our coordinates are lon/lat; without this netconvert treats them
             # as metres and builds a network 13 metres across.
             "--proj.utm",
@@ -194,8 +195,10 @@ def main() -> None:
             # not evidence about this corridor.
             "--tls.guess",
             "--tls.guess-signals",
-            "--tls.default-type", "static",
-            "--tls.cycle.time", "90",
+            "--tls.default-type",
+            "static",
+            "--tls.cycle.time",
+            "90",
             "--no-turnarounds",
         ],
         capture_output=True,
@@ -217,18 +220,19 @@ def main() -> None:
     # edges, which are the corridor's own trunk sections.
     entries = [e.getID() for e in net.getEdges() if not e.getIncoming()]
     if not entries:
-        entries = [
-            e.getID() for e in sorted(net.getEdges(), key=lambda x: -x.getLength())[:4]
-        ]
-    print(f"network: {len(all_edges)} edges, {len(net.getNodes())} nodes, "
-          f"{len(entries)} entry points")
+        entries = [e.getID() for e in sorted(net.getEdges(), key=lambda x: -x.getLength())[:4]]
+    print(
+        f"network: {len(all_edges)} edges, {len(net.getNodes())} nodes, {len(entries)} entry points"
+    )
 
     seconds = 3600
     edge_ids = set(all_edges)
     written = write_routes(OUT / "corridor.rou.xml", demand, edge_ids, seconds)
     measured_total = sum(sum(c.values()) for c in demand.values())
-    print(f"demand hour {args.hour:02d}: {measured_total:,} link-crossings measured, "
-          f"{written:,} injected")
+    print(
+        f"demand hour {args.hour:02d}: {measured_total:,} link-crossings measured, "
+        f"{written:,} injected"
+    )
 
     # Induction loops, one per edge. Without these the "volume check" compares
     # what we injected against what we intended to inject, which is circular

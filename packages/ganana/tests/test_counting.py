@@ -25,6 +25,7 @@ def _drive(counter: LineCounter, track_id: int, coco_id: int, ys: list[float]) -
 
 # ── the prohibition ──────────────────────────────────────────────────────────
 
+
 def test_a_person_is_never_countable() -> None:
     for pid in PERSON_CLASS_IDS:
         assert not is_countable(pid)
@@ -46,6 +47,7 @@ def test_a_person_crossing_the_line_produces_no_count() -> None:
 
 
 # ── counting is an event, not a state ────────────────────────────────────────
+
 
 def test_a_vehicle_is_counted_once_however_many_frames_it_appears_in() -> None:
     counter = LineCounter(line=LINE)
@@ -78,6 +80,7 @@ def test_a_flickering_one_frame_detection_never_counts() -> None:
 
 # ── geometry ─────────────────────────────────────────────────────────────────
 
+
 def test_direction_is_recorded_and_opposite_directions_differ() -> None:
     # An approach count that mixes directions is useless for a signal plan.
     counter = LineCounter(line=LINE)
@@ -98,6 +101,7 @@ def test_a_vehicle_beyond_the_line_s_extent_is_not_counted() -> None:
 
 
 # ── aggregation ──────────────────────────────────────────────────────────────
+
 
 def test_pcu_uses_the_class_factor_not_a_vehicle_count() -> None:
     counter = LineCounter(line=LINE)

@@ -64,7 +64,10 @@ python_version = "3.12"
 strict = true
 namespace_packages = true
 explicit_package_bases = true
-mypy_path = "packages/contracts/src:packages/adapters/src:packages/ganana/src:packages/drishti/src:packages/kavach/src:packages/neeti/src:apps/api/src:apps/worker/src"
+# setu was added after this line was written and never appended to it, so its
+# own tests imported it as an untyped third-party module and mypy skipped the
+# package entirely. Every packages/*/src belongs here.
+mypy_path = "packages/contracts/src:packages/adapters/src:packages/ganana/src:packages/drishti/src:packages/kavach/src:packages/neeti/src:packages/setu/src:apps/api/src:apps/worker/src"
 plugins = ["pydantic.mypy"]
 warn_unreachable = true
 disallow_any_generics = true

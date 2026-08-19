@@ -84,9 +84,7 @@ def two_wheeler_odds_ratio() -> tuple[float, float, float]:
     the quantity the allocator needs. Range reflects the spread across published
     estimates rather than a computed standard error.
     """
-    deaths_2w_share = (HELMET_FATALITY_SHARE_PCT / 100) / (
-        UNHELMETED_SHARE_OF_2W_DEATHS_PCT / 100
-    )
+    deaths_2w_share = (HELMET_FATALITY_SHARE_PCT / 100) / (UNHELMETED_SHARE_OF_2W_DEATHS_PCT / 100)
     crash_2w_share = TWO_WHEELER_CRASH_SHARE_PCT / 100
     # Odds of death given 2W involvement, against all other crashes.
     odds_2w = deaths_2w_share / max(1e-9, 1 - deaths_2w_share)
@@ -118,11 +116,22 @@ ASSUMPTIONS: Final[dict[str, dict[str, object]]] = {
 }
 
 
+def _number(key: str, field: str) -> float:
+    """Read a numeric bound out of ASSUMPTIONS.
+
+    The dict deliberately mixes numbers with the `basis` prose that justifies
+    them, so its value type is `object` and every read needs narrowing. Doing
+    it here once keeps the narrowing honest: an entry that is not a number
+    raises rather than being coerced into one.
+    """
+    value = ASSUMPTIONS[key][field]
+    if not isinstance(value, int | float):
+        raise TypeError(f"{key}.{field} is not a number: {value!r}")
+    return float(value)
+
+
 def _draw(rng: random.Random, key: str) -> float:
-    spec = ASSUMPTIONS[key]
-    return rng.uniform(
-        float(spec["low"]), float(spec["high"])
-    )
+    return rng.uniform(_number(key, "low"), _number(key, "high"))
 
 
 def fit_hour_effect(hours: list[dict[str, float]]) -> dict[str, object]:
@@ -195,10 +204,7 @@ def severity_model(hours: list[dict[str, float]] | None = None) -> dict[str, obj
     # observed 34.7 and called the 0.8 gap a residual, when it was really a
     # calibration it had not finished doing.
     baseline_freight = 0.05
-    mid_freight = (
-        float(ASSUMPTIONS["freight_multiplier"]["low"])
-        + float(ASSUMPTIONS["freight_multiplier"]["high"])
-    ) / 2
+    mid_freight = (_number("freight_multiplier", "low") + _number("freight_multiplier", "high")) / 2
     intercept = _logit(observed) - math.log(mid_freight) * baseline_freight
 
     def predict(
@@ -214,10 +220,14 @@ def severity_model(hours: list[dict[str, float]] | None = None) -> dict[str, obj
         "jaipur_now": {"unhelmeted_2w": JAIPUR_2W_SHARE * 0.73, "night": 0.0, "freight": 0.05},
         "night": {"unhelmeted_2w": JAIPUR_2W_SHARE * 0.73, "night": 1.0, "freight": 0.05},
         "helmet_compliance_90pct": {
-            "unhelmeted_2w": JAIPUR_2W_SHARE * 0.10, "night": 0.0, "freight": 0.05,
+            "unhelmeted_2w": JAIPUR_2W_SHARE * 0.10,
+            "night": 0.0,
+            "freight": 0.05,
         },
         "freight_corridor": {
-            "unhelmeted_2w": JAIPUR_2W_SHARE * 0.73, "night": 0.0, "freight": 0.30,
+            "unhelmeted_2w": JAIPUR_2W_SHARE * 0.73,
+            "night": 0.0,
+            "freight": 0.30,
         },
     }
 
@@ -231,9 +241,7 @@ def severity_model(hours: list[dict[str, float]] | None = None) -> dict[str, obj
                 "freight": _draw(rng, "freight_multiplier"),
             }
             draws.append(
-                predict(
-                    float(sc["unhelmeted_2w"]), float(sc["night"]), float(sc["freight"]), d
-                )
+                predict(float(sc["unhelmeted_2w"]), float(sc["night"]), float(sc["freight"]), d)
                 * 100
             )
         draws.sort()

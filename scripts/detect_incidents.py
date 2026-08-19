@@ -102,14 +102,16 @@ async def main() -> None:
     open_: dict | None = None
 
     def close(run: dict) -> None:
-        incidents.append((
-            run["start"],
-            run["link_id"],
-            run["centroid"],
-            severity_for(run["peak_z"]),
-            round(confidence_for(run["peak_z"]), 2),
-            run["end"] + _BUCKET,
-        ))
+        incidents.append(
+            (
+                run["start"],
+                run["link_id"],
+                run["centroid"],
+                severity_for(run["peak_z"]),
+                round(confidence_for(run["peak_z"]), 2),
+                run["end"] + _BUCKET,
+            )
+        )
 
     for r in rows:
         residual = r["observed"] - r["median"]

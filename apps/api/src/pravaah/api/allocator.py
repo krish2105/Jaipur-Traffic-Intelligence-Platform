@@ -176,16 +176,15 @@ def allocate() -> dict[str, object]:
     # *less* helmet enforcement, not more. That is a real limit of the argument
     # and it is published with it. Anyone who believes enforcement returns
     # barely saturate should not be persuaded by this panel, and should say so.
-    holds = [row["k"] for row in sensitivity
-             if row["helmet_share_pct"] > ENFORCEMENT_MIX["no_helmet"]]
+    holds = [
+        row["k"] for row in sensitivity if row["helmet_share_pct"] > ENFORCEMENT_MIX["no_helmet"]
+    ]
     fails = [row["k"] for row in sensitivity if row["k"] not in holds]
 
     return {
         "current_pct": {key: round(current[key] * 100, 2) for key in keys},
         "recommended_pct": {key: round(optimal[key] * 100, 2) for key in keys},
-        "delta_pct": {
-            key: round((optimal[key] - current[key]) * 100, 2) for key in keys
-        },
+        "delta_pct": {key: round((optimal[key] - current[key]) * 100, 2) for key in keys},
         "marginal_return_now": {
             key: round(_marginal(ATTRIBUTABLE[key], current[key], K), 4) for key in keys
         },
