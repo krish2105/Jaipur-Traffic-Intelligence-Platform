@@ -240,7 +240,31 @@ aapse maang rahe hain.</p>
 
 <p>The question a control room asks is not "how is this road" but <b>"how bad is
 Vaishali Nagar right now, and how much traffic is sitting in it"</b>. Nothing in
-Jaipur answers that today. PRAVAAH now does.</p>
+Jaipur answers that today. PRAVAAH now does, and the way it does it is worth two
+minutes of your attention because it is also where we were most recently wrong.</p>
+
+<h3>How you count vehicles without a camera</h3>
+<p>Traffic engineering has linked speed and density since the 1930s. Measure how
+fast a road is moving, and the number of vehicles on it follows. We take the live
+TomTom speed on each corridor link, convert it to vehicles, and add up everything
+inside a police station boundary. Against the critical accumulation of the same
+roads, that gives the sentence a control room can act on: not "8,400 vehicles"
+but "8,400 against a capacity of 6,900, and here are the four gates to hold".</p>
+
+<div class="warn">
+<p><b>We tested our own number against a simulation, and it failed.</b> The
+published constant every textbook gives for Indian arterials made our estimate
+63 percent wrong on busy roads, and the error bar we printed around it was
+correct only nine times in a hundred. We found this because we checked. Nobody
+would have found it from the screen.</p>
+<p style="margin-bottom:0">Refitted against 54 simulation runs where the true
+vehicle count is known, the error on a busy road is <b>2.8 percent</b>. On a
+lightly loaded road it is still 65 percent, and no error bar repairs that, so on
+a lightly loaded road <b>we now print no number at all</b>. The screen says
+"lightly loaded, count withheld" and shows the state of the road instead. The
+figure appears at the evening peak, which is the only time anyone would act on
+it. We would rather be silent in the afternoon than confident and wrong.</p>
+</div>
 
 <h3>Every part of the city, ranked</h3>
 <p>22 police station catchments and four Commissionerate zones, built over 1,452
@@ -376,7 +400,7 @@ showing you a selection.</p>
 <tr><td>Honesty of claims</td><td class="num">20 / 20</td>
     <td>Three of our own technical claims were tested and two were wrong. Both were corrected in the record rather than dropped quietly.</td></tr>
 <tr><td>Engineering quality</td><td class="num">19 / 20</td>
-    <td>192 automated tests across the platform, plus checks for security, colour contrast and accessibility that fail the build. Three of them stop the readiness panel claiming a source it does not have, does not point anywhere, or has a credential the supplier refuses.</td></tr>
+    <td>252 automated tests across the platform, plus checks for security, colour contrast and accessibility that fail the build. Three of them stop the readiness panel claiming a source it does not have, does not point anywhere, or has a credential the supplier refuses.</td></tr>
 <tr><td>Product completeness</td><td class="num">18 / 20</td>
     <td>Area screening built and live with the camera plan costed, and two more data sources now one free key away. Vehicle detection still needs training on Indian traffic.</td></tr>
 <tr><td>Interface</td><td class="num">10 / 10</td>
