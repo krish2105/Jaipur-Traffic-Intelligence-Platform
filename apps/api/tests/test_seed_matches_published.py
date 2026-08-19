@@ -39,7 +39,16 @@ async def _load() -> dict[int, tuple[int, int]]:
 def seeded() -> dict[int, tuple[int, int]]:
     # asyncpg rather than a sync engine: this project has no psycopg2 and does
     # not want one for a single read.
-    return asyncio.run(_load())
+    #
+    # An unreachable database skips rather than errors. A DATABASE_URL that is
+    # set but points at a stopped Postgres is the same situation as one that is
+    # unset — this machine cannot check the seed — and the suite already knows
+    # how to say that. Reporting it as three errors instead turned a laptop with
+    # its containers down into a red build.
+    try:
+        return asyncio.run(_load())
+    except (OSError, asyncpg.PostgresError) as exc:
+        pytest.skip(f"DATABASE_URL is set but Postgres is unreachable: {exc}")
 
 
 def test_every_published_year_is_reproduced_exactly(seeded: dict[int, tuple[int, int]]) -> None:
