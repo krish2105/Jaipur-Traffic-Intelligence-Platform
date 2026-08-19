@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<additional>
+  <vType id="2W" length="1.8" width="0.6" maxSpeed="16.667" minGap="0.5" sigma="0.7" latAlignment="arbitrary" vClass="motorcycle" />
+  <vType id="AUTO" length="2.6" width="1.4" maxSpeed="12.500" minGap="0.8" sigma="0.6" latAlignment="arbitrary" vClass="passenger" />
+  <vType id="ERIK" length="2.7" width="1.2" maxSpeed="6.944" minGap="0.8" sigma="0.6" latAlignment="arbitrary" vClass="passenger" />
+  <vType id="CAR" length="4.0" width="1.7" maxSpeed="19.444" minGap="1.5" sigma="0.5" latAlignment="arbitrary" vClass="passenger" />
+  <vType id="LCV" length="6.0" width="2.2" maxSpeed="16.667" minGap="2.0" sigma="0.5" latAlignment="arbitrary" vClass="passenger" />
+  <vType id="BUS" length="10.5" width="2.5" maxSpeed="15.278" minGap="2.5" sigma="0.4" latAlignment="arbitrary" vClass="passenger" />
+  <vType id="TRK2" length="9.0" width="2.5" maxSpeed="15.278" minGap="2.5" sigma="0.4" latAlignment="arbitrary" vClass="passenger" />
+  <flow id="f_through_2W" type="2W" begin="0" end="3600" vehsPerHour="1046.8" departLane="random" departSpeed="max">
+    <route edges="ramp_up flyover ramp_down"/>
+  </flow>
+  <flow id="f_local_2W" type="2W" begin="0" end="3600" vehsPerHour="856.4" departLane="random" departSpeed="max">
+    <route edges="g_in_j1 g_j1_j2 g_j2_j3 g_j3_j4 g_j4_out"/>
+  </flow>
+  <flow id="f_through_AUTO" type="AUTO" begin="0" end="3600" vehsPerHour="154.4" departLane="random" departSpeed="max">
+    <route edges="ramp_up flyover ramp_down"/>
+  </flow>
+  <flow id="f_local_AUTO" type="AUTO" begin="0" end="3600" vehsPerHour="126.4" departLane="random" departSpeed="max">
+    <route edges="g_in_j1 g_j1_j2 g_j2_j3 g_j3_j4 g_j4_out"/>
+  </flow>
+  <flow id="f_through_CAR" type="CAR" begin="0" end="3600" vehsPerHour="411.8" departLane="random" departSpeed="max">
+    <route edges="ramp_up flyover ramp_down"/>
+  </flow>
+  <flow id="f_local_CAR" type="CAR" begin="0" end="3600" vehsPerHour="337.0" departLane="random" departSpeed="max">
+    <route edges="g_in_j1 g_j1_j2 g_j2_j3 g_j3_j4 g_j4_out"/>
+  </flow>
+  <flow id="f_through_LCV" type="LCV" begin="0" end="3600" vehsPerHour="51.5" departLane="random" departSpeed="max">
+    <route edges="ramp_up flyover ramp_down"/>
+  </flow>
+  <flow id="f_local_LCV" type="LCV" begin="0" end="3600" vehsPerHour="42.1" departLane="random" departSpeed="max">
+    <route edges="g_in_j1 g_j1_j2 g_j2_j3 g_j3_j4 g_j4_out"/>
+  </flow>
+  <flow id="f_through_BUS" type="BUS" begin="0" end="3600" vehsPerHour="34.3" departLane="random" departSpeed="max">
+    <route edges="ramp_up flyover ramp_down"/>
+  </flow>
+  <flow id="f_local_BUS" type="BUS" begin="0" end="3600" vehsPerHour="28.1" departLane="random" departSpeed="max">
+    <route edges="g_in_j1 g_j1_j2 g_j2_j3 g_j3_j4 g_j4_out"/>
+  </flow>
+  <flow id="f_through_TRK2" type="TRK2" begin="0" end="3600" vehsPerHour="17.2" departLane="random" departSpeed="max">
+    <route edges="ramp_up flyover ramp_down"/>
+  </flow>
+  <flow id="f_local_TRK2" type="TRK2" begin="0" end="3600" vehsPerHour="14.0" departLane="random" departSpeed="max">
+    <route edges="g_in_j1 g_j1_j2 g_j2_j3 g_j3_j4 g_j4_out"/>
+  </flow>
+  <flow id="f_cross1_2W" type="2W" begin="0" end="3600" vehsPerHour="366.0" departLane="random" departSpeed="max">
+    <route edges="x_n1 x_j1s"/>
+  </flow>
+  <flow id="f_cross1_AUTO" type="AUTO" begin="0" end="3600" vehsPerHour="54.0" departLane="random" departSpeed="max">
+    <route edges="x_n1 x_j1s"/>
+  </flow>
+  <flow id="f_cross1_CAR" type="CAR" begin="0" end="3600" vehsPerHour="144.0" departLane="random" departSpeed="max">
+    <route edges="x_n1 x_j1s"/>
+  </flow>
+  <flow id="f_cross1_LCV" type="LCV" begin="0" end="3600" vehsPerHour="18.0" departLane="random" departSpeed="max">
+    <route edges="x_n1 x_j1s"/>
+  </flow>
+  <flow id="f_cross1_BUS" type="BUS" begin="0" end="3600" vehsPerHour="12.0" departLane="random" departSpeed="max">
+    <route edges="x_n1 x_j1s"/>
+  </flow>
+  <flow id="f_cross1_TRK2" type="TRK2" begin="0" end="3600" vehsPerHour="6.0" departLane="random" departSpeed="max">
+    <route edges="x_n1 x_j1s"/>
+  </flow>
+  <flow id="f_cross2_2W" type="2W" begin="0" end="3600" vehsPerHour="366.0" departLane="random" departSpeed="max">
+    <route edges="x_n2 x_j2s"/>
+  </flow>
+  <flow id="f_cross2_AUTO" type="AUTO" begin="0" end="3600" vehsPerHour="54.0" departLane="random" departSpeed="max">
+    <route edges="x_n2 x_j2s"/>
+  </flow>
+  <flow id="f_cross2_CAR" type="CAR" begin="0" end="3600" vehsPerHour="144.0" departLane="random" departSpeed="max">
+    <route edges="x_n2 x_j2s"/>
+  </flow>
+  <flow id="f_cross2_LCV" type="LCV" begin="0" end="3600" vehsPerHour="18.0" departLane="random" departSpeed="max">
+    <route edges="x_n2 x_j2s"/>
+  </flow>
+  <flow id="f_cross2_BUS" type="BUS" begin="0" end="3600" vehsPerHour="12.0" departLane="random" departSpeed="max">
+    <route edges="x_n2 x_j2s"/>
+  </flow>
+  <flow id="f_cross2_TRK2" type="TRK2" begin="0" end="3600" vehsPerHour="6.0" departLane="random" departSpeed="max">
+    <route edges="x_n2 x_j2s"/>
+  </flow>
+  <flow id="f_cross3_2W" type="2W" begin="0" end="3600" vehsPerHour="366.0" departLane="random" departSpeed="max">
+    <route edges="x_n3 x_j3s"/>
+  </flow>
+  <flow id="f_cross3_AUTO" type="AUTO" begin="0" end="3600" vehsPerHour="54.0" departLane="random" departSpeed="max">
+    <route edges="x_n3 x_j3s"/>
+  </flow>
+  <flow id="f_cross3_CAR" type="CAR" begin="0" end="3600" vehsPerHour="144.0" departLane="random" departSpeed="max">
+    <route edges="x_n3 x_j3s"/>
+  </flow>
+  <flow id="f_cross3_LCV" type="LCV" begin="0" end="3600" vehsPerHour="18.0" departLane="random" departSpeed="max">
+    <route edges="x_n3 x_j3s"/>
+  </flow>
+  <flow id="f_cross3_BUS" type="BUS" begin="0" end="3600" vehsPerHour="12.0" departLane="random" departSpeed="max">
+    <route edges="x_n3 x_j3s"/>
+  </flow>
+  <flow id="f_cross3_TRK2" type="TRK2" begin="0" end="3600" vehsPerHour="6.0" departLane="random" departSpeed="max">
+    <route edges="x_n3 x_j3s"/>
+  </flow>
+  <flow id="f_cross4_2W" type="2W" begin="0" end="3600" vehsPerHour="366.0" departLane="random" departSpeed="max">
+    <route edges="x_n4 x_j4s"/>
+  </flow>
+  <flow id="f_cross4_AUTO" type="AUTO" begin="0" end="3600" vehsPerHour="54.0" departLane="random" departSpeed="max">
+    <route edges="x_n4 x_j4s"/>
+  </flow>
+  <flow id="f_cross4_CAR" type="CAR" begin="0" end="3600" vehsPerHour="144.0" departLane="random" departSpeed="max">
+    <route edges="x_n4 x_j4s"/>
+  </flow>
+  <flow id="f_cross4_LCV" type="LCV" begin="0" end="3600" vehsPerHour="18.0" departLane="random" departSpeed="max">
+    <route edges="x_n4 x_j4s"/>
+  </flow>
+  <flow id="f_cross4_BUS" type="BUS" begin="0" end="3600" vehsPerHour="12.0" departLane="random" departSpeed="max">
+    <route edges="x_n4 x_j4s"/>
+  </flow>
+  <flow id="f_cross4_TRK2" type="TRK2" begin="0" end="3600" vehsPerHour="6.0" departLane="random" departSpeed="max">
+    <route edges="x_n4 x_j4s"/>
+  </flow>
+</additional>

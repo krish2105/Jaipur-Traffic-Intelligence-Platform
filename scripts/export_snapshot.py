@@ -53,6 +53,8 @@ PATHS: tuple[str, ...] = (
     "/areas/accumulation/live",
     # What Jaipur already publishes to the national data exchange.
     "/meta/city-data",
+    # Capital schemes appraised before the work order.
+    "/schemes",
     "/safety/severity-model",
     "/enforcement/allocation",
     "/counts/summary?corridor_id=1",

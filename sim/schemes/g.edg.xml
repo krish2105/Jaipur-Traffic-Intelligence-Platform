@@ -1,0 +1,18 @@
+<edges>
+  <edge id="g_in_j1" from="in" to="j1" numLanes="3" speed="13.9"/>
+  <edge id="g_j1_j2" from="j1" to="j2" numLanes="3" speed="13.9"/>
+  <edge id="g_j2_j3" from="j2" to="j3" numLanes="3" speed="13.9"/>
+  <edge id="g_j3_j4" from="j3" to="j4" numLanes="3" speed="13.9"/>
+  <edge id="g_j4_out" from="j4" to="out" numLanes="3" speed="13.9"/>
+  <edge id="x_n1" from="n1" to="j1" numLanes="2" speed="13.9"/>
+  <edge id="x_j1s" from="j1" to="s1" numLanes="2" speed="13.9"/>
+  <edge id="x_n2" from="n2" to="j2" numLanes="2" speed="13.9"/>
+  <edge id="x_j2s" from="j2" to="s2" numLanes="2" speed="13.9"/>
+  <edge id="x_n3" from="n3" to="j3" numLanes="2" speed="13.9"/>
+  <edge id="x_j3s" from="j3" to="s3" numLanes="2" speed="13.9"/>
+  <edge id="x_n4" from="n4" to="j4" numLanes="2" speed="13.9"/>
+  <edge id="x_j4s" from="j4" to="s4" numLanes="2" speed="13.9"/>
+  <edge id="ramp_up" from="in" to="up" numLanes="2" speed="13.9"/>
+  <edge id="flyover" from="up" to="down" numLanes="2" speed="16.7"/>
+  <edge id="ramp_down" from="down" to="out" numLanes="2" speed="13.9"/>
+</edges>

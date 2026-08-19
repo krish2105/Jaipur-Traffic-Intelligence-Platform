@@ -1,0 +1,139 @@
+{
+  "scheme": {
+    "id": "gopalpura-elevated",
+    "name": "Elevated road, Gopalpura Bypass",
+    "authority": "Jaipur Development Authority",
+    "cost_crore": 184.87,
+    "length_km": 2.16,
+    "lanes_each_way": 2,
+    "corridor_id": 4
+  },
+  "simulator": "SUMO 1.27.1",
+  "seeds": [
+    42,
+    7,
+    1337,
+    2024,
+    99
+  ],
+  "demand_veh_per_hour": 2400,
+  "junctions_bypassed": 4,
+  "results": [
+    {
+      "through_share": 0.4,
+      "groups": {
+        "through": {
+          "without_s": 185.9,
+          "with_s": 19.4,
+          "saved_s": 166.5,
+          "ci_low_s": 165.5,
+          "ci_high_s": 167.6,
+          "significant": true
+        },
+        "local": {
+          "without_s": 185.8,
+          "with_s": 159.0,
+          "saved_s": 26.8,
+          "ci_low_s": 24.9,
+          "ci_high_s": 28.7,
+          "significant": true
+        },
+        "mean": {
+          "without_s": 185.8,
+          "with_s": 103.1,
+          "saved_s": 82.7,
+          "ci_low_s": 82.0,
+          "ci_high_s": 83.5,
+          "significant": true
+        }
+      }
+    },
+    {
+      "through_share": 0.55,
+      "groups": {
+        "through": {
+          "without_s": 186.2,
+          "with_s": 21.7,
+          "saved_s": 164.5,
+          "ci_low_s": 163.4,
+          "ci_high_s": 165.6,
+          "significant": true
+        },
+        "local": {
+          "without_s": 185.2,
+          "with_s": 144.3,
+          "saved_s": 40.9,
+          "ci_low_s": 37.3,
+          "ci_high_s": 44.4,
+          "significant": true
+        },
+        "mean": {
+          "without_s": 185.7,
+          "with_s": 76.9,
+          "saved_s": 108.8,
+          "ci_low_s": 107.1,
+          "ci_high_s": 110.6,
+          "significant": true
+        }
+      }
+    },
+    {
+      "through_share": 0.7,
+      "groups": {
+        "through": {
+          "without_s": 185.7,
+          "with_s": 24.3,
+          "saved_s": 161.3,
+          "ci_low_s": 159.8,
+          "ci_high_s": 162.9,
+          "significant": true
+        },
+        "local": {
+          "without_s": 185.1,
+          "with_s": 120.2,
+          "saved_s": 64.9,
+          "ci_low_s": 61.6,
+          "ci_high_s": 68.2,
+          "significant": true
+        },
+        "mean": {
+          "without_s": 185.5,
+          "with_s": 53.1,
+          "saved_s": 132.4,
+          "ci_low_s": 131.4,
+          "ci_high_s": 133.3,
+          "significant": true
+        }
+      }
+    }
+  ],
+  "induced_demand": {
+    "through_share": 0.55,
+    "without_scheme_mean_delay_s": 185.7,
+    "steps": [
+      {
+        "extra_demand": 0.0,
+        "mean_delay_s": 76.9,
+        "saved_s": 108.8,
+        "share_of_original_saving": 1.0
+      },
+      {
+        "extra_demand": 0.15,
+        "mean_delay_s": 80.4,
+        "saved_s": 105.3,
+        "share_of_original_saving": 0.968
+      },
+      {
+        "extra_demand": 0.3,
+        "mean_delay_s": 84.3,
+        "saved_s": 101.5,
+        "share_of_original_saving": 0.933
+      }
+    ],
+    "note": "Not a forecast of how much demand a flyover induces, which nobody can give honestly. It answers the question a sceptical official should ask: how much of the saving survives if the road attracts traffic."
+  },
+  "swept_assumption": "Through share is the proportion of Gopalpura traffic passing along the corridor rather than turning off it. Nobody has measured it here, and the benefit scales almost entirely with it, so it is swept rather than assumed.",
+  "reported_separately": "Through and local traffic are reported apart. A flyover serves one and leaves the other at the same signals, and a mean over both hides the trade a councillor will be asked about.",
+  "limits": "A simulated difference on an abstracted corridor, not a prediction of what the built road will do. Ramp queueing, merge behaviour at the touchdown and induced demand are all absent. Its use is to set up the before-measurement while the before still exists.",
+  "is_synthetic": true
+}

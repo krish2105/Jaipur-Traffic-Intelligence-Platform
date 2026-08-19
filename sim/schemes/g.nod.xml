@@ -1,0 +1,18 @@
+<nodes>
+  <node id="in" x="0" y="0"/>
+  <node id="j1" x="432" y="0" type="traffic_light"/>
+  <node id="j2" x="864" y="0" type="traffic_light"/>
+  <node id="j3" x="1296" y="0" type="traffic_light"/>
+  <node id="j4" x="1728" y="0" type="traffic_light"/>
+  <node id="out" x="2160" y="0"/>
+  <node id="n1" x="432" y="300"/>
+  <node id="s1" x="432" y="-300"/>
+  <node id="n2" x="864" y="300"/>
+  <node id="s2" x="864" y="-300"/>
+  <node id="n3" x="1296" y="300"/>
+  <node id="s3" x="1296" y="-300"/>
+  <node id="n4" x="1728" y="300"/>
+  <node id="s4" x="1728" y="-300"/>
+  <node id="up" x="60" y="40"/>
+  <node id="down" x="2100" y="40"/>
+</nodes>

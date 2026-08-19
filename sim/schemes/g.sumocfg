@@ -1,0 +1,11 @@
+<configuration>
+  <input>
+    <net-file value="g.net.xml"/>
+    <route-files value="g.rou.xml"/>
+    <additional-files value="tls.add.xml"/>
+  </input>
+  <output><tripinfo-output value="trips.xml"/></output>
+  <time><begin value="0"/><end value="5400"/></time>
+  <processing><time-to-teleport value="-1"/></processing>
+  <random_number><seed value="99"/></random_number>
+</configuration>

@@ -549,6 +549,15 @@ async def scene(
     }
 
 
+def _find_data(*parts: str) -> Path | None:
+    """Locate a generated data file by walking up, as `_find_seed` does."""
+    for directory in Path(__file__).resolve().parents:
+        candidate = directory.joinpath("data", *parts)
+        if candidate.exists():
+            return candidate
+    return None
+
+
 def _find_seed(name: str) -> Path | None:
     """Locate a seed file by walking up from this module.
 
@@ -590,6 +599,30 @@ async def probe_coverage() -> dict[str, Any]:
     surprises somebody with a bill.
     """
     return probe.coverage()
+
+
+@router.get("/schemes")
+async def schemes() -> dict[str, Any]:
+    """Capital schemes appraised before the work order.
+
+    JDA is spending Rs 184.87 crore on an elevated road on Gopalpura Bypass, one
+    of the four corridors this platform models. Once it opens the counterfactual
+    is gone: nobody will be able to say what the road would have been doing
+    without it, because nobody measured.
+
+    Reported through and local separately, because a flyover serves one group
+    and leaves the other at the same signals, and a mean over both hides the
+    trade a councillor will be asked about. Reported across a swept through
+    share, because that assumption decides the answer and nobody has measured it
+    here. And reported with an induced-demand sensitivity, because a road that
+    saves two and a half minutes attracts traffic, which is the standard
+    criticism of urban grade separation and the standard omission from the
+    appraisals that justify them.
+    """
+    path = _find_data("schemes", "gopalpura-elevated.json")
+    if path is None:
+        return {"schemes": [], "note": "No appraisal has been run yet."}
+    return {"schemes": [json.loads(path.read_text(encoding="utf-8"))]}
 
 
 @router.get("/areas/accumulation/live")
