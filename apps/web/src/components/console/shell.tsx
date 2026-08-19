@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
+import { speedSourceMark, speedSourceTint, speedSourceTitle } from "@/lib/speed-source";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 
@@ -566,15 +567,13 @@ export function MapFallback({ links, locale }: { links: SceneLink[]; locale: Loc
               </td>
               <td
                 className="py-1.5 text-right font-mono tabular-nums text-[var(--ink-muted)]"
-                title={
-                  l.speed_source === "modelled"
-                    ? "derived from the congestion index — no camera speed for this link"
-                    : "measured"
-                }
+                title={speedSourceTitle(l.speed_source, hi)}
               >
                 {l.speed_kmh.toFixed(0)}
-                {l.speed_source === "modelled" && (
-                  <span className="text-[var(--ink-faint)]">~</span>
+                {speedSourceMark(l.speed_source) && (
+                  <span style={{ color: speedSourceTint(l.speed_source) }}>
+                    {speedSourceMark(l.speed_source)}
+                  </span>
                 )}
               </td>
             </tr>

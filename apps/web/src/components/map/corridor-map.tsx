@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { speedSourceMark, speedSourceTint, speedSourceTitle } from "@/lib/speed-source";
 import {
   AttributionControl,
   Map as MapLibreMap,
@@ -462,8 +463,13 @@ export function CorridorMap({
             }}
           >
             {hovered.congestion_index.toFixed(0)} / 100 · {hovered.speed_kmh.toFixed(0)} km/h
-            {hovered.speed_source === "modelled" && (
-              <span className="text-[var(--ink-faint)]">~</span>
+            {speedSourceMark(hovered.speed_source) && (
+              <span
+                style={{ color: speedSourceTint(hovered.speed_source) }}
+                title={speedSourceTitle(hovered.speed_source, hi)}
+              >
+                {speedSourceMark(hovered.speed_source)}
+              </span>
             )}
           </p>
           {hovered.suppressed && (

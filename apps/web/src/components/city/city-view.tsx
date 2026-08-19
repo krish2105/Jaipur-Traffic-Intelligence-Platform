@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import type { SpeedSource } from "@/lib/speed-source";
 
 import { currentScene, serverScene, setTheme, subscribeScene } from "@/lib/theme";
 import { City } from "./city-scene.loader";
@@ -54,7 +55,7 @@ export interface SceneLink {
   flow: number;
   speed_kmh: number;
   /** Whether that speed was seen by a camera or derived from the index. */
-  speed_source?: "measured" | "modelled";
+  speed_source?: SpeedSource;
   free_flow_kmh?: number;
   suppressed: boolean;
   class_mix?: Record<string, number>;

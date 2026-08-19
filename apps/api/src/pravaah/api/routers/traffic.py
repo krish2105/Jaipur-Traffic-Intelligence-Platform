@@ -22,6 +22,7 @@ from pravaah.adapters.published import (
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from .. import probe
 from ..allocator import allocate
 from ..deps import SessionDep
 from ..kpis import kpi_board
@@ -386,11 +387,21 @@ async def scene(
     city, so three round-trips would only produce three chances to show a
     half-built one.
 
-    `flow` is measured. `speed_kmh` is measured where a camera saw it and
-    modelled from the congestion index otherwise — `speed_source` says
-    which, always. `suppressed` marks links
-    whose latest bin fell below the quality floor. The twin renders those inert
-    — it must never invent traffic it did not measure (docs/06 §3).
+    `flow` is measured. `speed_kmh` has three possible provenances and
+    `speed_source` always says which:
+
+      "probe"     a live TomTom reading, fresh and above its confidence floor
+      "measured"  a camera on this link saw it
+      "modelled"  derived from the congestion index, measured by nothing
+
+    Probe wins over camera because it is the only one of the two that is real
+    today — there is no camera feed, so a "measured" speed here comes from the
+    seed. It is used only when the caller is asking about now: a reading taken
+    this afternoon says nothing about a moment the timeline has scrubbed to.
+
+    `suppressed` marks links whose latest bin fell below the quality floor. The
+    twin renders those inert — it must never invent traffic it did not measure
+    (docs/06 §3).
     """
     rows = await session.execute(
         text("""
@@ -467,11 +478,19 @@ async def scene(
         """),
         {"corridor_id": corridor_id, "at": at},
     )
+    # Empty unless a sweep ran recently AND the caller is asking about now.
+    probe_readings = probe.readings(at)
+
     links = []
     for r in rows:
         geometry = r.geometry or {}
         if geometry.get("type") != "LineString":
             continue
+        # A reading below TomTom's confidence floor is their historical model,
+        # not a probe measurement, so it is ignored rather than promoted.
+        reading = probe_readings.get(str(r.link_id))
+        if reading is not None and not reading.get("is_measured"):
+            reading = None
         links.append(
             {
                 "link_id": r.link_id,
@@ -490,11 +509,33 @@ async def scene(
                 # rush mean, and `speed_source` says which it is. docs/06 §8:
                 # no naked number.
                 "speed_kmh": (
-                    round(float(r.measured_speed_kmh), 1)
+                    float(reading["speed_kmh"])
+                    if reading is not None
+                    else round(float(r.measured_speed_kmh), 1)
                     if r.measured_speed_kmh is not None
                     else speed_kmh(float(r.congestion_index or 0), float(r.free_flow_kmh))
                 ),
-                "speed_source": "measured" if r.measured_speed_kmh is not None else "modelled",
+                "speed_source": (
+                    "probe"
+                    if reading is not None
+                    else "measured"
+                    if r.measured_speed_kmh is not None
+                    else "modelled"
+                ),
+                # Never a naked number (docs/06 §8): a probe speed carries who
+                # said it, how sure they were, when, and how many other links
+                # lean on the same reading.
+                "probe": (
+                    {
+                        "provider": "TomTom",
+                        "confidence": reading["confidence"],
+                        "observed_at": reading["observed_at"],
+                        "free_flow_kmh": reading["free_flow_kmh"],
+                        "shared_with_links": reading.get("shared_with_links", []),
+                    }
+                    if reading is not None
+                    else None
+                ),
                 "free_flow_kmh": round(float(r.free_flow_kmh), 1),
                 "suppressed": float(r.quality) < MIN_QUALITY,
                 "class_mix": r.class_mix or {},
@@ -536,6 +577,19 @@ async def scene_buildings() -> dict[str, Any]:
         return {"buildings": [], "count": 0, "note": "no cached building extract"}
     data = json.loads(path.read_text(encoding="utf-8"))
     return {"buildings": data.get("buildings", []), "count": data.get("count", 0)}
+
+
+@router.get("/probe/coverage")
+async def probe_coverage() -> dict[str, Any]:
+    """What the live probe layer covers, and what it cost.
+
+    Its own endpoint rather than a corner of /meta/sources, because the
+    interesting questions here are not "is there a key" but "how old is this,
+    how much of the network does it speak for, and how much of the month's
+    allowance is left". A panel that cannot answer the third one eventually
+    surprises somebody with a bill.
+    """
+    return probe.coverage()
 
 
 @router.get("/safety/blackspots")

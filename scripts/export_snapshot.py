@@ -45,6 +45,8 @@ WEB = Path("apps/web")
 PATHS: tuple[str, ...] = (
     "/corridors",
     "/safety/severity",
+    # Live probe coverage, freshness and what is left of the month's allowance.
+    "/probe/coverage",
     "/safety/severity-model",
     "/enforcement/allocation",
     "/counts/summary?corridor_id=1",

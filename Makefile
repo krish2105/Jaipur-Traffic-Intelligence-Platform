@@ -66,6 +66,12 @@ audit: ## Security scan — dependencies, secrets, SAST, plate leakage
 verify-security: ## Prove the DB-level security controls hold (docs/07 §8)
 	uv run python scripts/verify_security.py
 
+probe-discover: ## Map corridor links to TomTom segments. Once, ~90 calls.
+	uv run python scripts/fetch_probe_speeds.py --discover
+
+probe: ## Sweep live probe speeds. 25 calls; run every 45 min, 06:00-22:00 IST.
+	uv run python scripts/fetch_probe_speeds.py
+
 replay: ## Replay a camera's video through GANANA. usage: make replay CAMERA=1
 	uv run python -m pravaah.worker.ingest.replay --camera $(CAMERA)
 

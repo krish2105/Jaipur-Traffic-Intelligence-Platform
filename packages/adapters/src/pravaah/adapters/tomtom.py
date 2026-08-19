@@ -30,8 +30,10 @@ a comment is how a quota gets burned in a fortnight.
 
 from __future__ import annotations
 
+import asyncio
 import os
 import time
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 import httpx
@@ -58,6 +60,12 @@ class FlowSegment:
     #: makes it a model output wearing a measurement's clothes.
     confidence: float
     road_closure: bool
+    #: Fingerprint of the road segment TomTom actually matched, from the first
+    #: and last coordinate it returns. Two of our links can sit on one TomTom
+    #: segment — adjacent links on the same arterial routinely do — and without
+    #: this they look like two independent measurements when they are one
+    #: reading counted twice. Empty when the response carried no geometry.
+    segment_key: str = ""
 
     @property
     def congestion_index(self) -> float:
@@ -133,6 +141,62 @@ async def _probe(client: httpx.AsyncClient | None) -> bool:
     return await flow_at(26.9124, 75.7873, client=client) is not None
 
 
+#: TomTom rate-limits per second as well as per month. Four at a time keeps a
+#: twenty-link sweep under a second of wall clock without ever tripping it.
+_CONCURRENCY = 4
+
+
+async def flow_many(
+    points: Sequence[tuple[str, float, float]],
+    *,
+    client: httpx.AsyncClient | None = None,
+    concurrency: int = _CONCURRENCY,
+) -> dict[str, FlowSegment | None]:
+    """Flow for many points at once, keyed by the caller's own id.
+
+    One connection pool and a small semaphore, rather than a loop of one-shot
+    clients: a twenty-link sweep is twenty TLS handshakes otherwise, and the
+    free tier is small enough that every call should be deliberate.
+
+    A point that fails maps to None rather than dropping out of the result. The
+    caller needs to tell "this link was not asked about" from "this link was
+    asked about and had nothing to say" — they mean different things on a map.
+    """
+    owned = client is None
+    http = client or httpx.AsyncClient(timeout=15.0)
+    gate = asyncio.Semaphore(max(1, concurrency))
+
+    async def one(key: str, lat: float, lon: float) -> tuple[str, FlowSegment | None]:
+        async with gate:
+            return key, await flow_at(lat, lon, client=http)
+
+    try:
+        results = await asyncio.gather(*(one(k, la, lo) for k, la, lo in points))
+        return dict(results)
+    finally:
+        if owned:
+            await http.aclose()
+
+
+def _segment_key(segment: dict[str, object]) -> str:
+    """A stable id for the road segment TomTom matched, from its own geometry.
+
+    The v4 response has no segment id and no OpenLR code, but it does return the
+    matched geometry, and its endpoints are stable between calls. Rounded to
+    five decimal places, which is about a metre: finer than that and floating
+    point noise would split one segment into two.
+    """
+    coords = segment.get("coordinates")
+    points = coords.get("coordinate") if isinstance(coords, dict) else None
+    if not points:
+        return ""
+    first, last = points[0], points[-1]
+    return (
+        f"{first['latitude']:.5f},{first['longitude']:.5f}"
+        f"->{last['latitude']:.5f},{last['longitude']:.5f}"
+    )
+
+
 async def flow_at(
     lat: float, lon: float, *, client: httpx.AsyncClient | None = None
 ) -> FlowSegment | None:
@@ -165,6 +229,7 @@ async def flow_at(
             free_flow_travel_time_s=int(segment.get("freeFlowTravelTime", 0)),
             confidence=float(segment.get("confidence", 0)),
             road_closure=bool(segment.get("roadClosure", False)),
+            segment_key=_segment_key(segment),
         )
     except (httpx.HTTPError, ValueError, KeyError):
         return None

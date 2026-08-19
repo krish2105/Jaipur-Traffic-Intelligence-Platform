@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "pravaah-offline",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@pravaah/web", "dev", "--port", "3050"],
+      "port": 3050
+    }
+  ]
+}
