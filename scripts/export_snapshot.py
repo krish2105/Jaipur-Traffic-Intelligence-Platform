@@ -123,6 +123,28 @@ def main() -> None:
         print("\nnothing captured — is the API running?")
         raise SystemExit(1)
 
+    # File-derived endpoints, merged in rather than fetched.
+    #
+    # These are computed by their own scripts and written to src/data; the API
+    # never serves them, so a regeneration that only walks PATHS silently drops
+    # them. It did exactly that once, and /api/v1/areas started returning 404 in
+    # production while the console's Areas panel went blank. Merging here means
+    # a regen can no longer lose them.
+    derived = {
+        "/areas": "areas.json",
+        "/areas/accumulation": "accumulation.json",
+        "/evidence/detection": "detection-evidence.json",
+        "/evidence/pcu-junction": "pcu-comparison.json",
+        "/evidence/pcu-corridor": "pcu-corridor.json",
+    }
+    for route, filename in derived.items():
+        path = WEB / "src" / "data" / filename
+        if path.exists():
+            snapshot[route] = json.loads(path.read_text())
+            print(f"  ok  {route}  (from {filename})")
+        else:
+            print(f"  MISSING {route}: {filename} not built yet")
+
     data_dir = WEB / "src" / "data"
     data_dir.mkdir(parents=True, exist_ok=True)
     small = data_dir / "snapshot.json"
