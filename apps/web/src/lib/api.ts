@@ -628,6 +628,97 @@ export interface AreaAccumulation {
   is_synthetic: boolean;
 }
 
+/** The detector run over real, openly licensed photographs of Jaipur streets. */
+export interface DetectionEvidence {
+  model: { id: string; licence: string; threshold: number };
+  source: { name: string; what: string; why: string };
+  images: {
+    title: string;
+    page: string;
+    licence: string;
+    author: string;
+    detections: Record<string, number>;
+    mean_confidence: Record<string, number>;
+    total_vehicles: number;
+  }[];
+  totals: Record<string, number>;
+  class_mix_pct: Record<string, number>;
+  images_analysed: number;
+  vehicles_detected: number;
+  discarded_person_detections: number;
+  two_wheeler_detected: number;
+  prohibition: string;
+  proves: string;
+  does_not_prove: string;
+  finding: string;
+}
+
+/** Count-based vs PCU-based signal timing, measured in SUMO. */
+export interface PcuJunction {
+  /** Top level, not nested under `demand` — that key does not exist. */
+  pcu_ratio: number;
+  mix: Record<string, Record<string, number>>;
+  sweep: {
+    veh_per_hour_each_arm: number;
+    ns_pcu_per_hour: number;
+    ew_pcu_per_hour: number;
+    ew_vc_under_count_plan: number;
+    mean_delay_saved_s: number;
+    pcu_weighted_saved_s: number;
+    freight_arm_saved_s: number;
+  }[];
+  finding: {
+    wins_on_mean_delay_above_veh_per_hour: number | null;
+    wins_on_pcu_weighted_delay_at_all_levels: boolean;
+    wins_on_freight_arm_at_all_levels: boolean;
+  };
+  caveat: string;
+  advisory_only: boolean;
+}
+
+/** The same comparison along a corridor of 1 to 5 junctions. */
+export interface PcuCorridor {
+  plans: {
+    count: { green_arterial_s: number; progression_speed_ms: number };
+    pcu: { green_arterial_s: number; progression_speed_ms: number };
+  };
+  sweep: {
+    junctions: number;
+    seeds: number;
+    arterial_delay_saved_s: number;
+    arterial_delay_saved_min_s: number;
+    arterial_delay_saved_max_s: number;
+    arterial_stops_saved: number;
+    cross_delay_cost_s: number;
+    net_veh_seconds: number;
+  }[];
+  finding: {
+    per_junction_saving_s: number[];
+    compounds_with_corridor_length: boolean;
+    additive_with_corridor_length: boolean;
+  };
+  caveat: string;
+}
+
+export interface KpiEntry {
+  key: string;
+  label: Bilingual;
+  baseline: number;
+  target: number;
+  unit: string;
+  direction: "up" | "down";
+  basis: string;
+  source: string | null;
+  target_is_judgement: boolean;
+}
+
+export interface KpiBoard {
+  outcome: KpiEntry[];
+  system: KpiEntry[];
+  adoption: KpiEntry[];
+  note: string;
+}
+
 /**
  * The demo role, read from the session at call time.
  *
@@ -730,6 +821,10 @@ export const api = {
   corridors: () => get<Corridor[]>("/corridors"),
   severity: () => get<SeverityFinding>("/safety/severity"),
   areas: () => get<AreaScreening>("/areas"),
+  detectionEvidence: () => get<DetectionEvidence>("/evidence/detection"),
+  pcuJunction: () => get<PcuJunction>("/evidence/pcu-junction"),
+  pcuCorridor: () => get<PcuCorridor>("/evidence/pcu-corridor"),
+  kpis: () => get<KpiBoard>("/meta/kpis"),
   accumulation: () => get<AreaAccumulation>("/areas/accumulation"),
   severityModel: () => get<SeverityModel>("/safety/severity-model"),
   allocation: () => get<EnforcementAllocation>("/enforcement/allocation"),

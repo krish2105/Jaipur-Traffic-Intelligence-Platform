@@ -2,6 +2,9 @@
 
 import { CorpusSearch } from "./corpus-search";
 import { AreaScreeningPanel } from "./area-screening";
+import { DetectionPanel } from "./detection-panel";
+import { PcuPanel } from "./pcu-panel";
+import { KpiBoardPanel } from "./kpi-board";
 import { useEffect, useState } from "react";
 
 import {
@@ -25,7 +28,14 @@ import {
   type SignalAdvisory,
   type WeeklyMatrix,
 } from "@/lib/api";
-import type { AreaAccumulation, AreaScreening } from "@/lib/api";
+import type {
+  AreaAccumulation,
+  AreaScreening,
+  DetectionEvidence,
+  KpiBoard,
+  PcuCorridor,
+  PcuJunction,
+} from "@/lib/api";
 import type { SceneLink } from "@/components/city/city-view";
 import type { Locale } from "@/i18n/routing";
 import { formatCount } from "@/lib/format";
@@ -167,6 +177,15 @@ export function SectionView({
   }
   if (section === "areas") {
     return <AreasSection hi={hi} />;
+  }
+  if (section === "detection") {
+    return <DetectionSection hi={hi} />;
+  }
+  if (section === "signals-pcu") {
+    return <PcuSection hi={hi} />;
+  }
+  if (section === "kpis") {
+    return <KpiSection hi={hi} />;
   }
   if (section === "neeti") {
     return <NeetiSection hi={hi} locale={locale} />;
@@ -891,6 +910,67 @@ const SCENARIO_LABEL: Record<string, { en: string; hi: string }> = {
   low_emission_zone: { en: "Low-emission zone", hi: "कम-उत्सर्जन क्षेत्र" },
   congestion_charge: { en: "Congestion charge", hi: "भीड़ शुल्क" },
 };
+
+function DetectionSection({ hi }: { hi: boolean }) {
+  const { data } = useLazy<DetectionEvidence>(() => api.detectionEvidence(), true);
+  return (
+    <Shell
+      title={hi ? "पहचान प्रमाण" : "Detection evidence"}
+      subtitle={
+        hi
+          ? "शिपिंग डिटेक्टर, असली जयपुर सड़कों की खुली-लाइसेंस तस्वीरों पर चलाया गया। सबसे महत्वपूर्ण परिणाम हमारे विरुद्ध है, और वही सबसे ऊपर है।"
+          : "The shipped detector, run over openly licensed photographs of real Jaipur streets. The most important result is the one against us, and it leads."
+      }
+    >
+      {!data ? (
+        <Loading label={hi ? "प्रमाण लोड हो रहा है" : "Loading evidence"} />
+      ) : (
+        <DetectionPanel data={data} hi={hi} />
+      )}
+    </Shell>
+  );
+}
+
+function PcuSection({ hi }: { hi: boolean }) {
+  const { data: junction } = useLazy<PcuJunction>(() => api.pcuJunction(), true);
+  const { data: corridor } = useLazy<PcuCorridor>(() => api.pcuCorridor(), true);
+  return (
+    <Shell
+      title={hi ? "सिग्नल समय · PCU" : "Signal timing · PCU"}
+      subtitle={
+        hi
+          ? "गिनती-आधारित समय बनाम PCU-आधारित, SUMO में मापा गया। दो दावे परखे गए और दोनों ग़लत निकले; सुधार यहीं दर्ज हैं।"
+          : "Count-based timing against PCU-based, measured in SUMO. Two claims were tested and both were wrong; the corrections are recorded here rather than dropped."
+      }
+    >
+      {!junction ? (
+        <Loading label={hi ? "परिणाम लोड हो रहे हैं" : "Loading results"} />
+      ) : (
+        <PcuPanel junction={junction} corridor={corridor ?? null} hi={hi} />
+      )}
+    </Shell>
+  );
+}
+
+function KpiSection({ hi }: { hi: boolean }) {
+  const { data } = useLazy<KpiBoard>(() => api.kpis(), true);
+  return (
+    <Shell
+      title={hi ? "मापदंड" : "Key performance indicators"}
+      subtitle={
+        hi
+          ? "जिन संख्याओं पर यह मंच परखा जाना चाहता है। परिणाम, प्रणाली और अपनाव अलग रखे गए हैं क्योंकि वे अलग लोगों को जवाब देते हैं।"
+          : "The numbers this platform asks to be judged on. Outcome, system and adoption are kept apart because they answer to different people."
+      }
+    >
+      {!data ? (
+        <Loading label={hi ? "मापदंड लोड हो रहे हैं" : "Loading indicators"} />
+      ) : (
+        <KpiBoardPanel data={data} hi={hi} />
+      )}
+    </Shell>
+  );
+}
 
 function AreasSection({ hi }: { hi: boolean }) {
   const { data } = useLazy<AreaScreening>(() => api.areas(), true);

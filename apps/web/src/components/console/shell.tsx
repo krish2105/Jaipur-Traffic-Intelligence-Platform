@@ -81,6 +81,9 @@ export const NAV = [
   { id: "signals", en: "Signals", hi: "सिग्नल", cap: "read:signals" },
   { id: "enforcement", en: "Enforcement", hi: "प्रवर्तन", cap: "read:enforcement" },
   { id: "neeti", en: "NEETI", hi: "नीति", cap: "use:neeti" },
+  { id: "detection", en: "Detection", hi: "पहचान", cap: "read:traffic" },
+  { id: "signals-pcu", en: "Signal timing", hi: "सिग्नल समय", cap: "read:traffic" },
+  { id: "kpis", en: "KPIs", hi: "मापदंड", cap: "read:analytics" },
   { id: "reports", en: "Reports", hi: "रिपोर्ट", cap: "read:analytics" },
   { id: "provenance", en: "Provenance", hi: "स्रोत", cap: "read:traffic" },
 ] as const satisfies readonly { id: string; en: string; hi: string; cap: Capability }[];
