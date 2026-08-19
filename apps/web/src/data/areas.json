@@ -1,0 +1,177 @@
+{
+  "zones": [
+    {
+      "name": "Jaipur West",
+      "kind": "commissionerate_zone",
+      "station": null,
+      "links": 12,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": 12.6,
+      "max_congestion": 13.8,
+      "worst_link": {
+        "link_id": 236,
+        "name": "Ajmer Road",
+        "congestion_index": 13.8,
+        "speed_kmh": 56.9
+      },
+      "coverage": 0.0
+    },
+    {
+      "name": "Jaipur South",
+      "kind": "commissionerate_zone",
+      "station": null,
+      "links": 78,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": 12.5,
+      "max_congestion": 13.9,
+      "worst_link": {
+        "link_id": 452,
+        "name": "Tonk Road",
+        "congestion_index": 13.9,
+        "speed_kmh": 33.2
+      },
+      "coverage": 0.0
+    }
+  ],
+  "thanas": [
+    {
+      "name": "Police Station",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.7950769,
+        "lat": 26.9177909
+      },
+      "links": 5,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": 12.9,
+      "max_congestion": 13.7,
+      "worst_link": {
+        "link_id": 72,
+        "name": "Ajmer Road",
+        "congestion_index": 13.7,
+        "speed_kmh": 56.9
+      },
+      "coverage": 0.0
+    },
+    {
+      "name": "Police Station Gandhi Circle",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.8129569,
+        "lat": 26.8840927
+      },
+      "links": 6,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": 12.9,
+      "max_congestion": 13.9,
+      "worst_link": {
+        "link_id": 133,
+        "name": "JLN Marg",
+        "congestion_index": 13.9,
+        "speed_kmh": 47.4
+      },
+      "coverage": 0.0
+    },
+    {
+      "name": "Bajaj Nagar Police Station",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.7996764,
+        "lat": 26.8776453
+      },
+      "links": 48,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": 12.5,
+      "max_congestion": 13.9,
+      "worst_link": {
+        "link_id": 452,
+        "name": "Tonk Road",
+        "congestion_index": 13.9,
+        "speed_kmh": 33.2
+      },
+      "coverage": 0.0
+    },
+    {
+      "name": "Sanganer Police Station",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.7971644,
+        "lat": 26.8195252
+      },
+      "links": 22,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": 12.3,
+      "max_congestion": 13.9,
+      "worst_link": {
+        "link_id": 142,
+        "name": "Tonk Road",
+        "congestion_index": 13.9,
+        "speed_kmh": 47.4
+      },
+      "coverage": 0.0
+    },
+    {
+      "name": "Sodala Thana",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.7763672,
+        "lat": 26.9019038
+      },
+      "links": 7,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": 12.3,
+      "max_congestion": 13.8,
+      "worst_link": {
+        "link_id": 236,
+        "name": "Ajmer Road",
+        "congestion_index": 13.8,
+        "speed_kmh": 56.9
+      },
+      "coverage": 0.0
+    },
+    {
+      "name": "Mahila Thana East Gandhinagar",
+      "kind": "thana_catchment",
+      "station": {
+        "lon": 75.8042117,
+        "lat": 26.8815478
+      },
+      "links": 2,
+      "links_measured": 0,
+      "vehicles_per_hour": 0,
+      "pcu_per_hour": 0,
+      "mean_congestion": 12.1,
+      "max_congestion": 12.3,
+      "worst_link": {
+        "link_id": 335,
+        "name": "JLN Marg",
+        "congestion_index": 12.3,
+        "speed_kmh": 47.8
+      },
+      "coverage": 0.0
+    }
+  ],
+  "stations_total": 22,
+  "links_total": 90,
+  "links_unassigned": 0,
+  "boundary_basis": "Approximate, not gazetted. Police jurisdiction polygons are not in open data: an Overpass query for boundary=police over Jaipur returns zero. Each area is the set of links whose midpoint is nearest that station, which is the Voronoi cell computed directly. Zones roll those up by bearing from the walled city. Replace with the Commissionerate's own shapefile when supplied; nothing downstream changes.",
+  "pcu_source": "IRC:106-1990, urban roads",
+  "coverage_note": "coverage is the share of an area's links that carry measured counts. Congestion is modelled on the rest, so a low-coverage area is an estimate and the panel says so.",
+  "vehicle_counts_available": false,
+  "vehicle_count_note": "Congestion and worst-link are live for every area. Vehicle and PCU totals need measured counts, which exist only on instrumented links; until cameras are connected these read zero rather than being estimated.",
+  "is_synthetic": true
+}
