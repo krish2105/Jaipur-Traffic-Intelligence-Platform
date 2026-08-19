@@ -51,6 +51,8 @@ PATHS: tuple[str, ...] = (
     "/reliability/corridors",
     # Vehicles inside each area, estimated from measured speed.
     "/areas/accumulation/live",
+    # What Jaipur already publishes to the national data exchange.
+    "/meta/city-data",
     "/safety/severity-model",
     "/enforcement/allocation",
     "/counts/summary?corridor_id=1",

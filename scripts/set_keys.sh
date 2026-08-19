@@ -91,6 +91,8 @@ set_key DATA_GOV_IN_API_KEY "VAHAN fleet via data.gov.in (free, Jan Parichay log
         "https://www.data.gov.in/login  ->  My Account  ->  generate API key" "$ROOT_ENV"
 set_key VAHAN_RESOURCE_ID   "Which data.gov.in resource to read (not a secret)" \
         "open the dataset page, copy the UUID after /resource/" "$ROOT_ENV" plain
+set_key IUDX_TOKEN          "Jaipur city data via IUDX (consumer token from the provider)" \
+        "https://catalogue.iudx.org.in  ->  Jaipur  ->  request access" "$ROOT_ENV"
 # Deliberately NOT asked for, and please do not add them back:
 #
 #   OPENAQ_API_KEY      Nothing reads it. Air quality comes from Open-Meteo /
@@ -111,7 +113,7 @@ set_key VAHAN_RESOURCE_ID   "Which data.gov.in resource to read (not a secret)" 
 
 echo
 echo "── which keys are set ──"
-for v in TOMTOM_API_KEY DATA_GOV_IN_API_KEY VAHAN_RESOURCE_ID; do
+for v in TOMTOM_API_KEY DATA_GOV_IN_API_KEY VAHAN_RESOURCE_ID IUDX_TOKEN; do
   n=$(grep -E "^${v}=" "$ROOT_ENV" 2>/dev/null | head -1 | cut -d= -f2- | wc -c | tr -d ' ')
   if [ "${n:-1}" -gt 1 ]; then echo "   set     ${v}"; else echo "   missing ${v}"; fi
 done

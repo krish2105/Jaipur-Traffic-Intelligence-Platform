@@ -7,7 +7,7 @@ from typing import Any
 
 import httpx
 from fastapi import APIRouter
-from pravaah.adapters import tomtom, vahan
+from pravaah.adapters import iudx, tomtom, vahan
 from pravaah.adapters.air import (
     CPCB_NO2_24H,
     CPCB_PM10_24H,
@@ -90,6 +90,46 @@ async def data_provenance(session: SessionDep) -> dict[str, Any]:
     }
 
 
+@router.get("/meta/city-data")
+async def city_data() -> dict[str, Any]:
+    """What Jaipur already publishes to the national data exchange.
+
+    Read live from the IUDX catalogue, which is open and needs no credential, so
+    this is a fact rather than a proposal. It exists because the ask it supports
+    is much smaller than the one this platform has been making: not "install
+    cameras" but "grant a consumer token for the vehicle classification cameras
+    you already run".
+    """
+    resources = await iudx.discover()
+    return {
+        "instance": iudx.INSTANCE,
+        "exchange": "India Urban Data Exchange",
+        "standard": "API specification approved by the Bureau of Indian Standards",
+        "catalogue_reachable": bool(resources),
+        "resources": [
+            {
+                "id": r.id,
+                "label": r.label,
+                "description": r.description,
+                "access_policy": r.access_policy,
+                "needs_token": r.needs_token,
+                "fields": list(r.fields),
+                # Flagged rather than filtered: the others are real municipal
+                # data and a reader should see the whole picture, not our slice.
+                "wanted_by_pravaah": r.id in iudx.WANTED,
+            }
+            for r in resources
+        ],
+        "we_have_a_token": iudx.available(),
+        "needs": None if iudx.available() else iudx.needs(),
+        "note": (
+            "Camera locations are published; the counts behind them are not "
+            "readable without a consumer token. This adapter has never run "
+            "against a granted token, so nothing here is proven beyond discovery."
+        ),
+    }
+
+
 @router.get("/meta/sources")
 async def source_readiness(settings: SettingsDep) -> dict[str, Any]:
     """Every data source, its current mode, and exactly what switches it live.
@@ -133,6 +173,11 @@ async def source_readiness(settings: SettingsDep) -> dict[str, Any]:
 
     tomtom_live = await runs_live(tomtom)
     vahan_live = await runs_live(vahan)
+    # Two separate questions for the exchange, because the answers differ and
+    # the difference is the whole point of the ask. The catalogue is open and
+    # answers today; the data behind it needs a token Jaipur has not issued.
+    iudx_live = await runs_live(iudx)
+    iudx_reachable = await iudx.catalogue_reachable()
 
     # A key that is present but refused is its own state, and saying so is the
     # difference between "you have not given us this yet" and "what you gave us
@@ -196,6 +241,21 @@ async def source_readiness(settings: SettingsDep) -> dict[str, Any]:
             "mode": "replay",
             "detail": "Counts and classification. The pilot ask: six feeds, read-only, 90 days",
             "needs": "Read-only RTSP from the department",
+        },
+        {
+            # Not "an integration we could build". The catalogue is answering
+            # right now, and it says Jaipur already publishes Vehicle
+            # Classification Camera locations. Only read access is missing.
+            "id": "iudx",
+            "name": "Jaipur city data",
+            "provider": "IUDX (Smart Cities Mission)",
+            "mode": "live" if iudx_live else "replay",
+            "detail": (
+                "National exchange, API approved by the Bureau of Indian "
+                "Standards. Jaipur publishes VCC and ANPR camera locations"
+                + ("" if iudx_reachable else " — catalogue unreachable right now")
+            ),
+            "needs": None if iudx_live else iudx.needs(),
         },
         {
             "id": "vahan",
