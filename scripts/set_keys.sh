@@ -15,8 +15,10 @@ WEB_ENV="apps/web/.env.local"
 touch "$ROOT_ENV" "$WEB_ENV"
 chmod 600 "$ROOT_ENV" "$WEB_ENV"
 
+# $5 is "plain" for values that are not secret. A resource id is public and
+# gets pasted wrong constantly, so hiding it only hides the typo.
 set_key () {
-  local var="$1" label="$2" url="$3" file="$4"
+  local var="$1" label="$2" url="$3" file="$4" mode="${5:-hidden}"
   local current
   current=$(grep -E "^${var}=" "$file" 2>/dev/null | head -1 | cut -d= -f2-)
   echo
@@ -25,9 +27,14 @@ set_key () {
   if [ -n "$current" ]; then
     echo "   currently set (${#current} chars). Enter to keep."
   fi
-  printf "   paste key (hidden): "
-  read -rs value
-  echo
+  if [ "$mode" = "plain" ]; then
+    printf "   paste value: "
+    read -r value
+  else
+    printf "   paste key (hidden): "
+    read -rs value
+    echo
+  fi
   if [ -z "$value" ]; then
     echo "   kept"
     return
@@ -45,10 +52,12 @@ set_key () {
 
 echo "PRAVAAH — API keys. Nothing is echoed; both files are gitignored."
 
-set_key TOMTOM_API_KEY      "TomTom Traffic (free, no card, 2,500/day)" \
-        "https://developer.tomtom.com/user/register" "$ROOT_ENV"
-set_key DATA_GOV_IN_API_KEY "VAHAN fleet via data.gov.in (free, no card)" \
-        "https://data.gov.in/user/register" "$ROOT_ENV"
+set_key TOMTOM_API_KEY      "TomTom Traffic (free, no card, 20,000/month)" \
+        "https://docs.tomtom.com  ->  Sign in  ->  API & SDK Keys" "$ROOT_ENV"
+set_key DATA_GOV_IN_API_KEY "VAHAN fleet via data.gov.in (free, Jan Parichay login)" \
+        "https://www.data.gov.in/login  ->  My Account  ->  generate API key" "$ROOT_ENV"
+set_key VAHAN_RESOURCE_ID   "Which data.gov.in resource to read (not a secret)" \
+        "open the dataset page, copy the UUID after /resource/" "$ROOT_ENV" plain
 set_key OPENAQ_API_KEY      "OpenAQ air quality (free)" \
         "https://explore.openaq.org/register" "$ROOT_ENV"
 set_key GOOGLE_MAPS_API_KEY "Google Map Tiles API (billing required)" \
@@ -69,7 +78,7 @@ fi
 
 echo
 echo "── which keys are set ──"
-for v in TOMTOM_API_KEY DATA_GOV_IN_API_KEY OPENAQ_API_KEY GOOGLE_MAPS_API_KEY; do
+for v in TOMTOM_API_KEY DATA_GOV_IN_API_KEY VAHAN_RESOURCE_ID OPENAQ_API_KEY GOOGLE_MAPS_API_KEY; do
   n=$(grep -E "^${v}=" "$ROOT_ENV" 2>/dev/null | head -1 | cut -d= -f2- | wc -c | tr -d ' ')
   if [ "${n:-1}" -gt 1 ]; then echo "   set     ${v}"; else echo "   missing ${v}"; fi
 done

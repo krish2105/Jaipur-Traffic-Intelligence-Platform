@@ -204,8 +204,13 @@ The readiness panel used to turn a source green as soon as its key existed, and
 for two sources there was no code behind the key. Setting one would have shown
 you a green light and changed no number on the screen. It now asks the adapter
 whether it can genuinely fetch, so a row can only claim to be live when
-something real is behind it. We mention this because you would have had no way
-to catch it, and a dashboard that flatters itself is worth nothing to you.</p>
+something real is behind it. Then we found the same fault one level down: a key
+that was simply wrong still showed green. So the panel now asks the supplier
+whether it accepts the key, and it says which of the three things is missing,
+because "you have not sent this yet", "the key you sent is refused" and "we have
+not been told which dataset to read" are three different problems and only one
+of them is yours. We mention all of this because you would have had no way to
+catch it, and a dashboard that flatters itself is worth nothing to you.</p>
 </div>
 
 <div class="hin">
@@ -357,7 +362,7 @@ showing you a selection.</p>
 <tr><td>Honesty of claims</td><td class="num">20 / 20</td>
     <td>Three of our own technical claims were tested and two were wrong. Both were corrected in the record rather than dropped quietly.</td></tr>
 <tr><td>Engineering quality</td><td class="num">19 / 20</td>
-    <td>168 automated tests across the platform, plus checks for security, colour contrast and accessibility that fail the build. Includes a test that stops the readiness panel ever claiming a source it does not have.</td></tr>
+    <td>171 automated tests across the platform, plus checks for security, colour contrast and accessibility that fail the build. Three of them stop the readiness panel claiming a source it does not have, does not point anywhere, or has a credential the supplier refuses.</td></tr>
 <tr><td>Product completeness</td><td class="num">18 / 20</td>
     <td>Area screening built and live with the camera plan costed, and two more data sources now one free key away. Vehicle detection still needs training on Indian traffic.</td></tr>
 <tr><td>Interface</td><td class="num">10 / 10</td>

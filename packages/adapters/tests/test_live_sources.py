@@ -24,8 +24,26 @@ class TestReadinessRule:
     def test_available_with_a_key(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("TOMTOM_API_KEY", "k")
         monkeypatch.setenv("DATA_GOV_IN_API_KEY", "k")
+        monkeypatch.setenv("VAHAN_RESOURCE_ID", "3382eae5-e6fd-4e45-be4b-520b3bd0c76d")
         assert tomtom.available() is True
         assert vahan.available() is True
+
+    def test_a_key_with_nowhere_to_point_it_is_not_available(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # VAHAN needs a key AND a resource id. This module once shipped a
+        # plausible-looking UUID as a default, and an unresolvable resource
+        # returns 403 — indistinguishable from a rejected key, which is the
+        # most expensive kind of wrong error message.
+        monkeypatch.setenv("DATA_GOV_IN_API_KEY", "k")
+        monkeypatch.delenv("VAHAN_RESOURCE_ID", raising=False)
+        assert vahan.resource_id() is None
+        assert vahan.available() is False
+
+    def test_there_is_no_default_resource(self) -> None:
+        assert not hasattr(vahan, "DEFAULT_RESOURCE"), (
+            "a default resource id is a plausible value that does not resolve"
+        )
 
     def test_whitespace_is_not_a_credential(self, monkeypatch: pytest.MonkeyPatch) -> None:
         # An empty value left in a .env file is the classic way a deployment
@@ -90,8 +108,18 @@ class TestFleetMix:
 
     def test_class_map_only_targets_known_platform_classes(self) -> None:
         known = {
-            "2W", "CAR", "AUTO", "ERIK", "LCV", "BUS",
-            "TRK2", "NMV", "TAXI", "MBUS", "TRKM", "TRAC",
+            "2W",
+            "CAR",
+            "AUTO",
+            "ERIK",
+            "LCV",
+            "BUS",
+            "TRK2",
+            "NMV",
+            "TAXI",
+            "MBUS",
+            "TRKM",
+            "TRAC",
         }
         assert set(vahan.CLASS_MAP.values()) <= known
 
@@ -100,17 +128,21 @@ class TestDegradation:
     """No key means no data, never a guess."""
 
     @pytest.mark.asyncio
-    async def test_flow_returns_none_without_a_key(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    async def test_flow_returns_none_without_a_key(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv("TOMTOM_API_KEY", raising=False)
         assert await tomtom.flow_at(26.9124, 75.7873) is None
 
     @pytest.mark.asyncio
-    async def test_fleet_returns_none_without_a_key(
+    async def test_fleet_returns_none_without_a_key(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.delenv("DATA_GOV_IN_API_KEY", raising=False)
+        assert await vahan.fleet("Jaipur") is None
+
+    @pytest.mark.asyncio
+    async def test_fleet_returns_none_without_a_resource(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        monkeypatch.delenv("DATA_GOV_IN_API_KEY", raising=False)
+        monkeypatch.setenv("DATA_GOV_IN_API_KEY", "k")
+        monkeypatch.delenv("VAHAN_RESOURCE_ID", raising=False)
         assert await vahan.fleet("Jaipur") is None
 
 
@@ -128,6 +160,7 @@ class TestVerification:
     async def test_no_key_is_never_verified(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv("TOMTOM_API_KEY", raising=False)
         monkeypatch.delenv("DATA_GOV_IN_API_KEY", raising=False)
+        monkeypatch.delenv("VAHAN_RESOURCE_ID", raising=False)
         tomtom._REACHABLE = None
         vahan._REACHABLE = None
         assert await tomtom.verified() is False

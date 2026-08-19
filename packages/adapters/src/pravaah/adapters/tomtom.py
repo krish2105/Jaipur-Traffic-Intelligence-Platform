@@ -21,8 +21,11 @@ that is the gap the whole platform exists to fill (docs/01 §4). So this fills i
 "modelled". It does not produce a vehicle count and must never be presented as
 one.
 
-Free tier is 2,500 requests a day, which is one call per link every few minutes
-for a corridor of this size. Batch accordingly rather than polling per render.
+The free tier is 20,000 requests a month for Flow Segment Data (TomTom's own
+pricing page, checked 19 Aug 2026), which is about 645 a day. An earlier note
+here said 2,500 a day, which was TomTom's older figure and is now four times too
+generous. Batch accordingly rather than polling per render: the wrong number in
+a comment is how a quota gets burned in a fortnight.
 """
 
 from __future__ import annotations
@@ -35,9 +38,11 @@ import httpx
 
 ENDPOINT = "https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json"
 
-#: Free tier is 2,500/day. A corridor of 90 links polled every 15 minutes is
-#: 8,640 calls, which would exhaust it before lunch, so callers batch.
-FREE_TIER_DAILY = 2500
+#: Free tier, per TomTom's pricing page (checked 19 Aug 2026). A corridor of 90
+#: links polled every 15 minutes is 259,200 calls a month, thirteen times the
+#: allowance, so callers batch. Held as a month because that is the unit TomTom
+#: bills in; dividing it into a daily figure invented a limit that was not real.
+FREE_TIER_MONTHLY = 20_000
 
 
 @dataclass(frozen=True)
@@ -91,8 +96,6 @@ def available() -> bool:
     no longer turn a badge green.
     """
     return api_key() is not None
-
-
 
 
 #: Reachability is cached: the readiness panel is polled on every console

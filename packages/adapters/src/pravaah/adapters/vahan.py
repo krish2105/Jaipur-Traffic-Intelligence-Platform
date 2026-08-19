@@ -16,12 +16,16 @@ to fill the gap while no camera feed exists. Presenting a registration share as
 a traffic share would be exactly the kind of substitution this project accuses
 probe products of.
 
-The resource id is configuration
---------------------------------
+The resource id is configuration, with no default
+------------------------------------------------
 data.gov.in publishes VAHAN extracts as separately-identified resources that are
-re-issued rather than versioned in place. Hardcoding one guarantees a silent
-break, so it is an environment variable with a documented default, and a wrong
-or retired id degrades to None rather than to a wrong number.
+re-issued rather than versioned in place, so hardcoding one guarantees a silent
+break. It is `VAHAN_RESOURCE_ID`, and there is deliberately no fallback: this
+module used to ship a plausible-looking UUID as a default, which is worse than
+nothing. A resource id that does not resolve fails as a 403, which is exactly
+what a rejected key looks like, so the default would have sent whoever was
+debugging it to the wrong problem. No id now means the adapter reports itself
+unavailable and says which piece is missing.
 """
 
 from __future__ import annotations
@@ -33,9 +37,6 @@ from dataclasses import dataclass
 import httpx
 
 ENDPOINT = "https://api.data.gov.in/resource/{resource_id}"
-
-#: Overridable, because data.gov.in re-issues these rather than versioning them.
-DEFAULT_RESOURCE = "cf0e6a0e-1b0d-4a1f-9d4a-2f2b0d1e1f00"
 
 #: VAHAN's own class names to the platform's twelve. Anything unmapped is
 #: dropped rather than bucketed into "other", because a silent catch-all is how
@@ -96,19 +97,21 @@ def api_key() -> str | None:
     return key or None
 
 
-def resource_id() -> str:
-    return os.environ.get("VAHAN_RESOURCE_ID", "").strip() or DEFAULT_RESOURCE
+def resource_id() -> str | None:
+    """Which data.gov.in resource to read, or None if it has not been chosen."""
+    return os.environ.get("VAHAN_RESOURCE_ID", "").strip() or None
 
 
 def available() -> bool:
-    """Whether this adapter can run: a key exists AND this code exists.
+    """Whether this adapter can run: key, resource id, AND this code.
 
     Routed through here by `/meta/sources` so a credential on its own can no
-    longer turn the badge green with nothing behind it.
+    longer turn the badge green with nothing behind it. The resource id counts
+    as a credential for this purpose: a key with nowhere to point it reads
+    exactly like a refused key at the upstream, and the panel should say which
+    of the two is actually missing.
     """
-    return api_key() is not None
-
-
+    return api_key() is not None and resource_id() is not None
 
 
 #: Reachability is cached: the readiness panel is polled on every console
@@ -156,14 +159,15 @@ async def fleet(
     conversion and change a recommendation without anyone noticing.
     """
     key = api_key()
-    if key is None:
+    resource = resource_id()
+    if key is None or resource is None:
         return None
 
     owned = client is None
     http = client or httpx.AsyncClient(timeout=20.0)
     try:
         response = await http.get(
-            ENDPOINT.format(resource_id=resource_id()),
+            ENDPOINT.format(resource_id=resource),
             params={
                 "api-key": key,
                 "format": "json",
@@ -200,7 +204,7 @@ async def fleet(
             counts=counts,
             total=total,
             unmapped=unmapped,
-            source=f"data.gov.in resource {resource_id()}",
+            source=f"data.gov.in resource {resource}",
         )
     except (httpx.HTTPError, ValueError, KeyError):
         return None

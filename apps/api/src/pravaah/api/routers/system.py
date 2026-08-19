@@ -143,11 +143,14 @@ async def source_readiness(settings: SettingsDep) -> dict[str, Any]:
         if not tomtom.available()
         else "TOMTOM_API_KEY present but refused by TomTom"
     )
-    vahan_needs = (
-        "DATA_GOV_IN_API_KEY"
-        if not vahan.available()
-        else "DATA_GOV_IN_API_KEY present but refused by data.gov.in"
-    )
+    # VAHAN needs two things, and a key pointed at no resource fails upstream as
+    # a 403 — identical to a bad key. Naming the missing piece saves an hour.
+    if vahan.api_key() is None:
+        vahan_needs = "DATA_GOV_IN_API_KEY"
+    elif vahan.resource_id() is None:
+        vahan_needs = "VAHAN_RESOURCE_ID (the data.gov.in resource to read)"
+    else:
+        vahan_needs = "DATA_GOV_IN_API_KEY present but refused by data.gov.in"
 
     sources: list[dict[str, str | None]] = [
         {
