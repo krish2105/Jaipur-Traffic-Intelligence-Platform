@@ -69,6 +69,11 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 OUT = Path("data/probe/speeds.json")
 MAP = Path("data/probe/segments.json")
+#: One line per sweep, append-only. Reliability is a statement about the spread
+#: of travel times, so it needs history that the latest-reading file destroys on
+#: every run. Keyed by the representative link rather than the segment string to
+#: keep a month under a megabyte.
+HISTORY = Path("data/probe/history.jsonl")
 
 #: The shape of the sampling decision, kept here so the output can state it.
 #: Discovery found 90 corridor links resolving to 25 TomTom segments, so 25
@@ -167,6 +172,36 @@ def _write(path: Path, payload: dict[str, Any]) -> None:
     """Kept out of the async path: ruff rightly objects to blocking IO there."""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2) + "\n")
+
+
+def _append_history(
+    captured_at: str, chosen: list[dict[str, Any]], segments: dict[str, Any]
+) -> None:
+    """Append this sweep's travel times, one JSON line.
+
+    Append-only and never rewritten, because a reliability index is only as good
+    as the record behind it and a file that gets regenerated can quietly change
+    what last week looked like.
+
+    Confidence rides along so the reader can drop low-confidence samples rather
+    than discovering later that a percentile was computed partly from TomTom's
+    historical model.
+    """
+    row: dict[str, list[float]] = {}
+    for c in chosen:
+        seg = segments.get(str(c["link_id"]))
+        if seg is None or not seg.is_measured:
+            continue
+        row[str(c["link_id"])] = [
+            seg.current_travel_time_s,
+            seg.free_flow_travel_time_s,
+            round(seg.confidence, 2),
+        ]
+    if not row:
+        return
+    HISTORY.parent.mkdir(parents=True, exist_ok=True)
+    with HISTORY.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps({"t": captured_at, "r": row}, separators=(",", ":")) + "\n")
 
 
 def _read(path: Path) -> dict[str, Any]:
@@ -386,6 +421,11 @@ async def main() -> int:
             "confidence": round(seg.confidence, 2),
             "road_closure": seg.road_closure,
             "is_measured": seg.is_measured,
+            # Travel time, not just speed. Reliability measures are defined on
+            # journey time and cannot be recovered from speed alone without the
+            # segment length, which TomTom does not give us directly.
+            "travel_time_s": seg.current_travel_time_s,
+            "free_flow_travel_time_s": seg.free_flow_travel_time_s,
             "observed_at": captured_at,
             "segment_key": seg.segment_key,
             # Named so nobody reading the JSON can mistake one reading shared by
@@ -419,6 +459,7 @@ async def main() -> int:
         "links": readings,
     }
     _write(OUT, payload)
+    _append_history(captured_at, chosen, segments)
     print(f"\n  {len(chosen)} calls -> {len(readings)} links carry a reading")
     print(f"  {measured_segments}/{len(chosen)} segments above the confidence floor")
     print(

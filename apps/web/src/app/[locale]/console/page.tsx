@@ -19,7 +19,7 @@ export default async function ConsolePage({
   const [
     live,
     corridors, summary, cameras, forecast, scene, buildings, blackspots, signals,
-    readiness, weather, profile, weekly, incidents, probeCoverage,
+    readiness, weather, profile, weekly, incidents, probeCoverage, reliability,
   ] =
     await Promise.all([
     apiIsLive(),
@@ -67,6 +67,9 @@ export default async function ConsolePage({
       // No probe sweep yet, or the file is missing: the panel hides itself on a
       // null provider rather than rendering a row of dashes.
       api.probeCoverage().catch(() => null),
+      // No history yet, or the file is missing: the panel hides itself on an
+      // empty corridor list rather than showing four rows of nothing.
+      api.reliability().catch(() => null),
     ]);
 
   // The panel cannot detect this itself — a snapshot response is a
@@ -90,6 +93,7 @@ export default async function ConsolePage({
       weekly={weekly}
       incidents={incidents}
       probeCoverage={probeCoverage}
+      reliability={reliability}
     />
   );
 }

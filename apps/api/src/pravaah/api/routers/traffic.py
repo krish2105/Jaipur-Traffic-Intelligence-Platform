@@ -22,7 +22,7 @@ from pravaah.adapters.published import (
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .. import probe
+from .. import probe, reliability
 from ..allocator import allocate
 from ..deps import SessionDep
 from ..kpis import kpi_board
@@ -590,6 +590,28 @@ async def probe_coverage() -> dict[str, Any]:
     surprises somebody with a bill.
     """
     return probe.coverage()
+
+
+@router.get("/reliability/corridors")
+async def reliability_corridors() -> dict[str, Any]:
+    """Buffer Index and Planning Time Index per corridor.
+
+    The only measure on this platform computed entirely from live readings with
+    no model anywhere in the chain, which is why it is worth having even though
+    it says nothing about volume. It is also the number a commuter recognises:
+    not "mean delay is up 8 percent" but "budget 34 minutes for a 19 minute
+    trip".
+
+    Withheld until the history behind it is deep enough and wide enough. See
+    `reliability.py` for why both thresholds exist.
+    """
+    return reliability.by_corridor(probe.link_corridors())
+
+
+@router.get("/reliability/segments")
+async def reliability_segments() -> dict[str, Any]:
+    """The same indices per sampled segment, for anyone checking our arithmetic."""
+    return reliability.by_segment()
 
 
 @router.get("/safety/blackspots")

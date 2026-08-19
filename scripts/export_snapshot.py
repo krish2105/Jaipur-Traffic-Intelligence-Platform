@@ -47,6 +47,8 @@ PATHS: tuple[str, ...] = (
     "/safety/severity",
     # Live probe coverage, freshness and what is left of the month's allowance.
     "/probe/coverage",
+    # Buffer Index and Planning Time Index, or an honest "still collecting".
+    "/reliability/corridors",
     "/safety/severity-model",
     "/enforcement/allocation",
     "/counts/summary?corridor_id=1",

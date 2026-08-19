@@ -459,6 +459,42 @@ export interface SourceReadiness {
   note: string;
 }
 
+export interface ReliabilityRow {
+  corridor_id?: number;
+  link_id?: number;
+  segments_sampled?: number;
+  samples: number;
+  distinct_hours: number;
+  sufficient: boolean;
+  needs?: string;
+  mean_travel_time_s?: number;
+  median_travel_time_s?: number;
+  p95_travel_time_s?: number;
+  free_flow_travel_time_s?: number;
+  buffer_index?: number;
+  planning_time_index?: number;
+  travel_time_index?: number;
+}
+
+export interface Reliability {
+  corridors: ReliabilityRow[];
+  sweeps_in_window: number;
+  traverse_note: string;
+  method: {
+    buffer_index: string;
+    planning_time_index: string;
+    travel_time_index: string;
+    source: string;
+    window_days: number;
+    min_samples: number;
+    min_distinct_hours: number;
+    min_confidence: number;
+  };
+  gate_note: string;
+  is_measured: boolean;
+  measured_note: string;
+}
+
 export interface ProbeCoverage {
   provider: string | null;
   measures: string | null;
@@ -874,6 +910,7 @@ export const api = {
   signals: () => get<SignalAdvisory>("/signals/advisory"),
   readiness: () => get<SourceReadiness>("/meta/sources"),
   probeCoverage: () => get<ProbeCoverage>("/probe/coverage"),
+  reliability: () => get<Reliability>("/reliability/corridors"),
   weather: () => get<WeatherNow>("/meta/weather"),
   air: () => get<AirQuality>("/meta/air"),
   published: () => get<PublishedFigures>("/meta/published"),

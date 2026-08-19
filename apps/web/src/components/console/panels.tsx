@@ -10,6 +10,8 @@ import type {
   DayProfile,
   SignalAdvisory,
   ProbeCoverage,
+  Reliability,
+  ReliabilityRow,
   SourceReadiness,
   WeatherNow,
   WeeklyMatrix,
@@ -434,6 +436,117 @@ export function ReadinessPanel({ data }: { data: SourceReadiness }) {
             .filter((s) => s.needs)
             .map((s) => s.needs)
             .join(" · ")}
+        </p>
+      )}
+    </Panel>
+  );
+}
+
+const CORRIDOR_NAMES: Record<number, { en: string; hi: string }> = {
+  1: { en: "Tonk Road", hi: "टोंक रोड" },
+  2: { en: "JLN Marg", hi: "जेएलएन मार्ग" },
+  3: { en: "Ajmer Road", hi: "अजमेर रोड" },
+  4: { en: "Gopalpura Bypass", hi: "गोपालपुरा बाईपास" },
+};
+
+/**
+ * Turn a Buffer Index into the sentence a commuter would say.
+ *
+ * 0.42 means nothing to anyone. "Budget 27 minutes for a 19 minute trip" is the
+ * same fact and is the version that gets repeated in a meeting. The index is
+ * still shown, because the officials who know the standard will look for it.
+ */
+function budgetSentence(row: ReliabilityRow, hi: boolean): string | null {
+  const mean = row.mean_travel_time_s;
+  const p95 = row.p95_travel_time_s;
+  if (!mean || !p95) return null;
+  const typical = Math.round(mean / 60);
+  const budget = Math.round(p95 / 60);
+  if (typical < 1 || budget <= typical) return null;
+  return hi
+    ? `${typical} मिनट की यात्रा के लिए ${budget} मिनट रखें`
+    : `Budget ${budget} minutes for a ${typical} minute trip`;
+}
+
+/**
+ * Travel time reliability, the one measure here with no model in it anywhere.
+ *
+ * Mean delay is what every traffic product reports and what nobody outside a
+ * department feels. Variance is the lived experience: the trip that takes 19
+ * minutes most days and 34 on the day it matters. FHWA measures it this way
+ * across more than 30 cities, so the definitions are borrowed, not invented.
+ *
+ * The panel spends most of its space on the collecting state, because that is
+ * what it will show for the first fortnight and a panel that renders an empty
+ * shell for a fortnight teaches people to ignore it. Saying "34 of 40 sweeps,
+ * 6 of 8 hours" is a promise with a date on it.
+ */
+export function ReliabilityPanel({ data }: { data: Reliability }) {
+  const hi = (useLocale() as Locale) === "hi";
+  const rows = data.corridors ?? [];
+  if (rows.length === 0) return null;
+  const ready = rows.filter((r) => r.sufficient);
+
+  return (
+    <Panel
+      title={hi ? "यात्रा समय विश्वसनीयता" : "Travel time reliability"}
+      aside={
+        <span className="font-mono text-[10px] tabular-nums text-[var(--ink-muted)]">
+          {ready.length}/{rows.length} {hi ? "तैयार" : "ready"}
+        </span>
+      }
+    >
+      <ul className="space-y-2.5">
+        {rows.map((row) => {
+          const name = CORRIDOR_NAMES[row.corridor_id ?? 0];
+          const label = name ? (hi ? name.hi : name.en) : `#${row.corridor_id}`;
+          const sentence = budgetSentence(row, hi);
+          return (
+            <li key={row.corridor_id} className="border-t border-[var(--rule)] pt-2 first:border-0 first:pt-0">
+              <div className="flex items-baseline gap-2 text-[12px]">
+                <ModeDot live={row.sufficient} title={row.sufficient ? "reporting" : "collecting"} />
+                <span className="min-w-0 flex-1 truncate text-[var(--ink)]">{label}</span>
+                {row.sufficient ? (
+                  <span className="shrink-0 font-mono tabular-nums text-[var(--accent)]">
+                    {(row.buffer_index ?? 0).toFixed(2)}
+                  </span>
+                ) : (
+                  <span className="shrink-0 font-mono text-[10px] tabular-nums text-[var(--ink-faint)]">
+                    {row.samples}/{data.method.min_samples} ·{" "}
+                    {row.distinct_hours}/{data.method.min_distinct_hours}h
+                  </span>
+                )}
+              </div>
+              {row.sufficient && sentence && (
+                <p className="mt-0.5 pl-4 text-[11px] leading-relaxed text-[var(--ink-muted)]">
+                  {sentence}
+                  <span className="text-[var(--ink-faint)]">
+                    {" · PTI "}
+                    {(row.planning_time_index ?? 0).toFixed(2)}
+                  </span>
+                </p>
+              )}
+              {!row.sufficient && row.needs && (
+                <p className="mt-0.5 pl-4 text-[11px] leading-relaxed text-[var(--ink-faint)]">
+                  {hi ? "अभी संग्रह हो रहा है — चाहिए " : "Collecting — needs "}
+                  {row.needs}
+                </p>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+
+      <p className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] leading-relaxed text-[var(--ink-muted)]">
+        {hi
+          ? "बफ़र सूचकांक = (95वाँ प्रतिशतक − औसत) ÷ औसत। पूरी तरह मापा गया, कोई मॉडल नहीं।"
+          : "Buffer Index = (95th percentile − mean) ÷ mean. Entirely measured; no model anywhere in it."}
+      </p>
+      {ready.length < rows.length && (
+        <p className="mt-2 text-[11px] leading-relaxed text-[var(--ink-faint)]">
+          {hi
+            ? "एक सूचकांक तब तक रोका जाता है जब तक पर्याप्त स्वीप और दिन के पर्याप्त घंटे न हों।"
+            : "An index is withheld until it has both enough sweeps and enough distinct hours behind it."}
         </p>
       )}
     </Panel>

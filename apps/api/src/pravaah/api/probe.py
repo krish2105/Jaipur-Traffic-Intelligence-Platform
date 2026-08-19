@@ -94,6 +94,21 @@ def readings(at: datetime | None = None, now: datetime | None = None) -> dict[st
     return links if isinstance(links, dict) else {}
 
 
+def link_corridors() -> dict[str, int]:
+    """Which corridor each sampled link belongs to.
+
+    Read from the discovery cache rather than the database. Reliability is
+    computed from a file the sweep writes, and making it open Postgres would
+    reintroduce the coupling the sweep was just freed from.
+    """
+    points = (_load("segments.json").get("link_points") or {}).items()
+    return {
+        link_id: int(meta["corridor_id"])
+        for link_id, meta in points
+        if isinstance(meta, dict) and meta.get("corridor_id") is not None
+    }
+
+
 def coverage() -> dict[str, Any]:
     """What the probe layer currently covers, for the readiness panel.
 

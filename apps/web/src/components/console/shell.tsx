@@ -14,6 +14,7 @@ import type {
   SignalAdvisory,
   DayProfile,
   ProbeCoverage,
+  Reliability,
   SourceReadiness,
   WeatherNow,
   WeeklyMatrix,
@@ -45,6 +46,7 @@ import {
   HeatmapPanel,
   QualityPanel,
   ProbePanel,
+  ReliabilityPanel,
   ReadinessPanel,
   SignalPanel,
   WeatherPanel,
@@ -112,6 +114,7 @@ export function ConsoleShell({
   signals,
   readiness,
   probeCoverage,
+  reliability,
   weather,
   profile,
   weekly,
@@ -127,6 +130,7 @@ export function ConsoleShell({
   signals: SignalAdvisory;
   readiness: SourceReadiness;
   probeCoverage: ProbeCoverage | null;
+  reliability: Reliability | null;
   weather: WeatherNow;
   profile: DayProfile;
   weekly: WeeklyMatrix;
@@ -476,6 +480,7 @@ export function ConsoleShell({
           <AirPanel />
           <ReadinessPanel data={readiness} />
           {probeCoverage && <ProbePanel data={probeCoverage} />}
+          {reliability && <ReliabilityPanel data={reliability} />}
         </aside>
       </div>
 
