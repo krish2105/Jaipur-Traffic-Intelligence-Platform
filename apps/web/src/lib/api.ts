@@ -459,6 +459,37 @@ export interface SourceReadiness {
   note: string;
 }
 
+export interface ProbeCoverage {
+  provider: string | null;
+  measures: string | null;
+  captured_at: string | null;
+  age_minutes: number | null;
+  max_age_minutes: number;
+  is_fresh: boolean;
+  cadence_minutes: number | null;
+  window_ist: string | null;
+  segments_read: number | null;
+  segments_known: number | null;
+  links_covered: number | null;
+  corridor_links: number | null;
+  measured_segments: number | null;
+  discovery: {
+    discovered_at: string | null;
+    links: number | null;
+    distinct_segments: number | null;
+    calls_spent: number | null;
+  };
+  budget: {
+    monthly_limit?: number;
+    month?: string;
+    calls_used?: number;
+    calls_remaining?: number;
+    planned_monthly?: number;
+  };
+  note: string;
+  freshness_note?: string;
+}
+
 export interface WeatherNow {
   available: boolean;
   temperature_c?: number;
@@ -842,6 +873,7 @@ export const api = {
     get<BlackSpots>(`/safety/blackspots${query({ corridor_id: corridorId })}`),
   signals: () => get<SignalAdvisory>("/signals/advisory"),
   readiness: () => get<SourceReadiness>("/meta/sources"),
+  probeCoverage: () => get<ProbeCoverage>("/probe/coverage"),
   weather: () => get<WeatherNow>("/meta/weather"),
   air: () => get<AirQuality>("/meta/air"),
   published: () => get<PublishedFigures>("/meta/published"),

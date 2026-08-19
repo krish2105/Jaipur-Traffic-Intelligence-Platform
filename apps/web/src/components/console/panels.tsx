@@ -9,6 +9,7 @@ import type {
   Forecast,
   DayProfile,
   SignalAdvisory,
+  ProbeCoverage,
   SourceReadiness,
   WeatherNow,
   WeeklyMatrix,
@@ -435,6 +436,91 @@ export function ReadinessPanel({ data }: { data: SourceReadiness }) {
             .join(" · ")}
         </p>
       )}
+    </Panel>
+  );
+}
+
+/**
+ * The live probe layer: what it covers, how old it is, and what it cost.
+ *
+ * The label distinguishing a probe speed from a modelled one already existed in
+ * three places — the map tooltip, the citizen list and the map fallback — and
+ * none of them is on screen when the console first loads. So a viewer could
+ * read a page full of live TomTom readings and see nothing saying so. This
+ * panel is the one place that states it without being hunted for.
+ *
+ * Three things it refuses to leave out. Segments as well as links, because
+ * several links share one TomTom segment and counting links alone overstates
+ * how many independent measurements exist. Age, because a stale speed renders
+ * as confidently as a fresh one. And the month's remaining allowance, because a
+ * free tier nobody is watching is a bill nobody expected.
+ */
+export function ProbePanel({ data }: { data: ProbeCoverage }) {
+  const hi = (useLocale() as Locale) === "hi";
+  const stale = !data.is_fresh;
+  const segments = data.segments_read ?? 0;
+  const links = data.links_covered ?? 0;
+  const total = data.corridor_links ?? 0;
+  const used = data.budget?.calls_used ?? 0;
+  const limit = data.budget?.monthly_limit ?? 0;
+
+  if (!data.provider) return null;
+
+  return (
+    <Panel
+      title={hi ? "लाइव प्रोब गति" : "Live probe speeds"}
+      aside={
+        <span className="font-mono text-[10px] tabular-nums text-[var(--ink-muted)]">
+          {segments} {hi ? "खंड" : "segments"}
+        </span>
+      }
+    >
+      <div className="flex items-baseline gap-2 text-[12px]">
+        <ModeDot live={!stale} title={stale ? "stale" : "fresh"} />
+        <span className="min-w-0 flex-1 truncate text-[var(--ink)]">
+          {data.provider}
+        </span>
+        <span className="shrink-0 font-mono text-[10px] tabular-nums text-[var(--ink-faint)]">
+          {data.age_minutes === null
+            ? "—"
+            : `${Math.round(data.age_minutes)}${hi ? " मि" : "m"}`}
+        </span>
+      </div>
+
+      <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px]">
+        <dt className="text-[var(--ink-faint)]">{hi ? "कवरेज" : "Coverage"}</dt>
+        <dd className="text-right font-mono tabular-nums text-[var(--ink)]">
+          {links}/{total} {hi ? "लिंक" : "links"}
+        </dd>
+        <dt className="text-[var(--ink-faint)]">{hi ? "कॉल प्रति स्वीप" : "Calls per sweep"}</dt>
+        <dd className="text-right font-mono tabular-nums text-[var(--ink)]">{segments}</dd>
+        <dt className="text-[var(--ink-faint)]">{hi ? "अंतराल" : "Cadence"}</dt>
+        <dd className="text-right font-mono tabular-nums text-[var(--ink)]">
+          {data.cadence_minutes ?? "—"}
+          {hi ? " मि" : "m"} · {data.window_ist ?? "—"}
+        </dd>
+        <dt className="text-[var(--ink-faint)]">{hi ? "इस माह" : "This month"}</dt>
+        <dd className="text-right font-mono tabular-nums text-[var(--ink)]">
+          {used.toLocaleString("en-IN")}/{limit.toLocaleString("en-IN")}
+        </dd>
+      </dl>
+
+      {stale && (
+        <p className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] leading-relaxed text-[var(--accent)]">
+          {hi
+            ? `${data.max_age_minutes} मिनट से पुराना — लिंक फिर से मॉडल पर लौट आए हैं।`
+            : `Older than ${data.max_age_minutes} minutes, so links have fallen back to modelled speeds.`}
+        </p>
+      )}
+
+      {/* The limit of the source, stated where the source is shown rather than
+          in a footnote nobody reaches. This is the gap the platform exists to
+          fill, so it should never be discovered later. */}
+      <p className="mt-3 border-t border-[var(--rule)] pt-2.5 text-[11px] leading-relaxed text-[var(--ink-muted)]">
+        {hi
+          ? "TomTom केवल गति और देरी मापता है — कभी संख्या नहीं, कभी संरचना नहीं।"
+          : "TomTom measures speed and delay only — never volume, never composition."}
+      </p>
     </Panel>
   );
 }

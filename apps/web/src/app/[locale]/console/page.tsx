@@ -19,7 +19,7 @@ export default async function ConsolePage({
   const [
     live,
     corridors, summary, cameras, forecast, scene, buildings, blackspots, signals,
-    readiness, weather, profile, weekly, incidents,
+    readiness, weather, profile, weekly, incidents, probeCoverage,
   ] =
     await Promise.all([
     apiIsLive(),
@@ -64,6 +64,9 @@ export default async function ConsolePage({
         hours: [], totals: { crashes: 0, deaths: 0, since: 0, until: 0 }, peak_hour: 0,
         detector: { active: 0, detected_24h: 0, method: "" }, is_synthetic: true,
       })),
+      // No probe sweep yet, or the file is missing: the panel hides itself on a
+      // null provider rather than rendering a row of dashes.
+      api.probeCoverage().catch(() => null),
     ]);
 
   // The panel cannot detect this itself — a snapshot response is a
@@ -86,6 +89,7 @@ export default async function ConsolePage({
       profile={profile}
       weekly={weekly}
       incidents={incidents}
+      probeCoverage={probeCoverage}
     />
   );
 }
