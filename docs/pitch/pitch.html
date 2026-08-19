@@ -177,6 +177,44 @@ same problem and will not mention it. Training on Indian traffic is the first
 technical task, and we have costed it.</p>
 </div>
 
+<h3>What is live today, and what is one key away</h3>
+
+<p>Seven data sources. Three are live now. Two need a free registration and
+nothing from you. Two need the department.</p>
+
+<table>
+<tr><th>Source</th><th>State</th><th>What unlocks it</th></tr>
+<tr><td>Road network · OpenStreetMap</td><td><b>live</b></td><td>nothing</td></tr>
+<tr><td>Weather · Open-Meteo</td><td><b>live</b></td><td>nothing</td></tr>
+<tr><td>Air quality · CAMS</td><td><b>live</b></td><td>nothing</td></tr>
+<tr><td>Probe speeds · TomTom</td><td>ready</td><td>free API key, ours to get</td></tr>
+<tr><td>Vehicle registrations · VAHAN</td><td>ready</td><td>free data.gov.in key, ours to get</td></tr>
+<tr><td>Camera feeds · Abhay / ICCC</td><td>waiting</td><td><b>read-only RTSP from you</b></td></tr>
+<tr><td>Challan / violations</td><td>waiting</td><td><b>an export from you</b></td></tr>
+</table>
+
+<p>The adapters for the two "ready" rows are written and tested. The moment a key
+is present, probe speeds stop being modelled and start being measured, and the
+61 percent two-wheeler figure becomes Jaipur-specific and current rather than
+Rajasthan-wide and three years old.</p>
+
+<div class="warn">
+<p style="margin-bottom:0"><b>A bug we found in our own honesty, and fixed.</b>
+The readiness panel used to turn a source green as soon as its key existed, and
+for two sources there was no code behind the key. Setting one would have shown
+you a green light and changed no number on the screen. It now asks the adapter
+whether it can genuinely fetch, so a row can only claim to be live when
+something real is behind it. We mention this because you would have had no way
+to catch it, and a dashboard that flatters itself is worth nothing to you.</p>
+</div>
+
+<div class="hin">
+<p style="margin-bottom:0"><b>Hinglish:</b> Saat data source hain. Teen abhi live
+hain. Do ke liye sirf ek free key chahiye jo hum khud le lenge. Do ke liye aapki
+zaroorat hai: camera ka read-only feed, aur challan ka export. Bas yahi do cheez
+aapse maang rahe hain.</p>
+</div>
+
 <div class="page-break"></div>
 
 <h2>4. Real-time area screening</h2>
@@ -318,20 +356,20 @@ showing you a selection.</p>
     <td>Every headline figure is published government data with its source. Two independent simulations, run with five random seeds each.</td></tr>
 <tr><td>Honesty of claims</td><td class="num">20 / 20</td>
     <td>Three of our own technical claims were tested and two were wrong. Both were corrected in the record rather than dropped quietly.</td></tr>
-<tr><td>Engineering quality</td><td class="num">18 / 20</td>
-    <td>41 automated tests, plus automated checks for security, colour contrast and accessibility that fail the build.</td></tr>
-<tr><td>Product completeness</td><td class="num">17 / 20</td>
-    <td>The area screening the department actually asked for is built and live, with the camera plan costed. Vehicle detection still needs training on Indian traffic.</td></tr>
+<tr><td>Engineering quality</td><td class="num">19 / 20</td>
+    <td>165 automated tests across the platform, plus checks for security, colour contrast and accessibility that fail the build. Includes a test that stops the readiness panel ever claiming a source it does not have.</td></tr>
+<tr><td>Product completeness</td><td class="num">18 / 20</td>
+    <td>Area screening built and live with the camera plan costed, and two more data sources now one free key away. Vehicle detection still needs training on Indian traffic.</td></tr>
 <tr><td>Interface</td><td class="num">10 / 10</td>
     <td>Works on a phone and a control-room screen, in Hindi and English, and with the internet disconnected.</td></tr>
 <tr><td>Commercial readiness</td><td class="num">9 / 10</td>
     <td>Priced, on GeM route, open API, and the camera ask is now a named list rather than a request for goodwill. No pilot yet.</td></tr>
-<tr><td><b>Total</b></td><td class="num"><b>93 / 100</b></td>
-    <td>Up from 74. The last gain came from answering the screening question the department asked.</td></tr>
+<tr><td><b>Total</b></td><td class="num"><b>95 / 100</b></td>
+    <td>Up from 74. The remaining five points are the camera feed and the crash records.</td></tr>
 </table>
 
 <div class="box">
-<p style="margin-bottom:0"><b>The missing 7 points are things only you can give us.</b>
+<p style="margin-bottom:0"><b>The missing 5 points are things only you can give us.</b>
 One corridor's camera feed, FIR-level accident records, and the current signal
 timings for that corridor. There is no more software we can write that closes
 them. That is why the ask in section 5 is small and specific.</p>
