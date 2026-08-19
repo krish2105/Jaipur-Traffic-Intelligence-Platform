@@ -1,0 +1,1180 @@
+{
+  "method": "cordon counting: inside(h+1) = inside(h) + in(h) - out(h)",
+  "areas": [
+    {
+      "area": "Police Station Gandhi Circle",
+      "cordon_cameras": 24,
+      "peak_inside": 28404,
+      "peak_hour": 19,
+      "mean_inside": 16416,
+      "resident_baseline": 9936,
+      "conserved": true,
+      "hourly": [
+        5940,
+        3132,
+        1296,
+        216,
+        0,
+        1404,
+        5400,
+        12096,
+        19656,
+        23976,
+        24624,
+        23328,
+        23220,
+        23652,
+        23544,
+        23436,
+        24300,
+        26244,
+        28080,
+        28404,
+        25920,
+        21060,
+        15120,
+        9936
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 1547,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 3093,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 7733,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 12372,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Sanganer Police Station",
+      "cordon_cameras": 22,
+      "peak_inside": 26037,
+      "peak_hour": 19,
+      "mean_inside": 15048,
+      "resident_baseline": 9108,
+      "conserved": true,
+      "hourly": [
+        5445,
+        2871,
+        1188,
+        198,
+        0,
+        1287,
+        4950,
+        11088,
+        18018,
+        21978,
+        22572,
+        21384,
+        21285,
+        21681,
+        21582,
+        21483,
+        22275,
+        24057,
+        25740,
+        26037,
+        23760,
+        19305,
+        13860,
+        9108
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 1418,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 2835,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 7088,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 11341,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Bajaj Nagar Police Station",
+      "cordon_cameras": 21,
+      "peak_inside": 24853,
+      "peak_hour": 19,
+      "mean_inside": 14364,
+      "resident_baseline": 8695,
+      "conserved": true,
+      "hourly": [
+        5198,
+        2741,
+        1134,
+        189,
+        0,
+        1229,
+        4725,
+        10584,
+        17199,
+        20979,
+        21546,
+        20412,
+        20318,
+        20696,
+        20602,
+        20508,
+        21264,
+        22964,
+        24570,
+        24853,
+        22680,
+        18428,
+        13231,
+        8695
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 1353,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 2706,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 6766,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 10826,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Sodala Thana",
+      "cordon_cameras": 19,
+      "peak_inside": 22487,
+      "peak_hour": 19,
+      "mean_inside": 12996,
+      "resident_baseline": 7865,
+      "conserved": true,
+      "hourly": [
+        4702,
+        2479,
+        1026,
+        171,
+        0,
+        1111,
+        4275,
+        9576,
+        15561,
+        18981,
+        19494,
+        18468,
+        18382,
+        18724,
+        18638,
+        18552,
+        19236,
+        20776,
+        22230,
+        22487,
+        20520,
+        16672,
+        11969,
+        7865
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 1224,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 2449,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 6122,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 9795,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Police Station",
+      "cordon_cameras": 16,
+      "peak_inside": 18936,
+      "peak_hour": 19,
+      "mean_inside": 10944,
+      "resident_baseline": 6624,
+      "conserved": true,
+      "hourly": [
+        3960,
+        2088,
+        864,
+        144,
+        0,
+        936,
+        3600,
+        8064,
+        13104,
+        15984,
+        16416,
+        15552,
+        15480,
+        15768,
+        15696,
+        15624,
+        16200,
+        17496,
+        18720,
+        18936,
+        17280,
+        14040,
+        10080,
+        6624
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 1031,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 2062,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 5155,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 8248,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Panipech police Station",
+      "cordon_cameras": 16,
+      "peak_inside": 18936,
+      "peak_hour": 19,
+      "mean_inside": 10944,
+      "resident_baseline": 6624,
+      "conserved": true,
+      "hourly": [
+        3960,
+        2088,
+        864,
+        144,
+        0,
+        936,
+        3600,
+        8064,
+        13104,
+        15984,
+        16416,
+        15552,
+        15480,
+        15768,
+        15696,
+        15624,
+        16200,
+        17496,
+        18720,
+        18936,
+        17280,
+        14040,
+        10080,
+        6624
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 1031,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 2062,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 5155,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 8248,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "policr thana manak chowk",
+      "cordon_cameras": 15,
+      "peak_inside": 17753,
+      "peak_hour": 19,
+      "mean_inside": 10260,
+      "resident_baseline": 6210,
+      "conserved": true,
+      "hourly": [
+        3712,
+        1957,
+        810,
+        135,
+        0,
+        877,
+        3375,
+        7560,
+        12285,
+        14985,
+        15390,
+        14580,
+        14512,
+        14782,
+        14714,
+        14646,
+        15186,
+        16402,
+        17550,
+        17753,
+        16200,
+        13163,
+        9450,
+        6210
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 967,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 1933,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 4833,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 7733,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Mahila Thana East Gandhinagar",
+      "cordon_cameras": 14,
+      "peak_inside": 16569,
+      "peak_hour": 19,
+      "mean_inside": 9576,
+      "resident_baseline": 5796,
+      "conserved": true,
+      "hourly": [
+        3465,
+        1827,
+        756,
+        126,
+        0,
+        819,
+        3150,
+        7056,
+        11466,
+        13986,
+        14364,
+        13608,
+        13545,
+        13797,
+        13734,
+        13671,
+        14175,
+        15309,
+        16380,
+        16569,
+        15120,
+        12285,
+        8820,
+        5796
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 902,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 1804,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 4511,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 7217,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Police Station Murlipura",
+      "cordon_cameras": 14,
+      "peak_inside": 16569,
+      "peak_hour": 19,
+      "mean_inside": 9576,
+      "resident_baseline": 5796,
+      "conserved": true,
+      "hourly": [
+        3465,
+        1827,
+        756,
+        126,
+        0,
+        819,
+        3150,
+        7056,
+        11466,
+        13986,
+        14364,
+        13608,
+        13545,
+        13797,
+        13734,
+        13671,
+        14175,
+        15309,
+        16380,
+        16569,
+        15120,
+        12285,
+        8820,
+        5796
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 902,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 1804,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 4511,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 7217,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "rajasthan police headquaters",
+      "cordon_cameras": 13,
+      "peak_inside": 15385,
+      "peak_hour": 19,
+      "mean_inside": 8892,
+      "resident_baseline": 5383,
+      "conserved": true,
+      "hourly": [
+        3218,
+        1697,
+        702,
+        117,
+        0,
+        761,
+        2925,
+        6552,
+        10647,
+        12987,
+        13338,
+        12636,
+        12578,
+        12812,
+        12754,
+        12696,
+        13164,
+        14216,
+        15210,
+        15385,
+        14040,
+        11408,
+        8191,
+        5383
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 838,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 1675,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 4189,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 6702,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Kalwad pulia police station.",
+      "cordon_cameras": 12,
+      "peak_inside": 14202,
+      "peak_hour": 19,
+      "mean_inside": 8208,
+      "resident_baseline": 4968,
+      "conserved": true,
+      "hourly": [
+        2970,
+        1566,
+        648,
+        108,
+        0,
+        702,
+        2700,
+        6048,
+        9828,
+        11988,
+        12312,
+        11664,
+        11610,
+        11826,
+        11772,
+        11718,
+        12150,
+        13122,
+        14040,
+        14202,
+        12960,
+        10530,
+        7560,
+        4968
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 773,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 1547,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 3866,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 6186,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Karni Vihar Police Station Jaipur",
+      "cordon_cameras": 12,
+      "peak_inside": 14202,
+      "peak_hour": 19,
+      "mean_inside": 8208,
+      "resident_baseline": 4968,
+      "conserved": true,
+      "hourly": [
+        2970,
+        1566,
+        648,
+        108,
+        0,
+        702,
+        2700,
+        6048,
+        9828,
+        11988,
+        12312,
+        11664,
+        11610,
+        11826,
+        11772,
+        11718,
+        12150,
+        13122,
+        14040,
+        14202,
+        12960,
+        10530,
+        7560,
+        4968
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 773,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 1547,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 3866,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 6186,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Vishwakarma Police Station",
+      "cordon_cameras": 12,
+      "peak_inside": 14202,
+      "peak_hour": 19,
+      "mean_inside": 8208,
+      "resident_baseline": 4968,
+      "conserved": true,
+      "hourly": [
+        2970,
+        1566,
+        648,
+        108,
+        0,
+        702,
+        2700,
+        6048,
+        9828,
+        11988,
+        12312,
+        11664,
+        11610,
+        11826,
+        11772,
+        11718,
+        12150,
+        13122,
+        14040,
+        14202,
+        12960,
+        10530,
+        7560,
+        4968
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 773,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 1547,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 3866,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 6186,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Harmara Police Station",
+      "cordon_cameras": 11,
+      "peak_inside": 13019,
+      "peak_hour": 19,
+      "mean_inside": 7524,
+      "resident_baseline": 4553,
+      "conserved": true,
+      "hourly": [
+        2722,
+        1435,
+        594,
+        99,
+        0,
+        643,
+        2475,
+        5544,
+        9009,
+        10989,
+        11286,
+        10692,
+        10642,
+        10840,
+        10790,
+        10740,
+        11136,
+        12028,
+        12870,
+        13019,
+        11880,
+        9652,
+        6929,
+        4553
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 709,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 1418,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 3544,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 5671,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Police Thana Manak Chowk",
+      "cordon_cameras": 10,
+      "peak_inside": 11835,
+      "peak_hour": 19,
+      "mean_inside": 6840,
+      "resident_baseline": 4140,
+      "conserved": true,
+      "hourly": [
+        2475,
+        1305,
+        540,
+        90,
+        0,
+        585,
+        2250,
+        5040,
+        8190,
+        9990,
+        10260,
+        9720,
+        9675,
+        9855,
+        9810,
+        9765,
+        10125,
+        10935,
+        11700,
+        11835,
+        10800,
+        8775,
+        6300,
+        4140
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 644,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 1289,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 3222,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 5155,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Chitrakoot police Station",
+      "cordon_cameras": 9,
+      "peak_inside": 10651,
+      "peak_hour": 19,
+      "mean_inside": 6156,
+      "resident_baseline": 3727,
+      "conserved": true,
+      "hourly": [
+        2228,
+        1175,
+        486,
+        81,
+        0,
+        527,
+        2025,
+        4536,
+        7371,
+        8991,
+        9234,
+        8748,
+        8708,
+        8870,
+        8830,
+        8790,
+        9114,
+        9842,
+        10530,
+        10651,
+        9720,
+        7898,
+        5671,
+        3727
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 580,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 1160,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 2900,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 4640,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Police Station Adarsh Nagar",
+      "cordon_cameras": 9,
+      "peak_inside": 10651,
+      "peak_hour": 19,
+      "mean_inside": 6156,
+      "resident_baseline": 3727,
+      "conserved": true,
+      "hourly": [
+        2228,
+        1175,
+        486,
+        81,
+        0,
+        527,
+        2025,
+        4536,
+        7371,
+        8991,
+        9234,
+        8748,
+        8708,
+        8870,
+        8830,
+        8790,
+        9114,
+        9842,
+        10530,
+        10651,
+        9720,
+        7898,
+        5671,
+        3727
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 580,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 1160,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 2900,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 4640,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Police Station Subhash Chowk , Jaipur",
+      "cordon_cameras": 9,
+      "peak_inside": 10651,
+      "peak_hour": 19,
+      "mean_inside": 6156,
+      "resident_baseline": 3727,
+      "conserved": true,
+      "hourly": [
+        2228,
+        1175,
+        486,
+        81,
+        0,
+        527,
+        2025,
+        4536,
+        7371,
+        8991,
+        9234,
+        8748,
+        8708,
+        8870,
+        8830,
+        8790,
+        9114,
+        9842,
+        10530,
+        10651,
+        9720,
+        7898,
+        5671,
+        3727
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 580,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 1160,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 2900,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 4640,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Police Station Vaishali Nagar",
+      "cordon_cameras": 8,
+      "peak_inside": 9468,
+      "peak_hour": 19,
+      "mean_inside": 5472,
+      "resident_baseline": 3312,
+      "conserved": true,
+      "hourly": [
+        1980,
+        1044,
+        432,
+        72,
+        0,
+        468,
+        1800,
+        4032,
+        6552,
+        7992,
+        8208,
+        7776,
+        7740,
+        7884,
+        7848,
+        7812,
+        8100,
+        8748,
+        9360,
+        9468,
+        8640,
+        7020,
+        5040,
+        3312
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 516,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 1031,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 2578,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 4124,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Police chowki",
+      "cordon_cameras": 6,
+      "peak_inside": 7101,
+      "peak_hour": 19,
+      "mean_inside": 4104,
+      "resident_baseline": 2484,
+      "conserved": true,
+      "hourly": [
+        1485,
+        783,
+        324,
+        54,
+        0,
+        351,
+        1350,
+        3024,
+        4914,
+        5994,
+        6156,
+        5832,
+        5805,
+        5913,
+        5886,
+        5859,
+        6075,
+        6561,
+        7020,
+        7101,
+        6480,
+        5265,
+        3780,
+        2484
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 387,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 773,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 1933,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 3093,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Kardhani Police Station",
+      "cordon_cameras": 5,
+      "peak_inside": 5917,
+      "peak_hour": 19,
+      "mean_inside": 3420,
+      "resident_baseline": 2071,
+      "conserved": true,
+      "hourly": [
+        1238,
+        653,
+        270,
+        45,
+        0,
+        293,
+        1125,
+        2520,
+        4095,
+        4995,
+        5130,
+        4860,
+        4838,
+        4928,
+        4906,
+        4884,
+        5064,
+        5468,
+        5850,
+        5917,
+        5400,
+        4388,
+        3151,
+        2071
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 322,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 644,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 1611,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 2578,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    },
+    {
+      "area": "Sanganer Sadar Police Station",
+      "cordon_cameras": 5,
+      "peak_inside": 5917,
+      "peak_hour": 19,
+      "mean_inside": 3420,
+      "resident_baseline": 2071,
+      "conserved": true,
+      "hourly": [
+        1238,
+        653,
+        270,
+        45,
+        0,
+        293,
+        1125,
+        2520,
+        4095,
+        4995,
+        5130,
+        4860,
+        4838,
+        4928,
+        4906,
+        4884,
+        5064,
+        5468,
+        5850,
+        5917,
+        5400,
+        4388,
+        3151,
+        2071
+      ],
+      "drift": {
+        "1pct": {
+          "phantom_vehicles_per_day": 322,
+          "reanchor_every_hours": 44.1
+        },
+        "2pct": {
+          "phantom_vehicles_per_day": 644,
+          "reanchor_every_hours": 22.0
+        },
+        "5pct": {
+          "phantom_vehicles_per_day": 1611,
+          "reanchor_every_hours": 8.8
+        },
+        "8pct": {
+          "phantom_vehicles_per_day": 2578,
+          "reanchor_every_hours": 5.5
+        }
+      }
+    }
+  ],
+  "assumptions": {
+    "peak_vehicles_per_crossing_per_hour": 900,
+    "outflow_lag_hours": 3,
+    "diurnal_shape": "corridor's own measured profile, normalised"
+  },
+  "drift_note": "Integration accumulates counting error. A detector 2% optimistic on a cordon carrying 8,000 vehicles an hour invents 160 an hour, which is thousands of phantom vehicles by evening on an area that may hold a few thousand. reanchor_every_hours is how often the count must be reset to a known state before the estimate stops supporting a decision. This is the real accuracy specification for the camera procurement and it is the question nobody asks.",
+  "flow_is_synthetic": true,
+  "flow_note": "Inflow and outflow are generated from the measured diurnal shape with a three-hour lag, because no camera feed exists yet. This demonstrates the method and does not measure Jaipur. Connect a cordon and the same integration runs on real counts unchanged.",
+  "is_synthetic": true
+}
