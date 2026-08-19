@@ -19,6 +19,7 @@ from pravaah.adapters.published import (
     FLEET_RAJASTHAN_TOTAL,
     RAJASTHAN_ROAD_SAFETY_CELL,
 )
+from pravaah.drishti import anomaly
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -599,6 +600,55 @@ async def probe_coverage() -> dict[str, Any]:
     surprises somebody with a bill.
     """
     return probe.coverage()
+
+
+@router.get("/incidents/anomalies")
+async def incident_anomalies() -> dict[str, Any]:
+    """Segments that do not look like their neighbours, from live speeds.
+
+    Deliberately not called incident detection. A slow segment might be a crash,
+    a procession, a burst water main or a signal stuck on red, and from a speed
+    reading those are identical. This says a road is unlike its peers and leaves
+    the naming to the people whose job it is.
+
+    Spatial only for now. Comparing a segment against its own history at this
+    hour needs history, and the sweep has been recording it for hours rather
+    than weeks, so the temporal half declines instead of inventing a baseline
+    from a single reading.
+    """
+    geometry = probe.link_geometry()
+    readings = probe.readings()
+    segments = [
+        anomaly.Observation(
+            link_id=int(link_id),
+            name=str(meta.get("name") or ""),
+            corridor_id=int(meta.get("corridor_id") or 0),
+            congestion_index=float(reading.get("congestion_index") or 0.0),
+            segment_key=reading.get("segment_key"),
+        )
+        for link_id, meta in geometry.items()
+        if (reading := readings.get(link_id)) is not None and reading.get("is_measured")
+    ]
+    found = anomaly.spatial(segments)
+    return {
+        "anomalies": [
+            {
+                "link_id": a.link_id,
+                "covers": list(a.covers),
+                "name": a.name,
+                "corridor_id": a.corridor_id,
+                "congestion_index": a.congestion_index,
+                "peer_median": a.peer_median,
+                "score": a.score,
+                "basis": a.basis,
+                "severity": a.severity,
+            }
+            for a in found
+        ],
+        "segments_examined": len(segments),
+        "method": anomaly.method(peers_available=len(segments) > 0, history_available=False),
+        "is_synthetic": False,
+    }
 
 
 @router.get("/schemes")

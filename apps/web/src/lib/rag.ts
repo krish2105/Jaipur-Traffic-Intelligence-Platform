@@ -43,7 +43,10 @@ interface RawIndex {
   idf: Record<string, number>;
   avgdl: number;
   n: number;
+  /** Term to the words it actually occurs beside in this corpus. */
+  expansion?: Record<string, string[]>;
   method: string;
+  expansion_note?: string;
 }
 
 export interface Passage {
@@ -88,20 +91,53 @@ export async function loadIndex(): Promise<Prepared> {
 }
 
 /** Standard BM25. Written out rather than pulled in, because it is nine lines. */
+/**
+ * Weight given to a term the question did not contain.
+ *
+ * Expansion terms are a guess about what was meant, so they must never outvote
+ * the words actually typed. A quarter is enough to break a tie between two
+ * chunks that score the same lexically, and too little to pull an unrelated
+ * chunk to the top on its own.
+ */
+const EXPANSION_WEIGHT = 0.25;
+
+/**
+ * The query's own terms, plus the words this corpus uses alongside them.
+ *
+ * BM25 matches words, so a question phrased differently from the documents
+ * scores zero however well it matches in meaning. The expansion map, built from
+ * corpus co-occurrence at compile time, bridges some of that without shipping a
+ * model to the browser — which matters because this index is a static asset
+ * that has to work with the network cable pulled.
+ */
+function expand(raw: RawIndex, terms: string[]): { term: string; weight: number }[] {
+  const seen = new Set(terms);
+  const out = terms.map((term) => ({ term, weight: 1 }));
+  for (const term of terms) {
+    for (const related of raw.expansion?.[term] ?? []) {
+      if (seen.has(related)) continue;
+      seen.add(related);
+      out.push({ term: related, weight: EXPANSION_WEIGHT });
+    }
+  }
+  return out;
+}
+
 export function search(index: Prepared, query: string, top = 4): Passage[] {
   const terms = tokenise(query);
   if (terms.length === 0) return [];
   const { raw, tf, len } = index;
+  const weighted = expand(raw, terms);
 
   const scored = raw.chunks.map((chunk, i) => {
     let score = 0;
-    for (const term of terms) {
+    for (const { term, weight } of weighted) {
       const f = tf[i]?.get(term);
       if (!f) continue;
       const idf = raw.idf[term];
       if (idf === undefined) continue;
       const norm = 1 - B + (B * (len[i] ?? 0)) / (raw.avgdl || 1);
-      score += idf * ((f * (K1 + 1)) / (f + K1 * norm));
+      score += weight * idf * ((f * (K1 + 1)) / (f + K1 * norm));
     }
     return { doc: chunk.d, heading: chunk.h, text: chunk.t, score };
   });

@@ -216,3 +216,40 @@ describe("a captured payload must not claim to be fresh forever", () => {
     expect(ageMinutes <= maxAge).toBe(false);
   });
 });
+
+describe("retrieval reaches past the exact words", () => {
+  /**
+   * BM25 matches words. A question phrased differently from the corpus scores
+   * zero however well it matches in meaning. The index carries a co-occurrence
+   * map built at compile time so a paraphrase can still land, without shipping
+   * a model to a browser that has to work offline.
+   */
+  const index = JSON.parse(
+    readFileSync(join(__dirname, "../public/data/rag-index.json"), "utf8"),
+  ) as { expansion?: Record<string, string[]>; method: string; expansion_note?: string };
+
+  it("ships an expansion map", () => {
+    expect(index.expansion).toBeDefined();
+    expect(Object.keys(index.expansion ?? {}).length).toBeGreaterThan(200);
+  });
+
+  it("links terms to words that actually co-occur", () => {
+    // Not a synonym list. "helmet" reaches "fatalities" because the documents
+    // discuss them together, which is the mechanism and also its limit.
+    expect(index.expansion?.helmet).toBeDefined();
+    expect(index.expansion?.helmet?.length).toBeGreaterThan(0);
+  });
+
+  it("expands words, not numbers or fragments", () => {
+    // Numbers stay searchable — someone will type 34.7 — but they make poor
+    // synonyms, and the first build had "way." and "58.7" as neighbours.
+    for (const [term, related] of Object.entries(index.expansion ?? {}).slice(0, 200)) {
+      expect(term).toMatch(/^[a-z]{4,}$/);
+      for (const other of related) expect(other).toMatch(/^[a-z]{4,}$/);
+    }
+  });
+
+  it("says plainly that co-occurrence is not meaning", () => {
+    expect(index.expansion_note ?? "").toMatch(/not meaning/i);
+  });
+});

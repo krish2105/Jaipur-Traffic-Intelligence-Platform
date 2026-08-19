@@ -94,6 +94,12 @@ def readings(at: datetime | None = None, now: datetime | None = None) -> dict[st
     return links if isinstance(links, dict) else {}
 
 
+def link_geometry() -> dict[str, dict[str, Any]]:
+    """Cached per-link geometry and naming, from the discovery pass."""
+    points = _load("segments.json").get("link_points") or {}
+    return points if isinstance(points, dict) else {}
+
+
 def link_corridors() -> dict[str, int]:
     """Which corridor each sampled link belongs to.
 

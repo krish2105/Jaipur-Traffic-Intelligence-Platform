@@ -108,6 +108,60 @@ def chunk(path: Path) -> list[dict[str, object]]:
     return out
 
 
+#: Terms rarer than this cannot support a co-occurrence estimate: two shared
+#: chunks is a coincidence, not a relationship.
+MIN_DF_FOR_EXPANSION = 4
+
+#: How many neighbours to keep per term. Four is enough to bridge a paraphrase
+#: and few enough to keep the map from doubling the index.
+NEIGHBOURS = 4
+
+
+def _co_occurrence(
+    postings: list[dict[str, int]], df: Counter[str], n: int
+) -> dict[str, list[str]]:
+    """Terms that occur together more than chance, by pointwise mutual information.
+
+    Raw co-occurrence counts would rank every term's neighbours as the corpus's
+    most common words, which helps nobody. PMI divides by what chance predicts,
+    so it surfaces pairs that are specifically associated rather than merely
+    frequent.
+    """
+    # Words only, and long enough to carry meaning. Numbers and fragments are
+    # excluded from *expansion* but stay fully searchable: "34.7" is exactly the
+    # kind of thing someone types, and it should match the chunk that contains
+    # it. It just makes a poor synonym for "helmet".
+    candidates = {
+        term
+        for term, freq in df.items()
+        if freq >= MIN_DF_FOR_EXPANSION and len(term) >= 4 and term.isalpha()
+    }
+    together: dict[str, Counter[str]] = {term: Counter() for term in candidates}
+    for posting in postings:
+        present = sorted(set(posting) & candidates)
+        for i, a in enumerate(present):
+            for b in present[i + 1 :]:
+                together[a][b] += 1
+                together[b][a] += 1
+
+    out: dict[str, list[str]] = {}
+    for term, counts in together.items():
+        scored = []
+        for other, shared in counts.items():
+            if shared < 2:
+                continue
+            # PMI: log( P(a,b) / (P(a) P(b)) ), with counts standing in for
+            # probabilities since the denominator n cancels in the ranking.
+            pmi = math.log((shared * n) / (df[term] * df[other]))
+            if pmi > 0:
+                scored.append((pmi, other))
+        scored.sort(reverse=True)
+        best = [other for _, other in scored[:NEIGHBOURS]]
+        if best:
+            out[term] = best
+    return out
+
+
 def main() -> None:
     chunks: list[dict[str, object]] = []
     for path in sorted(DOCS.glob("*.md")):
@@ -123,7 +177,7 @@ def main() -> None:
         postings.append(dict(tf))
         lengths.append(len(tokens))
         df.update(tf.keys())
-    del postings  # built only to compute df; never shipped
+    # Kept now, to build the expansion map below. Still never shipped.
 
     n = len(chunks)
     avgdl = sum(lengths) / n if n else 0.0
@@ -135,6 +189,24 @@ def main() -> None:
         if freq < n * 0.6
     }
 
+    # ── Co-occurrence expansion ────────────────────────────────────────────
+    #
+    # BM25 matches words. A question phrased in different words than the corpus
+    # scores zero however well it matches in meaning: "how many cars are stuck"
+    # finds nothing when the documents say "vehicle accumulation".
+    #
+    # The usual fix is sentence embeddings, which means shipping a model to the
+    # browser. That is tens of megabytes, and this index is deliberately a
+    # static asset that works with the network cable pulled. So instead: which
+    # terms actually occur together in this corpus, measured at build time.
+    #
+    # This is co-occurrence, not meaning. It will connect "accumulation" to
+    # "vehicles" because they appear together, and it will not connect a synonym
+    # the corpus never uses. That is a real limit and it is stated in `method`
+    # rather than left for someone to discover.
+    expansion = _co_occurrence(postings, df, n)
+    del postings  # built only for df and the expansion map; never shipped
+
     # Term frequencies are NOT shipped. They are recoverable from the chunk text
     # by the same tokeniser, and 362 chunks of ~69 tokens is a few milliseconds
     # of work in the browser — against ~300 KB of duplicated payload if sent.
@@ -143,7 +215,17 @@ def main() -> None:
         "idf": idf,
         "avgdl": round(avgdl, 2),
         "n": n,
-        "method": "BM25 (k1=1.5, b=0.75), lexical, built at compile time",
+        "expansion": expansion,
+        "method": (
+            "BM25 (k1=1.5, b=0.75) over lexical terms, with query expansion from "
+            "corpus co-occurrence (PMI). Built at compile time; no model, no "
+            "network, works offline."
+        ),
+        "expansion_note": (
+            "Co-occurrence is not meaning. A term is linked to the words it "
+            "actually appears beside in these documents, so a synonym the corpus "
+            "never uses will still be missed."
+        ),
     }
 
     OUT.parent.mkdir(parents=True, exist_ok=True)

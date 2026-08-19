@@ -129,6 +129,56 @@ def outcome_kpis() -> list[dict[str, object]]:
             None,
             is_judgement=True,
         ),
+        # Added once the probe layer made them measurable. Each of these has a
+        # measurement path that exists today rather than one that arrives with a
+        # camera feed, which is the difference between a KPI and an aspiration.
+        _kpi(
+            "buffer_index",
+            "Buffer Index, worst corridor",
+            "बफ़र सूचकांक, सबसे ख़राब कॉरिडोर",
+            # No baseline yet: the gate needs 40 sweeps across 8 distinct hours
+            # and the sweep has been recording for hours. Zero would read as a
+            # perfectly reliable corridor, which is the opposite of unknown.
+            0.0,
+            0.35,
+            "ratio",
+            "down",
+            "FHWA travel time reliability, measured from live probe travel times",
+            "https://ops.fhwa.dot.gov/publications/tt_reliability/ttr_report.htm",
+            is_judgement=True,
+        ),
+        _kpi(
+            "minutes_over_critical",
+            "Minutes a day an area sits past critical",
+            "क्षेत्र क्रांतिक से ऊपर, मिनट प्रति दिन",
+            0.0,
+            60.0,
+            "min/day",
+            "down",
+            (
+                "Accumulation against critical, estimated from measured speed. "
+                "Counted only where the estimator was validated, above 0.4 "
+                "saturation."
+            ),
+            None,
+            is_judgement=True,
+        ),
+        _kpi(
+            "scheme_appraisal_coverage",
+            "Capital schemes appraised before the work order",
+            "कार्यादेश से पहले मूल्यांकित योजनाएँ",
+            1.0,
+            3.0,
+            "schemes",
+            "up",
+            (
+                "JDA has three elevated roads and a BRTS removal in progress on "
+                "corridors this platform models, worth about Rs 380 crore. One "
+                "is appraised."
+            ),
+            None,
+            is_judgement=True,
+        ),
     ]
 
 

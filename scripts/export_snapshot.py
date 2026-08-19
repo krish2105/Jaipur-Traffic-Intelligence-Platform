@@ -55,6 +55,8 @@ PATHS: tuple[str, ...] = (
     "/meta/city-data",
     # Capital schemes appraised before the work order.
     "/schemes",
+    # Segments unlike their corridor peers, from live speeds.
+    "/incidents/anomalies",
     "/safety/severity-model",
     "/enforcement/allocation",
     "/counts/summary?corridor_id=1",
